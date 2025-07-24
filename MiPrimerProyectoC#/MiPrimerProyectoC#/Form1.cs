@@ -21,5 +21,10 @@ namespace MiPrimerProyectoC_
         {
 
         }
+
+        private void btnSaludar_Click(object sender, EventArgs e)
+        {
+            lblSaludo.Text = "¡Hola, " + txtNombre.Text + " bienvenido a mi primer proyecto de C#";
+        }
     }
 }

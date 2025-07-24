@@ -1,0 +1,11 @@
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\MiPrimerProyectoC#.exe.config
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\MiPrimerProyectoC#.exe
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\MiPrimerProyectoC#.pdb
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.AssemblyReference.cache
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form1.resources
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Properties.Resources.resources
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.GenerateResource.cache
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.CoreCompileInputs.cache
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.exe
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.pdb
+C:\Users\ccjun\Desktop\notas\Progra1-semi2025.git\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.exe.config

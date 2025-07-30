@@ -19,6 +19,7 @@ namespace MiPrimerProyectoC_
 
         private void btnCalcular_Click(object sender, EventArgs e)
         {
+            //no se por que en la computadora de la U no me dejo subir los cambios con mi cuenta de GitHub y los subio con otra cuenta
             double num1, num2, respuesta;
             num1 = double.Parse(txtNum1.Text);
             num2 = double.Parse(txtNum2.Text);

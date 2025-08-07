@@ -21,5 +21,10 @@ namespace MiPrimerProyectoEnCSharp
         {
 
         }
+
+        private void btnSaludo_Click(object sender, EventArgs e)
+        {
+            lblSaludo.Text = "¡Hola!! " + txtNombre.Text;
+        }
     }
 }

@@ -24,7 +24,13 @@ namespace MiPrimerProyectoEnCSharp
 
         private void btnSaludo_Click(object sender, EventArgs e)
         {
-            lblSaludo.Text = "¡Hola!! " + txtNombre.Text;
+
+            Double num1 = Convert.ToDouble (txtNum1.Text);
+            Double num2 = Convert.ToDouble(txtNum2.Text);
+            Double total = num1 + num2;
+
+
+            lblTotal.Text = "El total es " + total;
         }
     }
 }

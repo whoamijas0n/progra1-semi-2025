@@ -44,6 +44,7 @@ namespace MiPrimerProyectoC_
             this.optPorcentaje = new System.Windows.Forms.RadioButton();
             this.cboOpciones = new System.Windows.Forms.ComboBox();
             this.btnCalcularOpciones = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.grbOpciones.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -252,5 +253,6 @@ namespace MiPrimerProyectoC_
         private System.Windows.Forms.RadioButton optPorcentaje;
         private System.Windows.Forms.ComboBox cboOpciones;
         private System.Windows.Forms.Button btnCalcularOpciones;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,11 +21,82 @@ namespace MiPrimerProyectoC_
         private void btnCalcular_Click(object sender, EventArgs e)
         {
             //no se por que en la computadora de la U no me dejo subir los cambios con mi cuenta de GitHub y los subio con otra cuenta
-            double num1, num2, respuesta;
+            double num1, num2, respuesta=0;
             num1 = double.Parse(txtNum1.Text);
             num2 = double.Parse(txtNum2.Text);
-            respuesta = num1 + num2;
+            if (optSuma.Checked)
+            {
+                respuesta = num1 + num2;
+            }
+            if (optResta.Checked)
+            {
+                respuesta = num1 - num2;
+            }
+            if (optMultiplicacion.Checked)
+            {
+                respuesta = num1 * num2;
+            }
+            if (optDivision.Checked)
+            {
+                respuesta = num1 / num2;
+            }
+            if (optExponenciacion.Checked){
+                respuesta = Math.Pow(num1, num2);
+            }
+            if (optPorcentaje.Checked)
+            {
+                respuesta =  (num1 / num2) * 0.10;
+            }
             lblRespuesta.Text = "Resultado = " + respuesta;
+        }
+       //agregar procentaje funcional, factorial y modulo
+
+        private void optDivision_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void grbOpciones_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCalcularOpciones_Click(object sender, EventArgs e)
+        {
+            double num1, num2, respuesta = 0;
+            num1 = double.Parse(txtNum1.Text);
+            num2 = double.Parse(txtNum2.Text);
+            switch (cboOpciones.SelectedIndex) {
+                case 0:
+                    respuesta = num1 + num2;
+                    break;
+                case 1:
+                    respuesta = num1 - num2;
+                    break;
+                case 2:
+                    respuesta = num1 * num2;
+                    break;
+                case 3:
+                    respuesta = num1 / num2;
+                    break;
+
+            }
+            lblRespuesta.Text = "Respuesta = " + respuesta;
         }
     }
 }

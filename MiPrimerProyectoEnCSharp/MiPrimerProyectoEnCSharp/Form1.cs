@@ -22,182 +22,56 @@ namespace MiPrimerProyectoEnCSharp
 
         }
 
-        private void btnSaludo_Click(object sender, EventArgs e)
-        {
-
-            Double num1, num2, total = 0;
-            num1 = double.Parse(txtNum1.Text);
-            num2 = double.Parse(txtNum2.Text);
-
-            if (optSuma.Checked)
-            {
-                total = num1 + num2;
-            }
-
-            if (optResta.Checked)
-            {
-                total = num1 - num2;
-            }
-
-            if (optMultiplicacion.Checked)
-            {
-                total = num1 * num2;
-            }
-
-            if (optDivision.Checked)
-            {
-                total = num1 / num2;
-            }
-
-            if (optExponente.Checked)
-            {
-                total = Math.Pow(num1, num2);
-            }
-
-            if (optPorcentaje.Checked)
-            {
-                double porcentaje = num2 / 100;
-
-
-                total = num1 * porcentaje;
-            }
-
-
-            if (optFactorial.Checked)
-            {
-                total = (int)num1;
-                for (int i = (int)num1 - 1; i > 1; i--)
-                {
-                    total *= i;
-                }
-            }
-
-            if (optModulo.Checked)
-            {
-                total = num1 % num2;
-            }
-
-
-
-            lblTotal.Text = "El total es " + total;
-
-        
-
-            if (optPrimo.Checked)
-            {
-                int i = 1, acum=0;
-                while (i <= num1 && acum<3)
-                {
-                    if (num1%i==0)
-                    {
-                        acum++;
-                    }
-                    i++;
-                }
-                if (acum <= 2)
-                {
-                    lblTotal.Text = "Respuesta : " + num1 + " es primo";
-                }
-                else
-                {
-                    lblTotal.Text = "Respuesta : " + num1 + " no es primo";
-                }
-
-            }
-
-
-
-
-        }
+      
 
         private void optSuma_CheckedChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void btnCalcularOpciones_Click(object sender, EventArgs e)
+        private void label1_Click(object sender, EventArgs e)
         {
-            double num1, num2, total=0;
-            num1 = double.Parse(txtNum1.Text);
-            num2 = double.Parse(txtNum1.Text);
-
-            switch (cboOpciones.SelectedIndex)
-            {
-                case 0:
-                    total = num1 + num2;
-                    break;
-
-                case 1:
-                    total = num1 - num2;
-                    break;
-
-                case 2:
-                    total = num1 * num2;
-                    break;
-
-                case 3:
-                    total = num1 / num2;
-                    break;
-
-                case 4:
-                    total = Math.Pow(num1, num2);
-                    break;
-
-                case 5:
-                    double porcentaje = num2 / 100;
-                    total = num1 * porcentaje;
-                    break;
-
-                case 6:
-                    total = (int)num1;
-                    for (int l = (int)num1 - 1; l > 1; l--)
-                    {
-                        total *= l;
-                    }
-                    break;
-
-                case 7:
-
-                    total = num1 % num2;
-
-                    break;
-
-            }
-
-            lblTotal.Text = "El total es " + total;
-
-
-            //Para los numeros primos
-
-            switch (cboOpciones.SelectedIndex)
-            {
-                case 8:
-
-                    int i = 1, acum = 0;
-                    while (i <= num1 && acum < 3)
-                    {
-                        if (num1 % i == 0)
-                        {
-                            acum++;
-                        }
-                        i++;
-                    }
-                    if (acum <= 2)
-                    {
-                        lblTotal.Text = "Respuesta : " + num1 + " es primo";
-                    }
-                    else
-                    {
-                        lblTotal.Text = "Respuesta : " + num1 + " no es primo";
-                    }
-
-
-                    break;
-            }
-
 
         }
 
-
+        private double[][] tablaIsr = {
+         new Double[] {0.01, 550, 0, 0},
+         new Double[] {550.01, 895.24, 0.10, 17.67},
+         new Double[] {895.25, 2038.10, 0.20, 60},
+         new Double[] {2038.11, 9999999, 0.30, 288.57}
+ };
+        private double calcularDeducciones(double sueldo, double porcentaje)
+        {
+            return sueldo * porcentaje;
         }
+        private double calcularIsr(double sueldo)
+        {
+            double isr = 0;
+            for (int i = 0; i < tablaIsr.Length; i++)
+            {
+                if (sueldo >= tablaIsr[i][0] && sueldo <= tablaIsr[i][1])
+                {
+                    isr = (sueldo - tablaIsr[i][0]) * tablaIsr[i][2] + tablaIsr[i][3];
+                }
+            }
+            return isr;
+        }
+        private void btnCalcular_Click(object sender, EventArgs e)
+        {
+            double sueldo = 0, isss = 0, afp = 0, isr = 0, sueldoNeto = 0;
+            sueldo = double.Parse(txtSueldo.Text);
+
+            isss = calcularDeducciones(sueldo, 0.03); // 3% de ISSS -> 3/100=0.03
+            afp = calcularDeducciones(sueldo, 0.0725); // 7.25% de AFP -> 7.25/100=0.0725
+            isr = calcularIsr(sueldo - isss - afp); // Calcular ISR
+
+            sueldoNeto = sueldo - isss - afp - isr; // Calcular sueldo neto
+
+            lblISS.Text = "ISSS: " + isss.ToString("C2");
+            lblAFP.Text = "AFP: " + afp.ToString("C2");
+            lblISR.Text = "ISR: " + isr.ToString("C2");
+            lblTotalDeducciones.Text = "Total Deducciones: " + (isss + afp + isr).ToString("C2");
+            lblSueldoNeto.Text = "Sueldo Neto: " + sueldoNeto.ToString("C2");
+        }
+    }
 }

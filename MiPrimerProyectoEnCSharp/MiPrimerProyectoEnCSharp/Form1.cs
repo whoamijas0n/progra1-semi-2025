@@ -56,7 +56,10 @@ namespace MiPrimerProyectoEnCSharp
 
             if (optPorcentaje.Checked)
             {
-                total = (num2 / num1) * 100;
+                double porcentaje = num2 / 100;
+
+
+                total = num1 * porcentaje;
             }
 
 
@@ -68,6 +71,12 @@ namespace MiPrimerProyectoEnCSharp
                     total *= i;
                 }
             }
+
+            if (optModulo.Checked)
+            {
+                total = num1 % num2;
+            }
+
 
 
             lblTotal.Text = "El total es " + total;
@@ -87,11 +96,11 @@ namespace MiPrimerProyectoEnCSharp
                 }
                 if (acum <= 2)
                 {
-                    lblTotal.Text = "Respuesta : " + num1 + "es primo";
+                    lblTotal.Text = "Respuesta : " + num1 + " es primo";
                 }
                 else
                 {
-                    lblTotal.Text = "Respuesta : " + num1 + "no es primo";
+                    lblTotal.Text = "Respuesta : " + num1 + " no es primo";
                 }
 
             }
@@ -135,15 +144,60 @@ namespace MiPrimerProyectoEnCSharp
                     break;
 
                 case 5:
-                    total = (num2 / num1) *100;
+                    double porcentaje = num2 / 100;
+                    total = num1 * porcentaje;
                     break;
-        
-           }
+
+                case 6:
+                    total = (int)num1;
+                    for (int l = (int)num1 - 1; l > 1; l--)
+                    {
+                        total *= l;
+                    }
+                    break;
+
+                case 7:
+
+                    total = num1 % num2;
+
+                    break;
+
+            }
 
             lblTotal.Text = "El total es " + total;
+
+
+            //Para los numeros primos
+
+            switch (cboOpciones.SelectedIndex)
+            {
+                case 8:
+
+                    int i = 1, acum = 0;
+                    while (i <= num1 && acum < 3)
+                    {
+                        if (num1 % i == 0)
+                        {
+                            acum++;
+                        }
+                        i++;
+                    }
+                    if (acum <= 2)
+                    {
+                        lblTotal.Text = "Respuesta : " + num1 + " es primo";
+                    }
+                    else
+                    {
+                        lblTotal.Text = "Respuesta : " + num1 + " no es primo";
+                    }
+
+
+                    break;
+            }
+
 
         }
 
 
-    }
+        }
 }

@@ -45,11 +45,33 @@ namespace MiPrimerProyectoC_
             }
             if (optPorcentaje.Checked)
             {
-                respuesta =  (num1 / num2) * 0.10;
+                respuesta =  (num1 / num2) * 100;
+            }
+            if (optFactorial.Checked)
+            {
+                respuesta = 1;
+                for (int i = 1; i <= num1; i++)
+                {
+                    respuesta *= i;
+                }
+            }
+            if (optPrimo.Checked)
+            {
+                int i=1, acum = 0;
+                while (i <= num1 && acum<3)
+                {
+                    if (num1 % i == 0)
+                    {
+                        acum++; //acumula los divisores 
+                    }
+                }
             }
             lblRespuesta.Text = "Resultado = " + respuesta;
+
+            
+
         }
-       //agregar procentaje funcional, factorial y modulo
+       //agregar procentaje funcional, primo y modulo
 
         private void optDivision_CheckedChanged(object sender, EventArgs e)
         {
@@ -94,6 +116,7 @@ namespace MiPrimerProyectoC_
                 case 3:
                     respuesta = num1 / num2;
                     break;
+                    // Agregar mas casos para factorial y primo
 
             }
             lblRespuesta.Text = "Respuesta = " + respuesta;

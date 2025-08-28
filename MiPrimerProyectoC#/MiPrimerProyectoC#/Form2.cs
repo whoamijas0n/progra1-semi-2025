@@ -71,8 +71,6 @@ namespace MiPrimerProyectoC_
             
 
         }
-       //agregar procentaje funcional, primo y modulo
-
         private void optDivision_CheckedChanged(object sender, EventArgs e)
         {
 
@@ -115,6 +113,13 @@ namespace MiPrimerProyectoC_
                     break;
                 case 3:
                     respuesta = num1 / num2;
+                    break;
+                case 4:
+                    respuesta = 1;
+                    for (int i = 1; i <= num1; i++)
+                    {
+                        respuesta *= i;
+                    }
                     break;
                     // Agregar mas casos para factorial y primo
 

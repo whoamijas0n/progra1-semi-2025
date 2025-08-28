@@ -45,3 +45,5 @@ C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerPr
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.exe
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.pdb
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form3.resources
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form4.resources
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form5.resources

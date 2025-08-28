@@ -26,8 +26,8 @@ namespace MiPrimerProyectoC_
         private double[][] tablaIsr = {
                 new Double[] {0.01, 550, 0, 0},
                 new Double[] {550.01, 895.24, 0.10, 17.67},
-                new Double[] {895.25, 2038.10, 0.20, 60},
-                new Double[] {2038.11, 9999999, 0.30, 288.57}
+                new Double[] {895.25, 2038.10, 0.20, 60},    //estas matrices son las tablas del isr las cuales
+                new Double[] {2038.11, 9999999, 0.30, 288.57}//se usan para calcular el isr
         };
         private double calcularDeducciones(double sueldo, double porcentaje)
         {

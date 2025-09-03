@@ -20,6 +20,8 @@ namespace miPrimerProyectoCsharp
         {
 
         }
+        /*hello */
+
 
         String[][] etiquetas = new string[][] {
             new string[]{"Dolar", "Pesos Mexicanos", "Quetzal", "Lempira", "Colon SV", "Cordobas", "Colon CR"}, //Monedas

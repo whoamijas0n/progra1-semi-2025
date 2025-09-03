@@ -50,16 +50,6 @@
             this.lblTotalLongitud = new System.Windows.Forms.Label();
             this.lblConvertirLongitud = new System.Windows.Forms.Label();
             this.lblTipoLongitud = new System.Windows.Forms.Label();
-            this.cboConvertirAlmacenamiento = new System.Windows.Forms.ComboBox();
-            this.cboTipoAlmacenamiento = new System.Windows.Forms.ComboBox();
-            this.lblTotalAlmacenamiento = new System.Windows.Forms.Label();
-            this.lblConvertirAlmacenamiento = new System.Windows.Forms.Label();
-            this.lblTipoAlmacenamiento = new System.Windows.Forms.Label();
-            this.cboConvertirTiempo = new System.Windows.Forms.ComboBox();
-            this.cboTipoTiempo = new System.Windows.Forms.ComboBox();
-            this.lblTotalTiempo = new System.Windows.Forms.Label();
-            this.lblConvertirTiempo = new System.Windows.Forms.Label();
-            this.lblTipoTiempo = new System.Windows.Forms.Label();
             this.btnCalcular = new System.Windows.Forms.Button();
             this.lblValor = new System.Windows.Forms.Label();
             this.txtValor = new System.Windows.Forms.TextBox();
@@ -344,137 +334,6 @@
             this.lblTipoLongitud.TabIndex = 17;
             this.lblTipoLongitud.Text = "Seleccione el tipo de longitud:";
             // 
-            // cboConvertirAlmacenamiento
-            // 
-            this.cboConvertirAlmacenamiento.FormattingEnabled = true;
-            this.cboConvertirAlmacenamiento.Items.AddRange(new object[] {
-            "Bit (b)",
-            "Byte (B)",
-            "Kilobyte (KB) ",
-            "Kibibyte (KiB)",
-            "Megabyte (MB)",
-            "Mebibyte (MiB)",
-            "Gigabyte (GB)",
-            "Gibibyte (GiB)",
-            "Terabyte (TB)",
-            "Tebibyte (TiB)"});
-            this.cboConvertirAlmacenamiento.Location = new System.Drawing.Point(442, 198);
-            this.cboConvertirAlmacenamiento.Name = "cboConvertirAlmacenamiento";
-            this.cboConvertirAlmacenamiento.Size = new System.Drawing.Size(121, 21);
-            this.cboConvertirAlmacenamiento.TabIndex = 26;
-            // 
-            // cboTipoAlmacenamiento
-            // 
-            this.cboTipoAlmacenamiento.FormattingEnabled = true;
-            this.cboTipoAlmacenamiento.Items.AddRange(new object[] {
-            "Bit (b)",
-            "Byte (B)",
-            "Kilobyte (KB) ",
-            "Kibibyte (KiB)",
-            "Megabyte (MB)",
-            "Mebibyte (MiB)",
-            "Gigabyte (GB)",
-            "Gibibyte (GiB)",
-            "Terabyte (TB)",
-            "Tebibyte (TiB)"});
-            this.cboTipoAlmacenamiento.Location = new System.Drawing.Point(248, 198);
-            this.cboTipoAlmacenamiento.Name = "cboTipoAlmacenamiento";
-            this.cboTipoAlmacenamiento.Size = new System.Drawing.Size(121, 21);
-            this.cboTipoAlmacenamiento.TabIndex = 25;
-            // 
-            // lblTotalAlmacenamiento
-            // 
-            this.lblTotalAlmacenamiento.AutoSize = true;
-            this.lblTotalAlmacenamiento.Location = new System.Drawing.Point(572, 201);
-            this.lblTotalAlmacenamiento.Name = "lblTotalAlmacenamiento";
-            this.lblTotalAlmacenamiento.Size = new System.Drawing.Size(34, 13);
-            this.lblTotalAlmacenamiento.TabIndex = 24;
-            this.lblTotalAlmacenamiento.Text = "Total:";
-            // 
-            // lblConvertirAlmacenamiento
-            // 
-            this.lblConvertirAlmacenamiento.AutoSize = true;
-            this.lblConvertirAlmacenamiento.Location = new System.Drawing.Point(375, 202);
-            this.lblConvertirAlmacenamiento.Name = "lblConvertirAlmacenamiento";
-            this.lblConvertirAlmacenamiento.Size = new System.Drawing.Size(61, 13);
-            this.lblConvertirAlmacenamiento.TabIndex = 23;
-            this.lblConvertirAlmacenamiento.Text = "Convertir a:";
-            // 
-            // lblTipoAlmacenamiento
-            // 
-            this.lblTipoAlmacenamiento.AutoSize = true;
-            this.lblTipoAlmacenamiento.Location = new System.Drawing.Point(53, 201);
-            this.lblTipoAlmacenamiento.Name = "lblTipoAlmacenamiento";
-            this.lblTipoAlmacenamiento.Size = new System.Drawing.Size(189, 13);
-            this.lblTipoAlmacenamiento.TabIndex = 22;
-            this.lblTipoAlmacenamiento.Text = "Seleccione el tipo de almacenamiento:";
-            // 
-            // cboConvertirTiempo
-            // 
-            this.cboConvertirTiempo.FormattingEnabled = true;
-            this.cboConvertirTiempo.Items.AddRange(new object[] {
-            "Segundo (s)",
-            "Milisegundo (ms)",
-            "Microsegundo (µs)",
-            "Nanosegundo (ns)",
-            "Minuto (min)",
-            "Hora (h) ",
-            "Día (d) ",
-            "Semana (sem)",
-            "Mes (mes) ≈ (30d)",
-            "Año (a)"});
-            this.cboConvertirTiempo.Location = new System.Drawing.Point(403, 236);
-            this.cboConvertirTiempo.Name = "cboConvertirTiempo";
-            this.cboConvertirTiempo.Size = new System.Drawing.Size(121, 21);
-            this.cboConvertirTiempo.TabIndex = 31;
-            // 
-            // cboTipoTiempo
-            // 
-            this.cboTipoTiempo.FormattingEnabled = true;
-            this.cboTipoTiempo.Items.AddRange(new object[] {
-            "Segundo (s)",
-            "Milisegundo (ms)",
-            "Microsegundo (µs)",
-            "Nanosegundo (ns)",
-            "Minuto (min)",
-            "Hora (h) ",
-            "Día (d) ",
-            "Semana (sem)",
-            "Mes (mes) ≈ (30d)",
-            "Año (a)"});
-            this.cboTipoTiempo.Location = new System.Drawing.Point(209, 236);
-            this.cboTipoTiempo.Name = "cboTipoTiempo";
-            this.cboTipoTiempo.Size = new System.Drawing.Size(121, 21);
-            this.cboTipoTiempo.TabIndex = 30;
-            this.cboTipoTiempo.SelectedIndexChanged += new System.EventHandler(this.cboTipoTiempo_SelectedIndexChanged);
-            // 
-            // lblTotalTiempo
-            // 
-            this.lblTotalTiempo.AutoSize = true;
-            this.lblTotalTiempo.Location = new System.Drawing.Point(533, 239);
-            this.lblTotalTiempo.Name = "lblTotalTiempo";
-            this.lblTotalTiempo.Size = new System.Drawing.Size(34, 13);
-            this.lblTotalTiempo.TabIndex = 29;
-            this.lblTotalTiempo.Text = "Total:";
-            // 
-            // lblConvertirTiempo
-            // 
-            this.lblConvertirTiempo.AutoSize = true;
-            this.lblConvertirTiempo.Location = new System.Drawing.Point(336, 240);
-            this.lblConvertirTiempo.Name = "lblConvertirTiempo";
-            this.lblConvertirTiempo.Size = new System.Drawing.Size(61, 13);
-            this.lblConvertirTiempo.TabIndex = 28;
-            this.lblConvertirTiempo.Text = "Convertir a:";
-            // 
-            // lblTipoTiempo
-            // 
-            this.lblTipoTiempo.AutoSize = true;
-            this.lblTipoTiempo.Location = new System.Drawing.Point(53, 236);
-            this.lblTipoTiempo.Name = "lblTipoTiempo";
-            this.lblTipoTiempo.Size = new System.Drawing.Size(108, 13);
-            this.lblTipoTiempo.TabIndex = 27;
-            this.lblTipoTiempo.Text = "Seleccione el tiempo:";
-            // 
             // btnCalcular
             // 
             this.btnCalcular.Location = new System.Drawing.Point(248, 297);
@@ -509,16 +368,6 @@
             this.Controls.Add(this.txtValor);
             this.Controls.Add(this.lblValor);
             this.Controls.Add(this.btnCalcular);
-            this.Controls.Add(this.cboConvertirTiempo);
-            this.Controls.Add(this.cboTipoTiempo);
-            this.Controls.Add(this.lblTotalTiempo);
-            this.Controls.Add(this.lblConvertirTiempo);
-            this.Controls.Add(this.lblTipoTiempo);
-            this.Controls.Add(this.cboConvertirAlmacenamiento);
-            this.Controls.Add(this.cboTipoAlmacenamiento);
-            this.Controls.Add(this.lblTotalAlmacenamiento);
-            this.Controls.Add(this.lblConvertirAlmacenamiento);
-            this.Controls.Add(this.lblTipoAlmacenamiento);
             this.Controls.Add(this.cboConvertirLongitud);
             this.Controls.Add(this.cboTipoLongitud);
             this.Controls.Add(this.lblTotalLongitud);
@@ -573,16 +422,6 @@
         private System.Windows.Forms.Label lblTotalLongitud;
         private System.Windows.Forms.Label lblConvertirLongitud;
         private System.Windows.Forms.Label lblTipoLongitud;
-        private System.Windows.Forms.ComboBox cboConvertirAlmacenamiento;
-        private System.Windows.Forms.ComboBox cboTipoAlmacenamiento;
-        private System.Windows.Forms.Label lblTotalAlmacenamiento;
-        private System.Windows.Forms.Label lblConvertirAlmacenamiento;
-        private System.Windows.Forms.Label lblTipoAlmacenamiento;
-        private System.Windows.Forms.ComboBox cboConvertirTiempo;
-        private System.Windows.Forms.ComboBox cboTipoTiempo;
-        private System.Windows.Forms.Label lblTotalTiempo;
-        private System.Windows.Forms.Label lblConvertirTiempo;
-        private System.Windows.Forms.Label lblTipoTiempo;
         private System.Windows.Forms.Button btnCalcular;
         private System.Windows.Forms.Label lblValor;
         private System.Windows.Forms.TextBox txtValor;

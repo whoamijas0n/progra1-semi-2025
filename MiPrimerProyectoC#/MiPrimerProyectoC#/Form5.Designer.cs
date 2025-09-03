@@ -65,14 +65,14 @@
             this.cboTipoConversor.Name = "cboTipoConversor";
             this.cboTipoConversor.Size = new System.Drawing.Size(162, 24);
             this.cboTipoConversor.TabIndex = 1;
+            this.cboTipoConversor.SelectedIndexChanged += new System.EventHandler(this.cboTipoConversor_SelectedIndexChanged);
             // 
             // cboDeConversor
             // 
-            this.cboDeConversor.FormattingEnabled = true;
-            this.cboDeConversor.Location = new System.Drawing.Point(98, 102);
+            this.cboDeConversor.Location = new System.Drawing.Point(98, 101);
             this.cboDeConversor.Name = "cboDeConversor";
             this.cboDeConversor.Size = new System.Drawing.Size(162, 24);
-            this.cboDeConversor.TabIndex = 3;
+            this.cboDeConversor.TabIndex = 10;
             // 
             // label2
             // 
@@ -107,10 +107,12 @@
             this.btnConvertir.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnConvertir.Location = new System.Drawing.Point(399, 102);
             this.btnConvertir.Name = "btnConvertir";
+            this.btnConvertir.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.btnConvertir.Size = new System.Drawing.Size(139, 52);
             this.btnConvertir.TabIndex = 6;
             this.btnConvertir.Text = "convertir";
             this.btnConvertir.UseVisualStyleBackColor = true;
+            this.btnConvertir.Click += new System.EventHandler(this.btnConvertir_Click_1);
             // 
             // lblCantidadConversor
             // 

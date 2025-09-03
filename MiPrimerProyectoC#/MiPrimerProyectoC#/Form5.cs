@@ -56,7 +56,11 @@ namespace MiPrimerProyectoC_
             }
             return cantidad * valores[tipo][a] / valores[tipo][de];
         }
-        private void btnConvertir_Click(object sender, EventArgs e)
+
+        //luego de borrar los objetos que se habia generado en
+        //el presente archivo un boton y el combo box volver a generarlo dandole 
+        //click el programa los reconocio y funciono 
+        private void btnConvertir_Click_1(object sender, EventArgs e)
         {
             try
             {
@@ -68,13 +72,14 @@ namespace MiPrimerProyectoC_
 
                 double respuesta = convertir(tipo, de, a, cantidad);
 
-                lblRespuestaConversor.Text = "RESPUESTA: " + respuesta.ToString("N2");
+                lblRespuestaConversor.Text = "Respuesta: " + respuesta.ToString("N2");
             }
             catch (Exception er)
             {
                 lblRespuestaConversor.Text = "Error " + er.Message + " solo valores validos";
             }
         }
+
         private void cboTipoConversor_SelectedIndexChanged(object sender, EventArgs e)
         {
             cboDeConversor.Items.Clear();

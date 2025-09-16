@@ -74,3 +74,14 @@ C:\Users\rousemary\Source\Repos\progra1-semi-2025w\MiPrimerProyectoEnCSharp\MiPr
 C:\Users\rousemary\Source\Repos\progra1-semi-2025w\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\bin\Debug\MiPrimerProyectoEnCSharp.exe
 C:\Users\rousemary\Source\Repos\progra1-semi-2025w\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\bin\Debug\MiPrimerProyectoEnCSharp.pdb
 C:\Users\rousemary\Source\Repos\progra1-semi-2025w\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\miPrimerProyectoCsharp.Form1.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\bin\Debug\MiPrimerProyectoEnCSharp.exe.config
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\bin\Debug\MiPrimerProyectoEnCSharp.exe
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\bin\Debug\MiPrimerProyectoEnCSharp.pdb
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.csproj.AssemblyReference.cache
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.exe.config
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\miPrimerProyectoCsharp.Form1.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.Properties.Resources.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.csproj.GenerateResource.cache
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.csproj.CoreCompileInputs.cache
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.exe
+C:\Users\rousemary\Source\Repos\progra1-semi-2025-wea\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.pdb

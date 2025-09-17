@@ -17,10 +17,10 @@ namespace MiPrimerProyectoC_
         DataSet objDs = new DataSet(); //Es una represantcion de la arquitectura de la DB en memoria.
 
         public Conexion() { //Construtor, inicializador de atributos
-            string cadenaConexion= "";
+            string cadenaConexion= @"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\db_academica.mdf;Integrated Security=True";
             objConexion.ConnectionString = cadenaConexion;
             objConexion.Open();//Abrir la conexion a la DB.
-        }
+        } 
        public DataSet obtenerDatos()
         {
             objDs.Clear();//limpiar el dataset

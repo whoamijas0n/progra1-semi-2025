@@ -21,7 +21,12 @@ namespace MiPrimerProyectoC_
         {
 
         }
-       
+        Claseconexion claseconexion = new Claseconexion();
+        DataSet objDs = new DataSet();
+        DataTable objDT = new DataTable();
+        public int posicion =0;
+        public string accion = "nuevo";
+        
     }
     }
 

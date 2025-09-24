@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiPrimerProyectoEnCSharp;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,55 +17,181 @@ namespace miPrimerProyectoCsharp
         {
             InitializeComponent();
         }
+        Conexion objCOnexion = new Conexion();
+        DataSet objDs = new DataSet();
+        DataTable objDt = new DataTable();
+
+        public int posicion = 0;
+        public string accion = "nuevo";
+
+        private void actualizarDs()
+        {
+            objDs.Clear(); //Limpiar el DataSet
+            objDs = objCOnexion.obtenerDatos();
+            objDt = objDs.Tables["alumnos"];
+            objDt.PrimaryKey = new DataColumn[] { objDt.Columns["idAlumno"] };
+
+            grdAlumnos.DataSource = objDt.DefaultView;
+            mostrarDatos();
+        }
+        private void mostrarDatos()
+        {
+            if (objDt.Rows.Count > 0)
+            {
+                idAlumno.Text = objDt.Rows[posicion]["idAlumno"].ToString();
+                txtCodigoAlumno.Text = objDt.Rows[posicion]["codigo"].ToString();
+                txtNombreAlumno.Text = objDt.Rows[posicion]["nombre"].ToString();
+                txtDireccionAlumno.Text = objDt.Rows[posicion]["direccion"].ToString();
+                txtTelefonoAlumno.Text = objDt.Rows[posicion]["telefono"].ToString();
+
+                lblnRegistrosAlumno.Text = (posicion + 1) + " de " + objDt.Rows.Count;
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            actualizarDs();
         }
-       
+        private void btnSiguienteAlumno_Click (object sender, EventArgs e)
+        {
+            if (posicion < objDt.Rows.Count - 1)
+            {
+                posicion++;// posicion=posicion+1
+                mostrarDatos();
+            }
+            else
+            {
+                MessageBox.Show("Estas en el ultimo registro.", "Navegacion de Alumnos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        private void btnAnteriorAlumno_Click (object sender, EventArgs e)
+        {
+            if (posicion > 0)
+            {
+                posicion--;// posicion=posicion-1
+                mostrarDatos();
+            }
+            else
+            {
+                MessageBox.Show("Estas en el primer registro.", "Navegacion de Alumnos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        private void btnUltimoAlumno_Click(object sender, EventArgs e)
+        {
+            posicion = objDt.Rows.Count - 1;
+            mostrarDatos();
+        }
+        private void btnPrimeroAlumno_Click(object sender, EventArgs e)
+        {
+            posicion = 0;
+            mostrarDatos();
+        }
+        private void estadoControles(Boolean estado)
+        {
+            grbDatosAlumno.Enabled = estado;
+            grbNavegacionAlumno.Enabled = !estado;
+            btnEliminarAlumno.Enabled = !estado;
+        }
+        private void limpiarControles()
+        {
+            idAlumno.Text = "";
+            txtCodigoAlumno.Text = "";
+            txtNombreAlumno.Text = "";
+            txtDireccionAlumno.Text = "";
+            txtTelefonoAlumno.Text = "";
+        }
+        private void btnAgregarAlumno_Click_1 (object sender, EventArgs e)
+        {
+            if (btnAgregarAlumno.Text == "Nuevo")
+            {
+                btnAgregarAlumno.Text = "Guardar";
+                btnModificarAlumno.Text = "Cancelar";
+                estadoControles(true);
+                accion = "nuevo";
+                limpiarControles();
+            }
+            else
+            {//Guardar
+                String[] alumnos = {
+                    idAlumno.Text, txtCodigoAlumno.Text, txtNombreAlumno.Text, txtDireccionAlumno.Text,
+                    txtTelefonoAlumno.Text
+                };
+                String respuesta = objCOnexion.administrarDatosAlumnos(alumnos, accion);
+                if (respuesta != "1")
+                {
+                    MessageBox.Show(respuesta, "Error al guardar alumnos.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    estadoControles(false);
+                    btnAgregarAlumno.Text = "Nuevo";
+                    btnModificarAlumno.Text = "Modificar";
+                    actualizarDs();
+                }
+            }
+        }
+        private void btnModificarAlumno_Click (object sender, EventArgs e)
+        {
+            if (btnModificarAlumno.Text == "Modificar")
+            {
+                btnAgregarAlumno.Text = "Guardar";
+                btnModificarAlumno.Text = "Cancelar";
+                estadoControles(true);
+                accion = "modificar";
 
-        private void lblAConversor_Click(object sender, EventArgs e)
+            }
+            else
+            {//Cancelar
+                mostrarDatos();
+                estadoControles(false);
+                btnAgregarAlumno.Text = "Nuevo";
+                btnModificarAlumno.Text = "Modificar";
+            }
+        }
+        private void btnEliminarAlumno_Click_1 (object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Esta seguro de eliminar a " + txtNombreAlumno.Text,
+                "Eliminando alumnos", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                String respuesta = objCOnexion.administrarDatosAlumnos(
+                    new String[] { idAlumno.Text, "", "", "", "" }, "eliminar"
+                );
+                if (respuesta != "1")
+                {
+                    MessageBox.Show(respuesta, "Error al eliminar alumnos.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    posicion = 0;
+                    actualizarDs();
+                }
+            }
+        }
+        private void txtBuscarAlumnos_KeyUp(object sender, KeyEventArgs e)
+        {
+            filtrarDatos(txtBuscarAlumnos.Text);
+        }
+        private void filtrarDatos(String valor)
+        {
+            DataView objDv = objDt.DefaultView;
+            objDv.RowFilter = "codigo like '%" + valor + "%' OR nombre like '" + valor + "%'";
+            grdAlumnos.DataSource = objDv;
+            seleccionarAlumno();
+        }
+        private void seleccionarAlumno()
+        {
+            posicion = objDt.Rows.IndexOf(objDt.Rows.Find(grdAlumnos.CurrentRow.Cells["id"].Value));
+            mostrarDatos();
+        }
+        private void grdAlumnos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            seleccionarAlumno();
+        }
+
+        private void grdAlumnos_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
 
-        private void txtCantidadConversor_TextChanged(object sender, EventArgs e)
-        {
 
-        }
-
-        private void lblCantidadConversor_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblRespuestaConversor_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblDeConversor_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblTipoConversor_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboDeConversor_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboTipoConversor_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboAConversor_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

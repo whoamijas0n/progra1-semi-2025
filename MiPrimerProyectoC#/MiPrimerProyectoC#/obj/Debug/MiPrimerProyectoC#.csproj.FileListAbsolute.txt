@@ -37,13 +37,13 @@ C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerPr
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\MiPrimerProyectoC#.pdb
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.AssemblyReference.cache
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.exe.config
-C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form1.resources
-C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form2.resources
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Properties.Resources.resources
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.GenerateResource.cache
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.csproj.CoreCompileInputs.cache
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.exe
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC#.pdb
-C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form3.resources
-C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form4.resources
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Form5.resources
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\db_academica.mdf
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\db_academica_log.ldf
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.FrmPrincipal.resources
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Docentes.resources

@@ -36,6 +36,13 @@ namespace MiPrimerProyectoC_
             objDocentes.MdiParent = this;
             objDocentes.Show();
         }
-        //hacer el ejerciico de la clase del miercoles pasado aqui(conversor con matriz vidimensional)
+
+        private void materiasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Materias objMaterias = new Materias();
+            objMaterias.MdiParent = this;
+            objMaterias.Show();
+        }
+        
     }
 }

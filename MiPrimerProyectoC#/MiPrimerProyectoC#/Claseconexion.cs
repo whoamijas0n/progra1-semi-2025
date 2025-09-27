@@ -21,14 +21,21 @@ namespace MiPrimerProyectoC_
             objConexion.ConnectionString = cadenaConexion;
             objConexion.Open();//Abrir la conexion a la DB.
         } 
-       public DataSet obtenerDatosAlumnos()
+       public DataSet obtenerDatos()
         {
             objDs.Clear();//limpiar el dataset
             objComandos.Connection = objConexion;//establecer la conexion para ejecutar los comandos.
 
-            objAdapatador.SelectCommand = objComandos;//Establcer el comando de selecion.
+            objAdapatador.SelectCommand = objComandos;//Establcer el comando de selecion.}
+            //Alumnos
             objComandos.CommandText = "SELECT * FROM alumnos";
             objAdapatador.Fill(objDs, "alumnos");//Tomando datos desde un dataset
+            //Docentes
+            objComandos.CommandText = "SELECT * FROM docentes";
+            objAdapatador.Fill(objDs, "docentes");//Tomando datos desde un dataset
+            //Materias
+            objComandos.CommandText = "SELECT * FROM materias";
+            objAdapatador.Fill(objDs, "materias");//Tomando datos desde un dataset
 
             return objDs;
         }
@@ -38,83 +45,62 @@ namespace MiPrimerProyectoC_
             String sql = "";
             if (accion == "nuevo")
             {
-                sql = "INSERT INTO alumnos(codigo,nombre,direccion,telefono) VALUES (@codigo, @nombre, @direccion, @telefono)";
+                sql = "INSERT INTO alumnos(codigo,nombre,direccion,telefono) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "')";
             }
             else if (accion == "modificar")
             {
-                sql = "UPDATE alumnos SET codigo=@codigo, nombre=@nombre, direccion=@direccion, telefono=@telefono WHERE IdAlumnos=@IdAlumnos";
+                sql = "UPDATE alumnos SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', direccion='" + datos[3] + "', telefono='" + datos[4] + "' WHERE IdAlumno='" + datos[0] + "'";
             }
             else if (accion == "eliminar")
             {
-                sql = "DELETE FROM alumnos WHERE IdAlumnos=@IdAlumnos";
+                sql = "DELETE FROM alumnos WHERE IdAlumnos='" + datos[0] + "'";
             }
             return ejecutarSQL(sql, datos);
         
         }
+        
+        public string administrarDatosDocentes(String[] datos, String accion)
+        {
+            String sql = "";
+            if (accion == "nuevo")
+            {
+                sql = "INSERT INTO docentes(codigo,nombre,direccion,telefono) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "')";
+            }
+            else if (accion == "modificar")
+            {
+                sql = "UPDATE docentes SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', direccion='" + datos[3] + "', telefono='" + datos[4] + "' WHERE IdDocentes='" + datos[0] + "'";
+            }
+            else if (accion == "eliminar")
+            {
+                sql = "DELETE FROM docentes WHERE IdDocentes='" + datos[0] + "'";
+            }
+            return ejecutarSQL(sql, datos);
+        }
+
+        public string administrarDatosMaterias(String[] datos, String accion)
+        {
+            String sql = "";
+            if (accion == "nuevo")
+            {
+                sql = "INSERT INTO materias(codigo,nombre,uv) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "')";
+            }
+            else if (accion == "modificar")
+            {
+                sql = "UPDATE materias SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', uv='" + datos[3] + "' WHERE IdMaterias='" + datos[0] + "'";
+            }
+            else if (accion == "eliminar")
+            {
+                sql = "DELETE FROM materias WHERE IdMaterias='" + datos[0] + "'";
+            }
+            return ejecutarSQL(sql, datos);
+        }
+
         private String ejecutarSQL(String sql, String[] datos)
         {
             try
             {
                 objComandos.Connection = objConexion;
                 objComandos.CommandText = sql;
-
-                objComandos.Parameters.Clear();
-                objComandos.Parameters.AddWithValue("@IdAlumnos", datos[0]);
-                objComandos.Parameters.AddWithValue("@codigo", datos[1]);
-                objComandos.Parameters.AddWithValue("@nombre", datos[2]);
-                objComandos.Parameters.AddWithValue("@direccion", datos[3]);
-                objComandos.Parameters.AddWithValue("@telefono", datos[4]);
-
-                return objComandos.ExecuteNonQuery().ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-        public DataSet obtenerDatosDocentes()
-        {
-            objDs.Clear();//limpiar el dataset
-            objComandos.Connection = objConexion;//establecer la conexion para ejecutar los comandos.
-
-            objAdapatador.SelectCommand = objComandos;//Establcer el comando de selecion.
-            objComandos.CommandText = "SELECT * FROM docentes";
-            objAdapatador.Fill(objDs, "docentes");//Tomando datos desde un dataset
-
-            return objDs;
-        }
-        public string administrarDatosDocentes(String[] datos, String accion)
-        {
-            String sql = "";
-            if (accion == "nuevo")
-            {
-                sql = "INSERT INTO docentes(codigo,nombre,direccion,telefono) VALUES (@codigo, @nombre, @direccion, @telefono)";
-            }
-            else if (accion == "modificar")
-            {
-                sql = "UPDATE docentes SET codigo=@codigo, nombre=@nombre, direccion=@direccion, telefono=@telefono WHERE IdDocentes=@IdDocentes";
-            }
-            else if (accion == "eliminar")
-            {
-                sql = "DELETE FROM docentes WHERE IdDocentes=@IdDocentes";
-            }
-            return ejecutarSQLDocente(sql, datos);
-
-        }
-        private String ejecutarSQLDocente(String sql, String[] datos)
-        {
-            try
-            {
-                objComandos.Connection = objConexion;
-                objComandos.CommandText = sql;
-
-                objComandos.Parameters.Clear();
-                objComandos.Parameters.AddWithValue("@IdDocentes", datos[0]);
-                objComandos.Parameters.AddWithValue("@codigo", datos[1]);
-                objComandos.Parameters.AddWithValue("@nombre", datos[2]);
-                objComandos.Parameters.AddWithValue("@direccion", datos[3]);
-                objComandos.Parameters.AddWithValue("@telefono", datos[4]);
-
                 return objComandos.ExecuteNonQuery().ToString();
             }
             catch (Exception ex)
@@ -123,4 +109,5 @@ namespace MiPrimerProyectoC_
             }
         }
     }
+      
 }

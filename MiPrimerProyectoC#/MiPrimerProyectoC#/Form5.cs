@@ -30,7 +30,7 @@ namespace MiPrimerProyectoC_
 
         private void ActulizarDs() {
             objDs.Clear();//Limpiar Dataset
-            objDs = objConexion.obtenerDatosAlumnos();
+            objDs = objConexion.obtenerDatos();
             objDT = objDs.Tables["alumnos"];
             objDT.PrimaryKey = new DataColumn[] { objDT.Columns["IdAlumnos"] };
 

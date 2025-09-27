@@ -47,3 +47,4 @@ C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerPr
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\bin\Debug\db_academica_log.ldf
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.FrmPrincipal.resources
 C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Docentes.resources
+C:\Users\ccjun\Desktop\notas\Ciclo_02_Programacion_1\Progra1-semi2025\MiPrimerProyectoC#\MiPrimerProyectoC#\obj\Debug\MiPrimerProyectoC_.Materias.resources

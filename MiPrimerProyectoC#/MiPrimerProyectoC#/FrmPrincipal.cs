@@ -46,5 +46,10 @@ namespace MiPrimerProyectoC_
             objPeriodos.MdiParent = this;
             objPeriodos.Show();
         }
+
+        private void salirToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

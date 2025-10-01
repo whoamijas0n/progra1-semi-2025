@@ -122,6 +122,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="db_academicaDataSet.xsc">
       <DependentUpon>db_academicaDataSet.xsd</DependentUpon>
@@ -167,6 +168,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>db_academica.mdf</DependentUpon>
     </Content>
+    <None Include="Resources\notas.png" />
+    <None Include="Resources\lapso-de-tiempo.png" />
+    <None Include="Resources\libro.png" />
+    <None Include="Resources\instructor.png" />
+    <None Include="Resources\alumno.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

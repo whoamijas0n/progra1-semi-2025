@@ -11,10 +11,10 @@ namespace MiPrimerProyectoC_
     internal class Claseconexion
     {
         //Definir los miembros de la clase atributos y metodos.
-        SqlConnection objConexion = new SqlConnection();//Conectarse a la DB.
-        SqlCommand objComandos = new SqlCommand(); // ejecutar una consulta en la DB.
-        SqlDataAdapter objAdapatador = new SqlDataAdapter(); //un puente entre la DB y la aplicacion.
-        DataSet objDs = new DataSet(); //Es una represantcion de la arquitectura de la DB en memoria.
+        public SqlConnection objConexion = new SqlConnection();//Conectarse a la DB.
+        public SqlCommand objComandos = new SqlCommand(); // ejecutar una consulta en la DB.
+        public SqlDataAdapter objAdapatador = new SqlDataAdapter(); //un puente entre la DB y la aplicacion.
+        public DataSet objDs = new DataSet(); //Es una represantcion de la arquitectura de la DB en memoria.
 
         public Claseconexion() { //Construtor, inicializador de atributos
             string cadenaConexion = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\db_academica.mdf;Integrated Security=True";
@@ -55,7 +55,7 @@ namespace MiPrimerProyectoC_
             {
                 sql = "DELETE FROM alumnos WHERE IdAlumnos='" + datos[0] + "'";
             }
-            return ejecutarSQL(sql, datos);
+            return ejecutarSQL(sql);
         
         }
         
@@ -74,7 +74,7 @@ namespace MiPrimerProyectoC_
             {
                 sql = "DELETE FROM docentes WHERE IdDocentes='" + datos[0] + "'";
             }
-            return ejecutarSQL(sql, datos);
+            return ejecutarSQL(sql);
         }
 
         public string administrarDatosMaterias(String[] datos, String accion)
@@ -92,10 +92,10 @@ namespace MiPrimerProyectoC_
             {
                 sql = "DELETE FROM materias WHERE IdMaterias='" + datos[0] + "'";
             }
-            return ejecutarSQL(sql, datos);
+            return ejecutarSQL(sql);
         }
 
-        private String ejecutarSQL(String sql, String[] datos)
+        public String ejecutarSQL(String sql)
         {
             try
             {

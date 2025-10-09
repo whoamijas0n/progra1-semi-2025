@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.grbBusquedaMaterias = new System.Windows.Forms.GroupBox();
+            this.cboBuscarMaterias = new System.Windows.Forms.ComboBox();
             this.grdMaterias = new System.Windows.Forms.DataGridView();
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Codigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,7 +55,6 @@
             this.lblNombrealumno = new System.Windows.Forms.Label();
             this.txtCodigoMateria = new System.Windows.Forms.TextBox();
             this.lblCodigoalumno = new System.Windows.Forms.Label();
-            this.cboBuscarMaterias = new System.Windows.Forms.ComboBox();
             this.grbBusquedaMaterias.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdMaterias)).BeginInit();
             this.grbEdicionMaterias.SuspendLayout();
@@ -73,6 +73,18 @@
             this.grbBusquedaMaterias.TabIndex = 7;
             this.grbBusquedaMaterias.TabStop = false;
             this.grbBusquedaMaterias.Text = "Busqueda Materias.";
+            // 
+            // cboBuscarMaterias
+            // 
+            this.cboBuscarMaterias.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboBuscarMaterias.FormattingEnabled = true;
+            this.cboBuscarMaterias.Items.AddRange(new object[] {
+            "Codigo",
+            "Nombre"});
+            this.cboBuscarMaterias.Location = new System.Drawing.Point(7, 22);
+            this.cboBuscarMaterias.Name = "cboBuscarMaterias";
+            this.cboBuscarMaterias.Size = new System.Drawing.Size(193, 24);
+            this.cboBuscarMaterias.TabIndex = 2;
             // 
             // grdMaterias
             // 
@@ -328,18 +340,6 @@
             this.lblCodigoalumno.Size = new System.Drawing.Size(54, 16);
             this.lblCodigoalumno.TabIndex = 0;
             this.lblCodigoalumno.Text = "Codigo:";
-            // 
-            // cboBuscarMaterias
-            // 
-            this.cboBuscarMaterias.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboBuscarMaterias.FormattingEnabled = true;
-            this.cboBuscarMaterias.Items.AddRange(new object[] {
-            "Codigo",
-            "Nombre"});
-            this.cboBuscarMaterias.Location = new System.Drawing.Point(7, 22);
-            this.cboBuscarMaterias.Name = "cboBuscarMaterias";
-            this.cboBuscarMaterias.Size = new System.Drawing.Size(193, 24);
-            this.cboBuscarMaterias.TabIndex = 2;
             // 
             // Materias
             // 

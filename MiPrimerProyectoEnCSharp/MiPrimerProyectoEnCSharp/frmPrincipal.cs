@@ -28,5 +28,44 @@ namespace MiPrimerProyectoEnCSharp
             objAlumnos.MdiParent = this;
             objAlumnos.Show();
         }
+
+        private void docentesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmDocentes objDocentes = new frmDocentes();
+            objDocentes.MdiParent = this;
+            objDocentes.Show();
+        }
+
+        private void materiasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmMaterias objMaterias = new frmMaterias();
+            objMaterias.MdiParent = this;
+            objMaterias.Show();
+        }
+
+        private void periodoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmPeriodo objPeriodo = new frmPeriodo();
+            objPeriodo.MdiParent = this;
+            objPeriodo.Show();
+        }
+
+        private void aplicacionesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void notasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           
+            
+                frmNotas objNotas = new frmNotas();
+                objNotas.MdiParent = this;
+                objNotas.Show();
+            
+
+        }
+
+
     }
 }

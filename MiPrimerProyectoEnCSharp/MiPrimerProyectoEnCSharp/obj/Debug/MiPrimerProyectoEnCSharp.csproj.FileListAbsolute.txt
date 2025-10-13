@@ -88,3 +88,7 @@ C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\Mi
 C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.exe
 C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.pdb
 C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.frmPrincipal.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.frmDocentes.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.frmMaterias.resources
+C:\Users\rousemary\source\repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.frmPeriodo.resources
+C:\Users\rousemary\Source\Repos\progra1-semi-2025mnn\MiPrimerProyectoEnCSharp\MiPrimerProyectoEnCSharp\obj\Debug\MiPrimerProyectoEnCSharp.frmNotas.resources

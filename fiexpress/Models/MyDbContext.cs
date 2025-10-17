@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using fiexpress.Models;
 
 namespace fiexpress.Models
 {
@@ -22,6 +23,7 @@ namespace fiexpress.Models
 
 
         }
+        public DbSet<fiexpress.Models.Rol> Rol { get; set; } = default!;
 
     }
 }

@@ -69,61 +69,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>db_academicaDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Docentes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docentes.Designer.cs">
-      <DependentUpon>Docentes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmNotas.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmNotas.Designer.cs">
-      <DependentUpon>frmNotas.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmPeriodos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmPeriodos.Designer.cs">
-      <DependentUpon>frmPeriodos.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmPrincipal.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmPrincipal.Designer.cs">
-      <DependentUpon>FrmPrincipal.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form5.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form5.Designer.cs">
       <DependentUpon>Form5.cs</DependentUpon>
     </Compile>
-    <Compile Include="Materias.cs">
+    <Compile Include="login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Materias.Designer.cs">
-      <DependentUpon>Materias.cs</DependentUpon>
+    <Compile Include="login.Designer.cs">
+      <DependentUpon>login.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Docentes.resx">
-      <DependentUpon>Docentes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmNotas.resx">
-      <DependentUpon>frmNotas.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmPeriodos.resx">
-      <DependentUpon>frmPeriodos.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmPrincipal.resx">
-      <DependentUpon>FrmPrincipal.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Form5.resx">
       <DependentUpon>Form5.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Materias.resx">
-      <DependentUpon>Materias.cs</DependentUpon>
+    <EmbeddedResource Include="login.resx">
+      <DependentUpon>login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

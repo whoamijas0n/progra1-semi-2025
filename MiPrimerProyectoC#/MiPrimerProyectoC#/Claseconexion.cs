@@ -26,73 +26,30 @@ namespace MiPrimerProyectoC_
             objDs.Clear();//limpiar el dataset
             objComandos.Connection = objConexion;//establecer la conexion para ejecutar los comandos.
 
-            objAdapatador.SelectCommand = objComandos;//Establcer el comando de selecion.}
-            //Alumnos
-            objComandos.CommandText = "SELECT * FROM alumnos";
-            objAdapatador.Fill(objDs, "alumnos");//Tomando datos desde un dataset
-            //Docentes
-            objComandos.CommandText = "SELECT * FROM docentes";
-            objAdapatador.Fill(objDs, "docentes");//Tomando datos desde un dataset
-            //Materias
-            objComandos.CommandText = "SELECT * FROM materias";
-            objAdapatador.Fill(objDs, "materias");//Tomando datos desde un dataset
+            objAdapatador.SelectCommand = objComandos;//Establcer el comando de selecion.
+            objComandos.CommandText = "SELECT * FROM usuarios";
+            objAdapatador.Fill(objDs, "usuarios");//Tomando datos desde un dataset
 
             return objDs;
         }
        
-        public string administrarDatosAlumnos(String[] datos, String accion)
+        public string Mantenimiento_usuarios(String[] datos, String accion)
         {
             String sql = "";
             if (accion == "nuevo")
             {
-                sql = "INSERT INTO alumnos(codigo,nombre,direccion,telefono) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "')";
+                sql = "INSERT INTO usuarios(usuario,clave,nombre,direccion,telefono) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "', '" + datos[5] + "')";
             }
             else if (accion == "modificar")
             {
-                sql = "UPDATE alumnos SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', direccion='" + datos[3] + "', telefono='" + datos[4] + "' WHERE IdAlumno='" + datos[0] + "'";
+                sql = "UPDATE usurio SET usuario='" + datos[1] + "', clave='" + datos[2] + "', nombre='" + datos[3] + "' direccion='" + datos[4] + "', telefono='" + datos[5] + "' WHERE IdUsuario='" + datos[0] + "'";
             }
             else if (accion == "eliminar")
             {
-                sql = "DELETE FROM alumnos WHERE IdAlumnos='" + datos[0] + "'";
+                sql = "DELETE FROM usuarios WHERE IdUsuario='" + datos[0] + "'";
             }
             return ejecutarSQL(sql);
         
-        }
-        
-        public string administrarDatosDocentes(String[] datos, String accion)
-        {
-            String sql = "";
-            if (accion == "nuevo")
-            {
-                sql = "INSERT INTO docentes(codigo,nombre,direccion,telefono) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "')";
-            }
-            else if (accion == "modificar")
-            {
-                sql = "UPDATE docentes SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', direccion='" + datos[3] + "', telefono='" + datos[4] + "' WHERE IdDocentes='" + datos[0] + "'";
-            }
-            else if (accion == "eliminar")
-            {
-                sql = "DELETE FROM docentes WHERE IdDocentes='" + datos[0] + "'";
-            }
-            return ejecutarSQL(sql);
-        }
-
-        public string administrarDatosMaterias(String[] datos, String accion)
-        {
-            String sql = "";
-            if (accion == "nuevo")
-            {
-                sql = "INSERT INTO materias(codigo,nombre,uv) VALUES ('" + datos[1] + "', '" + datos[2] + "', '" + datos[3] + "')";
-            }
-            else if (accion == "modificar")
-            {
-                sql = "UPDATE materias SET codigo='" + datos[1] + "', nombre='" + datos[2] + "', uv='" + datos[3] + "' WHERE IdMaterias='" + datos[0] + "'";
-            }
-            else if (accion == "eliminar")
-            {
-                sql = "DELETE FROM materias WHERE IdMaterias='" + datos[0] + "'";
-            }
-            return ejecutarSQL(sql);
         }
 
         public String ejecutarSQL(String sql)

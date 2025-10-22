@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace MiPrimerProyectoC_
 {
-    public partial class Form5 : Form
+    public partial class frm_usuarios : Form
     {
-        public Form5()
+        public frm_usuarios()
         {
             InitializeComponent();
         }
@@ -31,8 +31,8 @@ namespace MiPrimerProyectoC_
         private void ActulizarDs() {
             objDs.Clear();//Limpiar Dataset
             objDs = objConexion.obtenerDatos();
-            objDT = objDs.Tables["alumnos"];
-            objDT.PrimaryKey = new DataColumn[] { objDT.Columns["IdAlumnos"] };
+            objDT = objDs.Tables["usuarios"];
+            objDT.PrimaryKey = new DataColumn[] { objDT.Columns["IdUsuario"] };
 
             grdAlumnos.DataSource = objDT.DefaultView;
             mostrarDatos();
@@ -41,11 +41,12 @@ namespace MiPrimerProyectoC_
         {
             if (objDT.Rows.Count > 0)
             {
-                idAlumno.Text = objDT.Rows[posicion]["IdAlumnos"].ToString();
-                txtCodigoAlumno.Text = objDT.Rows[posicion]["codigo"].ToString();
-                txtNombreAlumno.Text = objDT.Rows[posicion]["nombre"].ToString();
-                txtDireccionAlumno.Text = objDT.Rows[posicion]["direccion"].ToString();
-                txtTelefonoAlumno.Text = objDT.Rows[posicion]["telefono"].ToString();
+                idAlumno.Text = objDT.Rows[posicion]["IdUsuario"].ToString();
+                txtCodigoAlumno.Text = objDT.Rows[posicion]["usuario"].ToString();
+                txtNombreAlumno.Text = objDT.Rows[posicion]["clave"].ToString();
+               txtnuevo.Text = objDT.Rows[posicion]["nombre "].ToString();
+              txtDireccionAlumno.Text = objDT.Rows[posicion]["direccion "].ToString();
+              txtTelefonoAlumno.Text = objDT.Rows[posicion]["telefono "].ToString();
                 lblnRegistrosAlumno.Text = (posicion + 1) + " de " + objDT.Rows.Count;
             }
         }
@@ -97,6 +98,7 @@ namespace MiPrimerProyectoC_
         {
             idAlumno.Text = "";
             txtCodigoAlumno.Text = "";
+            txtnuevo.Text = "";
             txtNombreAlumno.Text = "";
             txtDireccionAlumno.Text = "";
             txtTelefonoAlumno.Text = "";
@@ -114,13 +116,13 @@ namespace MiPrimerProyectoC_
             else
             {//Guardar
                 String[] alumnos = {
-                    idAlumno.Text, txtCodigoAlumno.Text, txtNombreAlumno.Text, txtDireccionAlumno.Text,
+                    idAlumno.Text, txtCodigoAlumno.Text, txtNombreAlumno.Text,txtnuevo.Text, txtDireccionAlumno.Text,
                     txtTelefonoAlumno.Text
                 };
-               String respuesta = objConexion.administrarDatosAlumnos(alumnos, accion);
+               String respuesta = objConexion.Mantenimiento_usuarios(alumnos, accion);
                 if (respuesta != "1")
                 {
-                    MessageBox.Show(respuesta, "Error al guardar alumnos.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(respuesta, "Error al guardar usuarios.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -156,12 +158,12 @@ namespace MiPrimerProyectoC_
             if (MessageBox.Show("Esta seguro de eliminar a " + txtNombreAlumno.Text,
               "Eliminando alumnos", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                String respuesta = objConexion.administrarDatosAlumnos(
-                    new String[] { idAlumno.Text, "", "", "", "" }, "eliminar"
+                String respuesta = objConexion.Mantenimiento_usuarios(
+                    new String[] { idAlumno.Text,"", "", "", "", "" }, "eliminar"
                 );
                 if (respuesta != "1")
                 {
-                    MessageBox.Show(respuesta, "Error al eliminar alumnos.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(respuesta, "Error al eliminar usuario.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -213,6 +215,8 @@ namespace MiPrimerProyectoC_
         {
             seleccionarAlumno();
         }
+
+        
     }
  }
 

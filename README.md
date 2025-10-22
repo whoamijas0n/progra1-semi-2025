@@ -1,2 +1,4 @@
 # Progra1-semi2025
-Código, ejemplos y practicas de la materiaProgramación Computacional
+Parcial II
+Herber Antonio Salgado Marin USSS015225
+Jason Adonay Velasquez Caballero USSS020425

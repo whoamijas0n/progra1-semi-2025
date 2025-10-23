@@ -1,15 +1,15 @@
 [
   {
-    "ContainingType": "fiexpress.Controllers.RolController",
-    "Method": "GetRol",
-    "RelativePath": "api/Rol",
+    "ContainingType": "fiexpress.Controllers.EmpleadosController",
+    "Method": "GetEmpleados",
+    "RelativePath": "api/Empleados",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[fiexpress.Models.Rol, fiexpress, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[fiexpress.Models.Empleado, fiexpress, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -20,22 +20,22 @@
     ]
   },
   {
-    "ContainingType": "fiexpress.Controllers.RolController",
-    "Method": "PostRol",
-    "RelativePath": "api/Rol",
+    "ContainingType": "fiexpress.Controllers.EmpleadosController",
+    "Method": "PostEmpleado",
+    "RelativePath": "api/Empleados",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "rol",
-        "Type": "fiexpress.Models.Rol",
+        "Name": "empleado",
+        "Type": "fiexpress.Models.Empleado",
         "IsRequired": true
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "fiexpress.Models.Rol",
+        "Type": "fiexpress.Models.Empleado",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -46,9 +46,9 @@
     ]
   },
   {
-    "ContainingType": "fiexpress.Controllers.RolController",
-    "Method": "GetRol",
-    "RelativePath": "api/Rol/{id}",
+    "ContainingType": "fiexpress.Controllers.EmpleadosController",
+    "Method": "GetEmpleado",
+    "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -61,7 +61,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "fiexpress.Models.Rol",
+        "Type": "fiexpress.Models.Empleado",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -72,9 +72,9 @@
     ]
   },
   {
-    "ContainingType": "fiexpress.Controllers.RolController",
-    "Method": "PutRol",
-    "RelativePath": "api/Rol/{id}",
+    "ContainingType": "fiexpress.Controllers.EmpleadosController",
+    "Method": "PutEmpleado",
+    "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -85,17 +85,17 @@
         "IsRequired": true
       },
       {
-        "Name": "rol",
-        "Type": "fiexpress.Models.Rol",
+        "Name": "empleado",
+        "Type": "fiexpress.Models.Empleado",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "fiexpress.Controllers.RolController",
-    "Method": "DeleteRol",
-    "RelativePath": "api/Rol/{id}",
+    "ContainingType": "fiexpress.Controllers.EmpleadosController",
+    "Method": "DeleteEmpleado",
+    "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

@@ -11,47 +11,47 @@ namespace fiexpress.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RolController : ControllerBase
+    public class EmpleadosController : ControllerBase
     {
         private readonly MyDbContext _context;
 
-        public RolController(MyDbContext context)
+        public EmpleadosController(MyDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Rol
+        // GET: api/Empleados
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rol>>> GetRol()
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleados()
         {
-            return await _context.Rol.ToListAsync();
+            return await _context.Empleados.ToListAsync();
         }
 
-        // GET: api/Rol/5
+        // GET: api/Empleados/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Rol>> GetRol(int id)
+        public async Task<ActionResult<Empleado>> GetEmpleado(int id)
         {
-            var rol = await _context.Rol.FindAsync(id);
+            var empleado = await _context.Empleados.FindAsync(id);
 
-            if (rol == null)
+            if (empleado == null)
             {
                 return NotFound();
             }
 
-            return rol;
+            return empleado;
         }
 
-        // PUT: api/Rol/5
+        // PUT: api/Empleados/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRol(int id, Rol rol)
+        public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
         {
-            if (id != rol.idRol)
+            if (id != empleado.idEmpleado)
             {
                 return BadRequest();
             }
 
-            _context.Entry(rol).State = EntityState.Modified;
+            _context.Entry(empleado).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace fiexpress.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RolExists(id))
+                if (!EmpleadoExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +72,36 @@ namespace fiexpress.Controllers
             return NoContent();
         }
 
-        // POST: api/Rol
+        // POST: api/Empleados
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Rol>> PostRol(Rol rol)
+        public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
         {
-            _context.Rol.Add(rol);
+            _context.Empleados.Add(empleado);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRol", new { id = rol.idRol }, rol);
+            return CreatedAtAction("GetEmpleado", new { id = empleado.idEmpleado }, empleado);
         }
 
-        // DELETE: api/Rol/5
+        // DELETE: api/Empleados/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRol(int id)
+        public async Task<IActionResult> DeleteEmpleado(int id)
         {
-            var rol = await _context.Rol.FindAsync(id);
-            if (rol == null)
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null)
             {
                 return NotFound();
             }
 
-            _context.Rol.Remove(rol);
+            _context.Empleados.Remove(empleado);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool RolExists(int id)
+        private bool EmpleadoExists(int id)
         {
-            return _context.Rol.Any(e => e.idRol == id);
+            return _context.Empleados.Any(e => e.idEmpleado == id);
         }
     }
 }

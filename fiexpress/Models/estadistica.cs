@@ -1,20 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
 {
-    public class estadistica
+    [Table("estadistica")]
+    public class Estadistica
     {
         [Key]
         public int idEstadistica { get; set; }
-        public int idEmpleado { get; set; }
-        [ForeignKey("idEmpleado")]
+
+        [ForeignKey("Empleado")]
+        public int idEmpleadoEstadistica { get; set; }
         public Empleado Empleado { get; set; }
-        public DateTime fecha { get; set; }
-       public int minutos_trabajadores { get; set; }
-        public int minutos_retraso { get; set; }
-        public int minutos_extras { get; set; }
-        public int asistencias { get; set; }
-        public int estado_dia { get; set; }
+
+        public DateOnly fecha { get; set; }
+        public int? minutos_trabajados { get; set; }
+        public int? minutos_retraso { get; set; }
+        public int? minutos_extra { get; set; }
+        public bool asistencia { get; set; }
+
+        [MaxLength(50)]
+        public string estado_dia { get; set; }
     }
 }

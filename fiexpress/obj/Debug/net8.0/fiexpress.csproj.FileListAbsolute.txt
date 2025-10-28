@@ -575,3 +575,4 @@ C:\Users\rousemary\Source\Repos\fiexpress-1\fiexpress\obj\Debug\net8.0\refint\fi
 C:\Users\rousemary\Source\Repos\fiexpress-1\fiexpress\obj\Debug\net8.0\fiexpress.pdb
 C:\Users\rousemary\Source\Repos\fiexpress-1\fiexpress\obj\Debug\net8.0\fiexpress.genruntimeconfig.cache
 C:\Users\rousemary\Source\Repos\fiexpress-1\fiexpress\obj\Debug\net8.0\ref\fiexpress.dll
+C:\Users\rousemary\Source\Repos\fiexpress-1\fiexpress\bin\Debug\net8.0\appsettings.Production.json

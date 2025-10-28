@@ -1,22 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
 {
-    public class permiso
+    [Table("permiso")]
+    public class Permiso
     {
         [Key]
         public int idPermiso { get; set; }
-        public int idpleado { get; set; }
-        [ForeignKey]("idEmpleado")
-            public Empleado dmpleado { get; set; }
-        public int tipo { get; set; }
-        public DateTime fecha_inicio { get; set; }
-        public DateTime fecha_fin { get; set; }
-        public int estado { get; set; }
-        public int perimiso_supervisor { get; set; }
-        [ForeignKey("perimiso_supervisor")]
-            public Empleado Supervisor { get; set; }
-        public int motivo { get; set; }
+
+        [ForeignKey("Empleado")]
+        public int idPermisoEmpleado { get; set; }
+        public Empleado Empleado { get; set; }
+
+        [ForeignKey("Supervisor")]
+        public int idPermisoSupervisor { get; set; }
+        public Supervisor Supervisor { get; set; }
+
+        [Required, MaxLength(50)]
+        public string tipo { get; set; }
+
+        public DateOnly fecha_inicio { get; set; }
+        public DateOnly fecha_fin { get; set; }
+
+        [Required, MaxLength(50)]
+        public string estado { get; set; }
+
+        [Required, MaxLength(50)]
+        public string motivo { get; set; }
+
+        public DateTime fecha_solicitud { get; set; }
     }
 }

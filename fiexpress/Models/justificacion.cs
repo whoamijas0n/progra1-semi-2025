@@ -1,16 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
 {
-    public class justificacion
+    [Table("justificacion")]
+    public class Justificacion
     {
         [Key]
         public int idJustificacion { get; set; }
-        public int incidenciaId { get; set; }
-        [ForeignKey("incidenciaId")]
-        public incidencia Incidencia { get; set; }
+
+        [ForeignKey("Incidencia")]
+        public int idIncidencia { get; set; }
+        public Incidencia Incidencia { get; set; }
+
+        [ForeignKey("Supervisor")]
+        public int idJustificacionSupervisor { get; set; }
+        public Supervisor Supervisor { get; set; }
+
+        [MaxLength(50)]
+        public string documento_url { get; set; }
+
+        [Required, MaxLength(50)]
         public string motivo { get; set; }
-        public int estado { get; set; }
+
+        [Required, MaxLength(50)]
+        public string estado { get; set; }
+
+        public DateTime? fecha_revision { get; set; }
     }
 }

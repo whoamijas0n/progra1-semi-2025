@@ -1,0 +1,211 @@
+﻿<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                Dashboard Principal
+            </h2>
+            <p class="text-muted">Bienvenido al sistema de control de asistencia FiExpress</p>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Empleados</h6>
+                            <h3 class="mb-0" id="total-empleados-dash">0</h3>
+                        </div>
+                        <div class="text-primary fs-1">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Fichajes Hoy</h6>
+                            <h3 class="mb-0 text-success" id="fichajes-hoy">0</h3>
+                        </div>
+                        <div class="text-success fs-1">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Departamentos</h6>
+                            <h3 class="mb-0 text-warning" id="total-departamentos">0</h3>
+                        </div>
+                        <div class="text-warning fs-1">
+                            <i class="bi bi-building"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Empleados Activos</h6>
+                            <h3 class="mb-0 text-info" id="empleados-activos-dash">0</h3>
+                        </div>
+                        <div class="text-info fs-1">
+                            <i class="bi bi-person-check-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">Accesos Rápidos</h5>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus fs-1 text-primary mb-3"></i>
+                    <h5>Gestión de Empleados</h5>
+                    <p class="text-muted">Administra empleados, horarios y permisos</p>
+                    <button class="btn btn-primary" onclick="window.cargarVista('empleados', 'Empleados')">
+                        Ir a Empleados
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-history fs-1 text-success mb-3"></i>
+                    <h5>Control de Fichajes</h5>
+                    <p class="text-muted">Registros de entrada y salida</p>
+                    <button class="btn btn-success" onclick="window.cargarVista('fichajes', 'Fichajes')">
+                        Ver Fichajes
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar3 fs-1 text-warning mb-3"></i>
+                    <h5>Horarios y Turnos</h5>
+                    <p class="text-muted">Gestiona horarios de trabajo</p>
+                    <button class="btn btn-warning" onclick="window.cargarVista('horarios', 'Horarios')">
+                        Ver Horarios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos Fichajes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock"></i> Últimos Fichajes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Tipo</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ultimos-fichajes">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="bi bi-hourglass-split"></i> Cargando...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>// Cargar datos del dashboard
+    async function cargarDashboard() {
+        try {
+            // Cargar empleados
+            const respEmpleados = await fetch('/api/empleados', { credentials: 'include' });
+            if (respEmpleados.ok) {
+                const empleadosData = await respEmpleados.json();
+                document.getElementById('total-empleados-dash').textContent = empleadosData.length;
+                document.getElementById('empleados-activos-dash').textContent =
+                    empleadosData.filter(e => e.activo).length;
+            }
+
+            // Cargar departamentos
+            const respDeptos = await fetch('/api/departamentos', { credentials: 'include' });
+            if (respDeptos.ok) {
+                const deptosData = await respDeptos.json();
+                document.getElementById('total-departamentos').textContent = deptosData.length;
+            }
+
+            // Cargar fichajes de hoy
+            const respFichajes = await fetch('/api/fichajes/hoy', { credentials: 'include' });
+            if (respFichajes.ok) {
+                const fichajesData = await respFichajes.json();
+                document.getElementById('fichajes-hoy').textContent = fichajesData.length;
+                mostrarUltimosFichajes(fichajesData);
+            }
+        } catch (error) {
+            console.error('Error al cargar dashboard:', error);
+        }
+    }
+
+    function mostrarUltimosFichajes(fichajes) {
+        const tbody = document.getElementById('ultimos-fichajes');
+
+        if (fichajes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fichajes hoy</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = fichajes.slice(0, 10).map(f => `
+            <tr>
+                <td>${f.empleado}</td>
+                <td>
+                    <span class="badge ${f.tipo === 'ENTRADA' ? 'bg-success' : 'bg-danger'}">
+                        ${f.tipo}
+                    </span>
+                </td>
+                <td>${f.hora}</td>
+                <td><span class="badge bg-info">Normal</span></td>
+            </tr>
+        `).join('');
+    }
+
+    // Cargar al mostrar la vista
+    cargarDashboard();</script>

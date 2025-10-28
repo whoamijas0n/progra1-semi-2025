@@ -1,20 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
 {
-    public class fichaje
+    [Table("fichaje")]
+    public class Fichaje
     {
         [Key]
+        [Column("idFIchaje")] // ⚠️ Nota: Con I mayúscula en BD
         public int idFichaje { get; set; }
-        public int idEmpleado { get; set; }
-        [ForeignKey("idEmpleado")]
+
+        [ForeignKey("Empleado")]
+        public int idEmpleadoFichaje { get; set; }
         public Empleado Empleado { get; set; }
-        public DateTime fecha { get; set; }
-        public DateTime hora { get; set; }
-        public int ip { get; set; }
-        public int observaciones { get; set; }
 
+        public DateOnly fecha { get; set; }
+        public TimeOnly hora { get; set; }
 
+        [Required, MaxLength(50)]
+        public string tipo { get; set; }
+
+        [MaxLength(50)]
+        public string ip { get; set; }
+
+        [MaxLength(100)]
+        public string observacion { get; set; }
     }
 }

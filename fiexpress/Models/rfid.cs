@@ -1,25 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
 {
-    public class rfid
+    [Table("tarjeta_rfid")]
+    public class Rfid
     {
         [Key]
-
         public int idRfid { get; set; }
+
+        [Required, MaxLength(50)]
         public string codigo_rfid { get; set; }
-        public int idEmpleado { get; set; }
-        [ForeignKey("idEmpleado")]
+
+        [ForeignKey("Empleado")]
+        public int idEmpleadoAsignado { get; set; }
         public Empleado Empleado { get; set; }
-        public int fecha_asignacion { get; set; }
 
-
-
-
-
-
-
+        public DateOnly fecha_asignacion { get; set; }
+        public bool activo { get; set; }
     }
-
 }

@@ -1,0 +1,9 @@
+wwwroot\img\background-login.jpg
+wwwroot\index.html
+wwwroot\login.html
+wwwroot\views\empleados.html
+wwwroot\views\fichajes-old.html
+wwwroot\views\horarios.html
+wwwroot\views\inicio.html
+wwwroot\views\usuarios.html
+wwwroot\views\fichajes.html

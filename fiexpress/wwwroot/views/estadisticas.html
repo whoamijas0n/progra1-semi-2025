@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Estadísticas</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <style>
+        .stats-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+            .stats-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .badge-completo {
+            background-color: #28a745;
+        }
+
+        .badge-retraso {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .badge-falta {
+            background-color: #dc3545;
+        }
+
+        .badge-justificado {
+            background-color: #17a2b8;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .empleado-highlight {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>📊 Panel de Estadísticas de Empleados</h2>
+            <button class="btn btn-outline-primary" onclick="cargarEstadisticas()">
+                🔄 Actualizar Datos
+            </button>
+        </div>
+
+        <!-- Tarjetas de resumen -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Total Registros</div>
+                    <div class="stat-number" id="totalRegistros">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Asistencia Completa</div>
+                    <div class="stat-number text-success" id="totalCompletos">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Con Retrasos</div>
+                    <div class="stat-number text-warning" id="totalRetrasos">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Faltas</div>
+                    <div class="stat-number text-danger" id="totalFaltas">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas adicionales -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Promedio Min. Trabajados</div>
+                    <div class="stat-number text-info" id="promedioTrabajados" style="font-size: 2rem;">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">Total Min. Extras</div>
+                    <div class="stat-number text-primary" id="totalExtras" style="font-size: 2rem;">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card bg-light">
+                    <div class="stat-label">% Asistencia General</div>
+                    <div class="stat-number text-success" id="porcentajeAsistencia" style="font-size: 2rem;">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <!-- Gráficos -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📈 Distribución de Estados</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartEstados"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">⏱️ Tiempo Promedio por Empleado</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartTiempos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de registros -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Registros Detallados</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Empleado</th>
+                                <th>Fecha</th>
+                                <th>Min. Trabajados</th>
+                                <th>Min. Retraso</th>
+                                <th>Min. Extras</th>
+                                <th>Asistencia</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEstadisticas">
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        // Configuración de Toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        let chartEstados = null;
+        let chartTiempos = null;
+
+
+    const API_URL = '/api/estadisticas'; 
+        csharp[HttpGet]
+public JsonResult ObtenerEstadisticas()
+        {
+            // Obtener todos los registros de la tabla ESTADISTICA
+            var estadisticas = db.Estadisticas.ToList();
+            return Json(estadisticas, JsonRequestBehavior.AllowGet);
+        }
+
+    
+
+        // Cargar estadísticas al iniciar la página
+        $(document).ready(function () {
+            cargarEstadisticas();
+        });
+
+        function cargarEstadisticas() {
+            toastr.info('Cargando estadísticas...', 'Información');
+
+        
+            // 
+            $.ajax({
+                url: API_URL,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // data debe ser un array con la estructura de tu tabla ESTADISTICA
+                    procesarEstadisticas(data);
+                    toastr.success('Estadísticas cargadas correctamente', 'Éxito');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al cargar estadísticas:', error);
+                    toastr.error('No se pudieron cargar las estadísticas. Verifica el endpoint.', 'Error');
+
+                    // Mostrar datos de ejemplo para pruebas
+                    mostrarDatosEjemplo();
+                }
+            });
+        }
+
+        function procesarEstadisticas(estadisticas) {
+            if (!estadisticas || estadisticas.length === 0) {
+                mostrarSinDatos();
+                return;
+            }
+
+            actualizarTarjetas(estadisticas);
+            actualizarTabla(estadisticas);
+            actualizarGraficos(estadisticas);
+        }
+
+        function actualizarTarjetas(estadisticas) {
+            const total = estadisticas.length;
+            const completos = estadisticas.filter(e => e.estado_dia === 'COMPLETO').length;
+            const retrasos = estadisticas.filter(e => e.estado_dia === 'RETRASO').length;
+            const faltas = estadisticas.filter(e => e.estado_dia === 'FALTA').length;
+
+            const totalTrabajados = estadisticas.reduce((sum, e) => sum + (e.minutos_trabajados || 0), 0);
+            const promedioTrabajados = total > 0 ? Math.round(totalTrabajados / total) : 0;
+
+            const totalExtras = estadisticas.reduce((sum, e) => sum + (e.minutos_extras || 0), 0);
+
+            const promedioAsistencia = estadisticas.reduce((sum, e) => sum + (e.asistencia || 0), 0) / total;
+            const porcentajeAsistencia = Math.round(promedioAsistencia * 100);
+
+            $('#totalRegistros').text(total);
+            $('#totalCompletos').text(completos);
+            $('#totalRetrasos').text(retrasos);
+            $('#totalFaltas').text(faltas);
+            $('#promedioTrabajados').text(promedioTrabajados + ' min');
+            $('#totalExtras').text(totalExtras + ' min');
+            $('#porcentajeAsistencia').text(porcentajeAsistencia + '%');
+        }
+
+        function actualizarTabla(estadisticas) {
+            const tbody = $('#tablaEstadisticas');
+
+            if (estadisticas.length === 0) {
+                tbody.html('<tr><td colspan="8" class="text-center text-muted">No hay registros disponibles</td></tr>');
+                return;
+            }
+
+            const rows = estadisticas.map(est => `
+                    <tr>
+                        <td>${est.idEstadistica || est.id_estadistica || '-'}</td>
+                        <td><span class="empleado-highlight">#${est.idEmpleado || est.id_empleado || '-'}</span></td>
+                        <td>${formatearFecha(est.fecha)}</td>
+                        <td>${est.minutos_trabajados || est.minutosTrabajados || 0} min</td>
+                        <td>${est.minutos_retraso || est.minutosRetraso || 0} min</td>
+                        <td>${est.minutos_extras || est.minutosExtras || 0} min</td>
+                        <td>${est.asistencia || 0}</td>
+                        <td><span class="badge badge-${(est.estado_dia || est.estadoDia || '').toLowerCase()}">${est.estado_dia || est.estadoDia || 'N/A'}</span></td>
+                    </tr>
+                `).join('');
+
+            tbody.html(rows);
+        }
+
+        function actualizarGraficos(estadisticas) {
+            actualizarGraficoEstados(estadisticas);
+            actualizarGraficoTiempos(estadisticas);
+        }
+
+        function actualizarGraficoEstados(estadisticas) {
+            const ctx = document.getElementById('chartEstados').getContext('2d');
+
+            const conteo = {
+                COMPLETO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'COMPLETO').length,
+                RETRASO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'RETRASO').length,
+                FALTA: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'FALTA').length,
+                JUSTIFICADO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'JUSTIFICADO').length
+            };
+
+            if (chartEstados) {
+                chartEstados.destroy();
+            }
+
+            chartEstados = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completo', 'Retraso', 'Falta', 'Justificado'],
+                    datasets: [{
+                        data: [conteo.COMPLETO, conteo.RETRASO, conteo.FALTA, conteo.JUSTIFICADO],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(23, 162, 184, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(40, 167, 69)',
+                            'rgb(255, 193, 7)',
+                            'rgb(220, 53, 69)',
+                            'rgb(23, 162, 184)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function actualizarGraficoTiempos(estadisticas) {
+            const ctx = document.getElementById('chartTie

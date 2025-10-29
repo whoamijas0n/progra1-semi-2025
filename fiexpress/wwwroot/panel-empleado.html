@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FiExpress - Sistema de Fichajes</title>
-
+    <title>FiExpress - Panel Empleado</title>
     <!-- Bootstrap y Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
     <style>
         body {
             overflow-x: hidden;
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
         }
-
         /* Panel lateral */
         #sidebar {
             height: 100vh;
@@ -33,7 +30,6 @@
             transition: transform 0.3s ease;
         }
 
-            /* Título del panel */
             #sidebar h4 {
                 padding: 20px;
                 text-align: center;
@@ -41,8 +37,7 @@
                 margin: 0;
                 font-weight: 600;
             }
-
-        /* Enlaces del menú */
+        /* Menú */
         #menu {
             flex-grow: 1;
             padding-top: 10px;
@@ -76,7 +71,6 @@
                 margin: 10px 20px;
                 opacity: 0.2;
             }
-
         /* Usuario abajo */
         #user-section {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -107,7 +101,6 @@
             #logout:hover {
                 transform: scale(1.1);
             }
-
         /* Contenido principal */
         #main {
             margin-left: 250px;
@@ -115,14 +108,12 @@
             min-height: 100vh;
         }
 
-        /* Breadcrumb */
         .breadcrumb {
             background: white;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
         /* Botón hamburguesa */
         #menu-toggle {
             display: none;
@@ -136,7 +127,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* Overlay para móviles */
         #overlay {
             display: none;
             position: fixed;
@@ -148,7 +138,6 @@
             z-index: 999;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             #sidebar {
                 transform: translateX(-100%);
@@ -173,7 +162,6 @@
             }
         }
 
-        /* Loader */
         .loader {
             display: flex;
             flex-direction: column;
@@ -189,12 +177,10 @@
     </style>
 </head>
 <body>
-    <!-- Botón hamburguesa (solo móvil) -->
+    <!-- Botón hamburguesa -->
     <button id="menu-toggle" class="btn btn-dark">
         <i class="bi bi-list"></i>
     </button>
-
-    <!-- Overlay (solo móvil) -->
     <div id="overlay"></div>
 
     <!-- Menú lateral -->
@@ -204,47 +190,30 @@
                 <i class="bi bi-clock-history"></i> FiExpress
             </h4>
             <div id="menu">
-                <a href="#" data-form="inicio" data-title="Inicio">
+                <a href="#" data-form="inicio-empleado" data-title="Inicio">
                     <i class="bi bi-house-door"></i> Inicio
                 </a>
-                <a href="#" data-form="empleados" data-title="Empleados">
-                    <i class="bi bi-person-badge"></i> Empleados
-                </a>
-                <a href="#" data-form="fichajes" data-title="Fichajes">
-                    <i class="bi bi-clock-history"></i> Fichajes
-                </a>
-                <a href="#" data-form="Rfid" data-title="Rfid">
-                    <i class="bi bi-card-heading"></i> Tarjetas RFID
-                </a>
-                <a href="#" data-form="horarios" data-title="Horarios">
-                    <i class="bi bi-calendar3"></i> Horarios
-                </a>
-                <a href="#" data-form="estadisticas" data-title="Estadísticas">
+                <a href="#" data-form="estadisticas-personales" data-title="Estadísticas">
                     <i class="bi bi-graph-up"></i> Estadísticas
                 </a>
-                <a href="#" data-form="permisos" data-title="Permisos">
+                <a href="#" data-form="notificaciones" data-title="Notificaciones">
+                    <i class="bi bi-bell"></i> Notificaciones
+                </a>
+                <a href="#" data-form="permisos-empleado" data-title="Permisos">
                     <i class="bi bi-file-text"></i> Permisos
                 </a>
-                <a href="#" data-form="justificaciones" data-title="Justificaciones" class="admin-only">
+                <a href="#" data-form="justificaciones-empleado" data-title="Justificaciones">
                     <i class="bi bi-pencil-square"></i> Justificaciones
                 </a>
                 <hr>
-                <a href="#" data-form="usuarios" data-title="Usuarios" class="admin-only">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-                <a href="#" data-form="configuracion" data-title="Configuración" class="admin-only">
-                    <i class="bi bi-gear"></i> Configuración
-                </a>
             </div>
         </div>
-
-        <!-- Sección de usuario -->
         <div id="user-section" class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="bi bi-person-circle"></i>
                 <div>
                     <div id="username">Cargando...</div>
-                    <small id="user-role">...</small>
+                    <small id="user-role">Empleado</small>
                 </div>
             </div>
             <a href="#" id="logout" class="text-danger" title="Cerrar sesión">
@@ -253,191 +222,107 @@
         </div>
     </div>
 
-    <!-- Contenedor principal -->
+    <!-- Contenido principal -->
     <div id="main">
-        <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
-                    <a href="#" data-form="inicio">
+                    <a href="#" data-form="inicio-empleado">
                         <i class="bi bi-house-door"></i> Inicio
                     </a>
                 </li>
                 <li class="breadcrumb-item active" id="breadcrumb-actual">Dashboard</li>
             </ol>
         </nav>
-
-        <!-- Contenido dinámico -->
         <div id="contenido"></div>
     </div>
 
-    <!-- Scripts -->
     <script>
-        // Estado de la aplicación
-        const app = {
-            usuario: null,
-            vistaActual: 'inicio'
-        };
+        const app = { usuario: null, vistaActual: 'inicio-empleado' };
 
         document.addEventListener("DOMContentLoaded", async () => {
             // Verificar autenticación
             const autenticado = await verificarAutenticacion();
             if (!autenticado) return;
-
-            // Cargar información del usuario
+            // Cargar usuario
             await cargarUsuario();
-
-            // Configurar menú según rol
-            configurarMenuSegunRol();
-
             // Inicializar menú
             inicializarMenu();
-
-            // Inicializar botón hamburguesa (móvil)
             inicializarMenuMovil();
-
-            // Configurar logout
             configurarLogout();
-
             // Cargar vista inicial
-            cargarVista('inicio', 'Dashboard');
+            cargarVista('inicio-empleado', 'Dashboard');
         });
 
-        // Verificar autenticación
         async function verificarAutenticacion() {
             try {
-                const res = await fetch('/api/auth/verificar', {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-
+                const res = await fetch('/api/auth/verificar', { credentials: 'include' });
                 if (!res.ok) {
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                     return false;
                 }
                 return true;
             } catch (error) {
-                console.error('Error al verificar autenticación:', error);
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
         }
 
-        // Cargar información del usuario actual
         async function cargarUsuario() {
             try {
-                const res = await fetch('/api/auth/usuario-actual', {
-                    credentials: 'include'
-                });
-
+                const res = await fetch('/api/auth/usuario-actual', { credentials: 'include' });
                 if (!res.ok) throw new Error('Error al cargar usuario');
-
                 app.usuario = await res.json();
-
-
-
-                const rol = app.usuario.rol;
-                const esSupervisor = app.usuario.esSupervisor;
-                if (rol !== 'Admin' && !esSupervisor) {
-                    alert('Acceso denegado. Redirigiendo a tu panel.');
-                    window.location.href = '/panel-empleado.html';
-                    return;
-                }
-
-
-                // Actualizar UI
-                document.getElementById('username').textContent =
-                    `${app.usuario.nombre} ${app.usuario.apellido || ''}`.trim();
-                document.getElementById('user-role').textContent =
-                    app.usuario.rol || 'Empleado';
-
-                // Dentro de la función cargarUsuario(), después de obtener app.usuario
-                if (app.usuario.rol !== 'Admin' && !app.usuario.esSupervisor) {
-                    window.location.href = '/panel-empleado.html';
-                    return;
-                }
-
+                document.getElementById('username').textContent = app.usuario.nombre;
+                document.getElementById('user-role').textContent = app.usuario.rol || 'Empleado';
             } catch (error) {
                 console.error('Error al cargar usuario:', error);
-                document.getElementById('username').textContent = 'Usuario';
-                document.getElementById('user-role').textContent = 'Empleado';
             }
         }
 
-        // Configurar menú según rol
-        function configurarMenuSegunRol() {
-            const rol = app.usuario?.rol;
-            const opcionesAdmin = document.querySelectorAll('.admin-only');
-
-            // Ocultar opciones de admin si no es supervisor/admin
-            if (rol !== 'Supervisor' && rol !== 'Admin') {
-                opcionesAdmin.forEach(opcion => {
-                    opcion.style.display = 'none';
-                });
-            }
-        }
-
-        // Inicializar menú
         function inicializarMenu() {
             const links = document.querySelectorAll("#menu a");
-
             links.forEach(link => {
                 link.addEventListener("click", e => {
                     e.preventDefault();
-
-                    // Actualizar clases activas
                     links.forEach(l => l.classList.remove("active"));
                     link.classList.add("active");
-
-                    // Cargar vista
                     const vista = link.dataset.form;
                     const titulo = link.dataset.title || vista;
                     cargarVista(vista, titulo);
-
-                    // Cerrar menú en móvil
                     cerrarMenuMovil();
                 });
             });
-
-            // Click en breadcrumb inicio
             document.querySelector('.breadcrumb-item a').addEventListener('click', e => {
                 e.preventDefault();
                 links.forEach(l => l.classList.remove("active"));
                 links[0].classList.add("active");
-                cargarVista('inicio', 'Dashboard');
+                cargarVista('inicio-empleado', 'Dashboard');
                 cerrarMenuMovil();
             });
         }
 
-        // Inicializar menú móvil
         function inicializarMenuMovil() {
             const toggle = document.getElementById('menu-toggle');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
-
             toggle.addEventListener('click', () => {
                 sidebar.classList.toggle('show');
                 overlay.classList.toggle('show');
             });
-
             overlay.addEventListener('click', cerrarMenuMovil);
         }
 
-        // Cerrar menú móvil
         function cerrarMenuMovil() {
             document.getElementById('sidebar').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
         }
 
-        // Cargar vista dinámica
         function cargarVista(vista, titulo) {
             const contenedor = document.getElementById("contenido");
             const breadcrumb = document.getElementById("breadcrumb-actual");
-
             app.vistaActual = vista;
             breadcrumb.textContent = titulo;
-
-            // Mostrar loader
             contenedor.innerHTML = `
                     <div class="loader">
                         <div class="spinner-border text-primary" role="status">
@@ -446,8 +331,6 @@
                         <p class="mt-3 text-muted">Cargando ${titulo}...</p>
                     </div>
                 `;
-
-            // Cargar contenido
             fetch(`/views/${vista}.html`)
                 .then(res => {
                     if (!res.ok) throw new Error(`Vista '${vista}' no encontrada`);
@@ -455,23 +338,18 @@
                 })
                 .then(html => {
                     contenedor.innerHTML = html;
-                    // Ejecutar scripts si existen en la vista cargada
                     ejecutarScriptsVista(contenedor);
                 })
                 .catch(err => {
                     contenedor.innerHTML = `
-                            <div class="alert alert-danger d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
-                                <div>
-                                    <strong>Error al cargar la vista</strong><br>
-                                    ${err.message}
-                                </div>
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Error: ${err.message}
                             </div>
                         `;
                 });
         }
 
-        // Ejecutar scripts de vistas cargadas dinámicamente
         function ejecutarScriptsVista(contenedor) {
             const scripts = contenedor.querySelectorAll('script');
             scripts.forEach(oldScript => {
@@ -484,17 +362,14 @@
             });
         }
 
-        // Configurar logout
         function configurarLogout() {
             document.getElementById("logout").addEventListener("click", async e => {
                 e.preventDefault();
                 if (!confirm("¿Estás seguro de cerrar sesión?")) return;
                 try {
-                    await fetch('/api/auth/logout', {
-                        method: 'POST',
-                        credentials: 'include' // ✅ Esencial
-                    });
-                    // ✅ Redirigir directamente al login SIN parámetros
+                    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                    localStorage.clear();
+                    sessionStorage.clear();
                     window.location.href = '/login.html';
                 } catch (error) {
                     alert('Error al cerrar sesión');
@@ -502,28 +377,19 @@
             });
         }
 
-        // Función auxiliar para hacer fetch con autenticación
         async function fetchAuth(url, options = {}) {
-            const defaultOptions = {
+            const response = await fetch(url, {
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
-            };
-
-            const response = await fetch(url, { ...defaultOptions, ...options });
-
-            // Si es 401, redirigir al login
+                headers: { 'Content-Type': 'application/json', ...options.headers },
+                ...options
+            });
             if (response.status === 401) {
                 window.location.href = '/login.html';
                 throw new Error('No autenticado');
             }
-
             return response;
         }
 
-        // Exponer funciones globales para que las vistas puedan usarlas
         window.app = app;
         window.fetchAuth = fetchAuth;
         window.cargarVista = cargarVista;

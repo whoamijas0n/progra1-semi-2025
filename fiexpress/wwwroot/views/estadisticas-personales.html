@@ -1,0 +1,136 @@
+﻿<!-- views/estadisticas-personales.html -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-graph-up text-primary"></i>
+                Mis Estadísticas
+            </h2>
+            <p class="text-muted">Resumen de tu desempeño este mes</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Días Trabajados</h6>
+                    <h3 class="mb-0 text-success" id="dias-trabajados">0</h3>
+                    <small class="text-muted" id="total-dias-mes">de 0 días</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Asistencia</h6>
+                    <h3 class="mb-0 text-warning" id="porcentaje-asistencia">0%</h3>
+                    <small class="text-muted">Este mes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-danger border-4 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Minutos de Retraso</h6>
+                    <h3 class="mb-0 text-danger" id="minutos-retraso">0</h3>
+                    <small class="text-muted">Total mensual</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Horas Extras</h6>
+                    <h3 class="mb-0 text-info" id="minutos-extra">0</h3>
+                    <small class="text-muted">Total mensual</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Resumen del Mes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar bg-success" role="progressbar" id="barra-asistencia" style="width: 0%"></div>
+                    </div>
+                    <p class="text-muted" id="detalle-asistencia">Cargando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history"></i> Últimos Fichajes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Observación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-fichajes-personales">
+                                <tr><td colspan="4" class="text-center text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function cargarEstadisticasPersonales() {
+        try {
+            const res = await window.fetchAuth('/api/estadisticas/personales');
+            const data = await res.json();
+
+            document.getElementById('dias-trabajados').textContent = data.resumen.diasTrabajados;
+            document.getElementById('total-dias-mes').textContent = `de ${data.resumen.totalDias} días`;
+            document.getElementById('porcentaje-asistencia').textContent = `${data.resumen.porcentajeAsistencia}%`;
+            document.getElementById('minutos-retraso').textContent = data.resumen.minutosRetraso;
+            document.getElementById('minutos-extra').textContent = data.resumen.minutosExtra;
+
+            const barra = document.getElementById('barra-asistencia');
+            const detalle = document.getElementById('detalle-asistencia');
+            barra.style.width = `${data.resumen.porcentajeAsistencia}%`;
+            barra.textContent = `${data.resumen.porcentajeAsistencia}%`;
+            detalle.textContent = `Has asistido ${data.resumen.diasTrabajados} de ${data.resumen.totalDias} días laborables este mes.`;
+
+            const tbody = document.getElementById('tabla-fichajes-personales');
+            if (data.ultimosFichajes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fichajes recientes</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.ultimosFichajes.map(f => `
+                <tr>
+                    <td>${f.fecha}</td>
+                    <td>${f.hora}</td>
+                    <td><span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">${f.tipo}</span></td>
+                    <td>${f.observacion || '—'}</td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('tabla-fichajes-personales').innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error al cargar datos</td></tr>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarEstadisticasPersonales);
+</script>

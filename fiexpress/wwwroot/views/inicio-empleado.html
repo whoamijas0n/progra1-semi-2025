@@ -1,0 +1,227 @@
+﻿<!-- views/inicio-empleado.html -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                Mi Panel Personal
+            </h2>
+            <p class="text-muted">Bienvenido, <span id="nombre-empleado">...</span>. Aquí está tu resumen diario.</p>
+        </div>
+    </div>
+
+    <!-- Tarjetas de resumen personal -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Fichajes Hoy</h6>
+                            <h3 class="mb-0 text-success" id="fichajes-hoy-count">0</h3>
+                        </div>
+                        <div class="text-success fs-1">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Turno Actual</h6>
+                            <h5 class="mb-0 text-info" id="turno-actual">—</h5>
+                        </div>
+                        <div class="text-info fs-1">
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Notificaciones</h6>
+                            <h3 class="mb-0 text-warning" id="notificaciones-pendientes">0</h3>
+                        </div>
+                        <div class="text-warning fs-1">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Asistencia Mes</h6>
+                            <h5 class="mb-0 text-primary" id="asistencia-mes">—</h5>
+                        </div>
+                        <div class="text-primary fs-1">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Fichajes de Hoy -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i> Fichajes de Hoy
+                    </h5>
+                    <small class="text-muted" id="fecha-hoy"></small>
+                </div>
+                <div class="card-body">
+                    <div id="lista-fichajes-hoy" class="list-group">
+                        <div class="text-center py-3 text-muted">
+                            <div class="spinner-border spinner-border-sm"></div> Cargando...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Acciones Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">Acciones Rápidas</h5>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-text fs-1 text-warning mb-3"></i>
+                    <h5>Solicitar Permiso</h5>
+                    <p class="text-muted">Ausencia planificada o emergencia</p>
+                    <button class="btn btn-warning" onclick="window.cargarVista('permisos-empleado', 'Permisos')">
+                        Solicitar Permiso
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-pencil-square fs-1 text-info mb-3"></i>
+                    <h5>Justificar Incidencia</h5>
+                    <p class="text-muted">Llegada tarde o falta no planificada</p>
+                    <button class="btn btn-info" onclick="window.cargarVista('justificaciones-empleado', 'Justificaciones')">
+                        Justificar Ahora
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: Notificaciones -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bell"></i> Notificaciones Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="lista-notificaciones" class="list-group">
+                        <div class="text-center py-3 text-muted">
+                            <div class="spinner-border spinner-border-sm"></div> Cargando...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>async function cargarDashboardEmpleado() {
+        const empleadoId = window.app.usuario.idEmpleadoAsignado;
+        document.getElementById('nombre-empleado').textContent = window.app.usuario.nombre;
+        document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-ES');
+
+        try {
+            // 1. Fichajes de hoy
+            const resFichajes = await window.fetchAuth(`/api/fichajes/empleado/${empleadoId}?fecha=${new Date().toISOString().split('T')[0]}`);
+            const fichajes = await resFichajes.json();
+            document.getElementById('fichajes-hoy-count').textContent = fichajes.length;
+            mostrarFichajesHoy(fichajes);
+
+            // 2. Horario activo
+            const resHorario = await window.fetchAuth(`/api/horarios/activo/empleado/${empleadoId}`);
+            if (resHorario.ok) {
+                const horario = await resHorario.json();
+                document.getElementById('turno-actual').textContent = horario.turno.nombre;
+            } else {
+                document.getElementById('turno-actual').textContent = 'Sin horario';
+            }
+
+            // 3. Notificaciones
+            const resNotif = await window.fetchAuth(`/api/notificaciones/empleado/${empleadoId}`);
+            const notificaciones = await resNotif.json();
+            const pendientes = notificaciones.filter(n => !n.leido).length;
+            document.getElementById('notificaciones-pendientes').textContent = pendientes;
+            mostrarNotificaciones(notificaciones.slice(0, 5));
+
+            // 4. Estadísticas (simulado por ahora)
+            // En el futuro: /api/estadisticas/mias
+            document.getElementById('asistencia-mes').textContent = '22/22 días';
+
+        } catch (error) {
+            console.error('Error al cargar dashboard:', error);
+            document.getElementById('lista-fichajes-hoy').innerHTML = '<div class="text-center text-danger py-3">Error al cargar datos</div>';
+            document.getElementById('lista-notificaciones').innerHTML = '<div class="text-center text-danger py-3">Error al cargar notificaciones</div>';
+        }
+    }
+
+    function mostrarFichajesHoy(fichajes) {
+        const contenedor = document.getElementById('lista-fichajes-hoy');
+        if (fichajes.length === 0) {
+            contenedor.innerHTML = '<div class="text-center text-muted py-3">Aún no has fichado hoy</div>';
+            return;
+        }
+        contenedor.innerHTML = fichajes.map(f => `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${f.tipo}</strong>
+                    <small class="text-muted d-block">${f.hora}</small>
+                </div>
+                <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">${f.tipo}</span>
+            </div>
+        `).join('');
+    }
+
+    function mostrarNotificaciones(notificaciones) {
+        const contenedor = document.getElementById('lista-notificaciones');
+        if (notificaciones.length === 0) {
+            contenedor.innerHTML = '<div class="text-center text-muted py-3">No tienes notificaciones</div>';
+            return;
+        }
+        contenedor.innerHTML = notificaciones.map(n => `
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>${n.titulo}</strong>
+                    <small class="text-muted">${new Date(n.fecha_envio).toLocaleTimeString()}</small>
+                </div>
+                <p class="mb-1">${n.mensaje}</p>
+                ${n.leido ? '' : '<span class="badge bg-warning">Nueva</span>'}
+            </div>
+        `).join('');
+    }
+
+    // Inicializar al cargar la vista
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarDashboardEmpleado();
+    });</script>

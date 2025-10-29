@@ -1,0 +1,89 @@
+﻿<!-- views/permisos-supervisor.html -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-file-text text-success"></i> Gestión de Permisos</h2>
+            <p class="text-muted">Aprueba o rechaza solicitudes de permisos</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div id="tabla-permisos-supervisor" class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Tipo</th>
+                            <th>Fechas</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-permisos">
+                        <tr><td colspan="6" class="text-center"><div class="spinner-border spinner-border-sm"></div> Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>async function cargarPermisosSupervisor() {
+        const tbody = document.getElementById('tbody-permisos');
+        try {
+            const res = await window.fetchAuth('/api/permisos?estado=Pendiente');
+            const permisos = await res.json();
+            if (permisos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay solicitudes pendientes</td></tr>';
+                return;
+            }
+            tbody.innerHTML = permisos.map(p => `
+                <tr>
+                    <td>${p.empleado.nombre}</td>
+                    <td><span class="badge bg-info">${p.tipo}</span></td>
+                    <td>${p.fecha_inicio} → ${p.fecha_fin}</td>
+                    <td>${p.motivo}</td>
+                    <td><span class="badge bg-warning">Pendiente</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-success me-1" onclick="aprobarPermiso(${p.idPermiso})">
+                            <i class="bi bi-check"></i> Aprobar
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="rechazarPermiso(${p.idPermiso})">
+                            <i class="bi bi-x"></i> Rechazar
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error al cargar permisos</td></tr>';
+        }
+    }
+
+    async function aprobarPermiso(id) {
+        if (!confirm('¿Aprobar esta solicitud?')) return;
+        try {
+            const res = await window.fetchAuth(`/api/permisos/${id}/aprobar`, { method: 'PUT' });
+            if (res.ok) {
+                alert('Permiso aprobado');
+                cargarPermisosSupervisor();
+            }
+        } catch (error) {
+            alert('Error al aprobar');
+        }
+    }
+
+    async function rechazarPermiso(id) {
+        if (!confirm('¿Rechazar esta solicitud?')) return;
+        try {
+            const res = await window.fetchAuth(`/api/permisos/${id}/rechazar`, { method: 'PUT' });
+            if (res.ok) {
+                alert('Permiso rechazado');
+                cargarPermisosSupervisor();
+            }
+        } catch (error) {
+            alert('Error al rechazar');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarPermisosSupervisor);</script>

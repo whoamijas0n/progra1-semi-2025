@@ -4,516 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FiExpress - Iniciar Sesión</title>
-
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
     <style>
         body {
-            background: url(img/background-login.jpg);
-            background-position: center;
-            background-size: cover;
-
+            background: #f8f9fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .login-container {
-            max-width: 450px;
-            width: 100%;
-            padding: 20px;
         }
 
         .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .login-header {
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: white;
-        }
-
-            .login-header h1 {
-                font-size: 2rem;
-                font-weight: 700;
-                margin-bottom: 10px;
-            }
-
-            .login-header p {
-                margin: 0;
-                opacity: 0.9;
-            }
-
-        .login-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .login-body {
-            padding: 40px 30px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
-        }
-
-            .form-control:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            }
-
-        .input-group-text {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-right: none;
-            border-radius: 10px 0 0 10px;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-            border-radius: 0 10px 10px 0;
-        }
-
-        .btn-login {
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 600;
-            color: white;
+            max-width: 400px;
             width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-            .btn-login:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-                color: white;
-            }
-
-            .btn-login:active {
-                transform: translateY(0);
-            }
-
-            .btn-login:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-            .forgot-password:hover {
-                color: #764ba2;
-                text-decoration: underline;
-            }
-
-        .divider {
-            text-align: center;
-            margin: 25px 0;
-            position: relative;
-        }
-
-            .divider::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 0;
-                right: 0;
-                height: 1px;
-                background: #dee2e6;
-            }
-
-            .divider span {
-                background: white;
-                padding: 0 15px;
-                position: relative;
-                color: #6c757d;
-                font-size: 0.9rem;
-            }
-
-        .demo-credentials {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-            .demo-credentials h6 {
-                color: #667eea;
-                font-weight: 600;
-                margin-bottom: 10px;
-                font-size: 0.9rem;
-            }
-
-            .demo-credentials p {
-                margin: 5px 0;
-                font-size: 0.85rem;
-                color: #495057;
-            }
-
-            .demo-credentials code {
-                background: white;
-                padding: 2px 6px;
-                border-radius: 4px;
-                color: #667eea;
-                font-weight: 600;
-            }
-
-        .alert {
-            border-radius: 10px;
-            border: none;
-        }
-
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.15em;
-        }
-
-        .login-footer {
-            text-align: center;
-            padding: 20px;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-            .login-footer a {
-                color: white;
-                text-decoration: underline;
-            }
-
-        /* Animación de entrada */
-        .login-card {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 576px) {
-            .login-container {
-                padding: 10px;
-            }
-
-            .login-header {
-                padding: 30px 20px;
-            }
-
-            .login-body {
-                padding: 30px 20px;
-            }
-
-            .login-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .login-icon {
-                font-size: 3rem;
-            }
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Header -->
-            <div class="login-header">
-
-                <!--
-
-        <div class="login-icon">
-            <i class="bi bi-clock-history"></i>
+    <div class="login-card bg-white">
+        <div class="text-center mb-4">
+            <h2 class="text-primary">FiExpress</h2>
+            <p class="text-muted">Inicia sesión para continuar</p>
         </div>
-
-    -->
-
-                <h1>GitMarket</h1>
-                <p>Sistema de Control de Asistencia</p>
+        <div id="alert-container"></div>
+        <form id="login-form">
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="username" required>
             </div>
-
-            <!-- Body -->
-            <div class="login-body">
-                <!-- Alerta de error -->
-                <div id="alert-container"></div>
-
-                <!-- Formulario de Login -->
-                <form id="login-form">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">
-                            <i class="bi bi-person-circle"></i> Usuario
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-person"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   id="username"
-                                   placeholder="Ingresa tu usuario"
-                                   required
-                                   autocomplete="username">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">
-                            <i class="bi bi-lock-fill"></i> Contraseña
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-key"></i>
-                            </span>
-                            <input type="password"
-                                   class="form-control"
-                                   id="password"
-                                   placeholder="Ingresa tu contraseña"
-                                   required
-                                   autocomplete="current-password">
-                            <button class="btn btn-outline-secondary"
-                                    type="button"
-                                    id="toggle-password"
-                                    style="border-radius: 0 10px 10px 0; border-left: none;">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="remember-forgot">
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   id="remember-me">
-                            <label class="form-check-label" for="remember-me">
-                                Recordarme
-                            </label>
-                        </div>
-                        <a href="#" class="forgot-password" onclick="mostrarRecuperacion(); return false;">
-                            ¿Olvidaste tu contraseña?
-                        </a>
-                    </div>
-
-                    <button type="submit" class="btn btn-login mt-4" id="btn-login">
-                        <span id="login-text">
-                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-                        </span>
-                        <span id="login-spinner" class="d-none">
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            Iniciando sesión...
-                        </span>
-                    </button>
-                </form>
-
-              
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" required>
             </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="login-footer">
-            <p class="mb-0">
-                &copy; 2025 FiExpress. Todos los derechos reservados.<br>
-                <small>Versión 1.0.0</small>
-            </p>
-        </div>
+            <button type="submit" class="btn btn-primary w-100" id="btn-login">
+                <span id="login-text">Iniciar Sesión</span>
+                <span id="login-spinner" class="d-none spinner-border spinner-border-sm ms-2"></span>
+            </button>
+        </form>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>// Toggle mostrar/ocultar contraseña
-        document.getElementById('toggle-password').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const icon = this.querySelector('i');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
-            }
-        });
-
-        // Manejar el envío del formulario
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+    <script>document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('remember-me').checked;
 
-            // Validación básica
-            if (!username || !password) {
-                mostrarAlerta('Por favor, completa todos los campos', 'warning');
-                return;
-            }
-
-            // Deshabilitar botón y mostrar spinner
-            const btnLogin = document.getElementById('btn-login');
-            const loginText = document.getElementById('login-text');
-            const loginSpinner = document.getElementById('login-spinner');
-
-            btnLogin.disabled = true;
-            loginText.classList.add('d-none');
-            loginSpinner.classList.remove('d-none');
+            const btn = document.getElementById('btn-login');
+            btn.disabled = true;
+            document.getElementById('login-text').classList.add('d-none');
+            document.getElementById('login-spinner').classList.remove('d-none');
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password,
-                        rememberMe: rememberMe
-                    }),
-                    credentials: 'include' // Importante para cookies
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Login exitoso
-                    mostrarAlerta('¡Bienvenido! Redirigiendo...', 'success');
-
-                    // Guardar datos en localStorage si es necesario
-                    if (rememberMe) {
-                        localStorage.setItem('username', username);
-                    }
-
-                    // Redirigir al dashboard después de 1 segundo
-                    setTimeout(() => {
-                        window.location.href = '/index.html';
-                    }, 1000);
-                } else {
-                    // Error en login
-                    mostrarAlerta(data.mensaje || 'Usuario o contraseña incorrectos', 'danger');
-                    btnLogin.disabled = false;
-                    loginText.classList.remove('d-none');
-                    loginSpinner.classList.add('d-none');
-                }
-            } catch (error) {
-                console.error('Error en login:', error);
-                mostrarAlerta('Error de conexión. Por favor, intenta nuevamente.', 'danger');
-                btnLogin.disabled = false;
-                loginText.classList.remove('d-none');
-                loginSpinner.classList.add('d-none');
-            }
-        });
-
-        // Función para mostrar alertas
-        function mostrarAlerta(mensaje, tipo = 'info') {
-            const container = document.getElementById('alert-container');
-            const alertaDiv = document.createElement('div');
-            alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
-            alertaDiv.innerHTML = `
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-
-            container.innerHTML = '';
-            container.appendChild(alertaDiv);
-
-            // Auto cerrar después de 5 segundos
-            setTimeout(() => {
-                alertaDiv.remove();
-            }, 5000);
-        }
-
-        // Función para mostrar recuperación de contraseña (placeholder)
-        function mostrarRecuperacion() {
-            mostrarAlerta('Función de recuperación de contraseña no implementada aún. Contacta al administrador.', 'info');
-        }
-
-        // Autocompletar usuario si estaba guardado
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUsername = localStorage.getItem('username');
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
-                document.getElementById('remember-me').checked = true;
-            }
-        });
-
-        // Verificar si ya hay sesión activa
-        async function verificarSesion() {
-            try {
-                const response = await fetch('/api/auth/verificar', {
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, rememberMe: false }),
                     credentials: 'include'
                 });
 
-                if (response.ok) {
-                    // Ya hay sesión activa, redirigir
-                    window.location.href = '/index.html';
+                const data = await res.json();
+
+                if (res.ok) {
+                    // ✅ REDIRECCIÓN SEGÚN ROL DEL USUARIO QUE ACABA DE LOGUEARSE
+                    const destino = (data.usuario.rol === 'Admin' || data.usuario.esSupervisor)
+                        ? '/index.html'
+                        : '/panel-empleado.html';
+
+                    window.location.href = destino;
+                } else {
+                    mostrarAlerta(data.mensaje || 'Credenciales incorrectas', 'danger');
+                    resetButton();
                 }
             } catch (error) {
-                // No hacer nada, mostrar login normal
-                console.log('No hay sesión activa');
+                console.error('Error:', error);
+                mostrarAlerta('Error de conexión', 'danger');
+                resetButton();
             }
+        });
+
+        function resetButton() {
+            const btn = document.getElementById('btn-login');
+            btn.disabled = false;
+            document.getElementById('login-text').classList.remove('d-none');
+            document.getElementById('login-spinner').classList.add('d-none');
         }
 
-        // Verificar sesión al cargar la página
-        verificarSesion();
-
-        // Permitir Enter para enviar el formulario
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('login-form').dispatchEvent(new Event('submit'));
-            }
-        });</script>
+        function mostrarAlerta(mensaje, tipo) {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `
+                <div class="alert alert-${tipo} alert-dismissible fade show">
+                    ${mensaje}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

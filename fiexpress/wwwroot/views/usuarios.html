@@ -337,17 +337,24 @@
                     '<span class="badge bg-success">Activo</span>' :
                     '<span class="badge bg-danger">Inactivo</span>'}
                             </div>
+                           
                             <div class="btn-group w-100">
-                                <button class="btn btn-sm btn-outline-primary" onclick="UsuariosModule.editarUsuario(${user.idUsuario})">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </button>
-                                <button class="btn btn-sm btn-outline-warning" onclick="UsuariosModule.cambiarPasswordModal(${user.idUsuario}, '${user.username}')">
-                                    <i class="bi bi-key"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="UsuariosModule.eliminarUsuario(${user.idUsuario}, '${user.username}')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
+    <button class="btn btn-sm btn-outline-primary" onclick="UsuariosModule.editarUsuario(${user.idUsuario})">
+        <i class="bi bi-pencil"></i> Editar
+    </button>
+    <button class="btn btn-sm btn-outline-warning" onclick="UsuariosModule.cambiarPasswordModal(${user.idUsuario}, '${user.username}')">
+        <i class="bi bi-key"></i>
+    </button>
+    ${user.activo ?
+                    `<button class="btn btn-sm btn-outline-danger" onclick="UsuariosModule.eliminarUsuario(${user.idUsuario}, '${user.username}')">
+            <i class="bi bi-trash"></i> Desactivar
+        </button>` :
+                    `<button class="btn btn-sm btn-outline-success" onclick="UsuariosModule.activarUsuario(${user.idUsuario}, '${user.username}')">
+            <i class="bi bi-check-circle"></i> Activar
+        </button>`
+    }
+</div>
+
                         </div>
                     </div>
                 </div>
@@ -396,35 +403,36 @@
         }
 
         // Editar usuario
+        // Editar usuario
         async function editarUsuario(id) {
             console.log('✏️ Editando usuario ID:', id);
             try {
                 const user = await apiCall(`/api/usuarios/${id}`);
                 console.log('✅ Datos del usuario cargados:', user);
 
+                // Rellenar formulario
                 document.getElementById('usuarioId').value = user.idUsuario;
                 document.getElementById('txtUsername').value = user.username;
+                document.getElementById('txtPassword').value = ''; // No se muestra la contraseña actual
                 document.getElementById('chkActivo').checked = user.activo;
 
-                // Mostrar información del empleado (solo lectura)
+                // Mostrar info del empleado (solo lectura)
                 document.getElementById('info-nombre').textContent = user.empleado.nombre;
                 document.getElementById('info-email').textContent = user.empleado.email;
                 document.getElementById('info-departamento').textContent = user.empleado.departamento;
                 document.getElementById('info-rol').textContent = user.empleado.rol;
                 document.getElementById('info-empleado').style.display = 'block';
 
-                // Deshabilitar campo de empleado en edición
-                document.getElementById('selEmpleado').disabled = true;
-                document.getElementById('selEmpleado').innerHTML = `<option value="${user.empleado.idEmpleado}">${user.empleado.nombre} (Actual)</option>`;
+                // ✅ Establecer el IdEmpleado en un campo oculto o en el select (solo lectura visual)
+                const select = document.getElementById('selEmpleado');
+                select.innerHTML = `<option value="${user.empleado.idEmpleado}" selected>${user.empleado.nombre} (${user.empleado.departamento})</option>`;
+                select.disabled = true; // Visualmente deshabilitado, pero el valor se envía
 
                 document.getElementById('modalTitle').textContent = 'Editar Usuario';
-
                 if (!state.modalInstance) {
                     state.modalInstance = new bootstrap.Modal(document.getElementById('modalUsuario'));
                 }
                 state.modalInstance.show();
-
-                console.log('✅ Modal de edición abierto');
             } catch (error) {
                 console.error('❌ Error al cargar usuario:', error);
                 mostrarAlerta('Error al cargar usuario: ' + error.message, 'danger');
@@ -432,9 +440,8 @@
         }
 
         // Guardar usuario
+        // Guardar usuario
         async function guardarUsuario() {
-            console.log('💾 Iniciando guardado de usuario...');
-
             const form = document.getElementById('formUsuario');
             if (!form.checkValidity()) {
                 form.reportValidity();
@@ -442,59 +449,39 @@
             }
 
             const usuarioId = document.getElementById('usuarioId').value;
-            const selEmpleado = document.getElementById('selEmpleado');
-            const txtUsername = document.getElementById('txtUsername');
-            const txtPassword = document.getElementById('txtPassword');
-            const chkActivo = document.getElementById('chkActivo');
-
             const data = {
-                idEmpleado: parseInt(selEmpleado.value),
-                username: txtUsername.value.trim(),
-                password: txtPassword.value,
-                activo: chkActivo.checked
+                IdEmpleado: parseInt(document.getElementById('selEmpleado').value),
+                Username: document.getElementById('txtUsername').value.trim(),
+                Password: document.getElementById('txtPassword').value,
+                // Activo se maneja por el backend o por otro endpoint
             };
-
-            console.log('📋 Datos a enviar:', { ...data, password: '***' });
 
             try {
                 if (usuarioId) {
-                    // Actualizar usuario existente
-                    console.log('🔄 Actualizando usuario ID:', usuarioId);
+                    // ✅ Actualizar con todos los datos
                     await apiCall(`/api/usuarios/${usuarioId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            username: data.username,
-                            activo: data.activo
-                            // No enviar password en la actualización normal
-                        })
+                        body: JSON.stringify(data)
                     });
-                    console.log('✅ Usuario actualizado');
                     mostrarAlerta('Usuario actualizado exitosamente', 'success');
                 } else {
-                    // Crear nuevo usuario
-                    console.log('➕ Creando nuevo usuario');
+                    // Crear nuevo
                     await apiCall('/api/usuarios', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
-                    console.log('✅ Usuario creado');
                     mostrarAlerta('Usuario creado exitosamente', 'success');
                 }
 
-                // Cerrar modal
                 if (state.modalInstance) {
                     state.modalInstance.hide();
                 }
-
-                // Recargar lista
-                console.log('🔄 Recargando lista de usuarios...');
                 await cargarUsuarios();
-                await cargarEmpleadosSinUsuario(); // Actualizar estadísticas
-
+                await cargarEmpleadosSinUsuario();
             } catch (error) {
-                console.error('❌ Error al guardar:', error);
+                console.error('Error al guardar:', error);
                 mostrarAlerta('Error al guardar: ' + error.message, 'danger');
             }
         }
@@ -553,6 +540,19 @@
                 await cargarEmpleadosSinUsuario(); // Actualizar estadísticas
             } catch (error) {
                 mostrarAlerta('Error al desactivar: ' + error.message, 'danger');
+            }
+        }
+
+        // Activar usuario
+        async function activarUsuario(id, username) {
+            if (!confirm(`¿Estás seguro de activar al usuario ${username}?`)) return;
+            try {
+                await apiCall(`/api/usuarios/${id}/activar`, { method: 'PUT' });
+                mostrarAlerta('Usuario activado exitosamente', 'success');
+                await cargarUsuarios();
+                await cargarEmpleadosSinUsuario(); // Actualizar estadísticas
+            } catch (error) {
+                mostrarAlerta('Error al activar: ' + error.message, 'danger');
             }
         }
 
@@ -663,7 +663,8 @@
             guardarUsuario,
             cambiarPasswordModal,
             cambiarPassword,
-            eliminarUsuario
+            eliminarUsuario,
+            activarUsuario 
         };
     })();
 </script>

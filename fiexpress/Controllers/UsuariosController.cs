@@ -205,12 +205,16 @@ namespace fiexpress.Controllers
         }
 
         // PUT: api/usuarios/{id}
+        // PUT: api/usuarios/{id}
+        // PUT: api/usuarios/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UsuarioUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UsuarioCreateDto dto)
         {
             try
             {
-                var usuario = await _context.Usuarios.FindAsync(id);
+                var usuario = await _context.Usuarios
+                    .Include(u => u.Empleado)
+                    .FirstOrDefaultAsync(u => u.idUsuario == id);
 
                 if (usuario == null)
                 {
@@ -224,17 +228,22 @@ namespace fiexpress.Controllers
                     return BadRequest(new { mensaje = "El nombre de usuario ya existe" });
                 }
 
-                usuario.username = dto.Username;
-
-                // Solo actualizar contraseña si se proporciona una nueva
-                if (!string.IsNullOrWhiteSpace(dto.Password))
+                // ✅ Validar que el IdEmpleado coincida (no se puede cambiar)
+                if (dto.IdEmpleado != usuario.idUsuarioEmpleado)
                 {
-                    // TODO: Hash de contraseña
-                    usuario.password = dto.Password;
+                    return BadRequest(new { mensaje = "No se puede cambiar el empleado asignado al usuario" });
                 }
 
-                await _context.SaveChangesAsync();
+                // ✅ Actualizar todos los campos
+                usuario.username = dto.Username;
+                if (!string.IsNullOrWhiteSpace(dto.Password))
+                {
+                    // TODO: Hashear en producción
+                    usuario.password = dto.Password;
+                }
+                usuario.activo = true; // o usa dto.Activo si lo incluyes
 
+                await _context.SaveChangesAsync();
                 return Ok(new { mensaje = "Usuario actualizado exitosamente" });
             }
             catch (Exception ex)
@@ -343,6 +352,8 @@ namespace fiexpress.Controllers
 
         [MaxLength(35)]
         public string Password { get; set; } // Opcional al editar
+
+        public bool Activo { get; set; }
     }
 
     public class CambiarPasswordDto

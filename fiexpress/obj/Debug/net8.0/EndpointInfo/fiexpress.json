@@ -1387,17 +1387,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuarioUpdateDto"
+                "$ref": "#/components/schemas/UsuarioCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuarioUpdateDto"
+                "$ref": "#/components/schemas/UsuarioCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuarioUpdateDto"
+                "$ref": "#/components/schemas/UsuarioCreateDto"
               }
             }
           }
@@ -1830,8 +1830,7 @@
           },
           "fechaIngreso": {
             "type": "string",
-            "format": "date",
-            "nullable": true
+            "format": "date"
           },
           "fotoUrl": {
             "type": "string",
@@ -2630,25 +2629,6 @@
             "maxLength": 35,
             "minLength": 6,
             "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UsuarioUpdateDto": {
-        "required": [
-          "username"
-        ],
-        "type": "object",
-        "properties": {
-          "username": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "password": {
-            "maxLength": 35,
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

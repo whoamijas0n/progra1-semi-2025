@@ -4,364 +4,445 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Estadísticas</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .stats-card {
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+        body {
+            background-color: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-            .stats-card:hover {
-                transform: translateY(-5px);
+        .stats-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+            .stats-header h1 {
+                font-size: 24px;
+                font-weight: 600;
+                color: #2c3e50;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
             }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #0d6efd;
+        .btn-actualizar {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: #3498db;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-actualizar:hover {
+                background: #f8f9fa;
+                border-color: #3498db;
+            }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .stat-label {
-            color: #6c757d;
-            font-size: 0.9rem;
+            font-size: 12px;
+            color: #7f8c8d;
             text-transform: uppercase;
-        }
-
-        .badge-completo {
-            background-color: #28a745;
-        }
-
-        .badge-retraso {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .badge-falta {
-            background-color: #dc3545;
-        }
-
-        .badge-justificado {
-            background-color: #17a2b8;
-        }
-
-        .loading-spinner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
-        }
-
-        .empleado-highlight {
             font-weight: 600;
-            color: #0d6efd;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-loading {
+            width: 60px;
+            height: 60px;
+            display: inline-block;
+        }
+
+        .spinner-blue {
+            color: #3498db;
+        }
+
+        .spinner-green {
+            color: #2ecc71;
+        }
+
+        .spinner-yellow {
+            color: #f1c40f;
+        }
+
+        .spinner-red {
+            color: #e74c3c;
+        }
+
+        .spinner-cyan {
+            color: #1abc9c;
+        }
+
+        .text-blue {
+            color: #3498db;
+        }
+
+        .text-green {
+            color: #2ecc71;
+        }
+
+        .text-yellow {
+            color: #f1c40f;
+        }
+
+        .text-red {
+            color: #e74c3c;
+        }
+
+        .text-cyan {
+            color: #1abc9c;
         }
     </style>
 </head>
 <body>
     <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📊 Panel de Estadísticas de Empleados</h2>
-            <button class="btn btn-outline-primary" onclick="cargarEstadisticas()">
-                🔄 Actualizar Datos
+        <!-- Header -->
+        <div class="stats-header d-flex justify-content-between align-items-center">
+            <h1>
+                <i class="bi bi-bar-chart-fill" style="color: #3498db;"></i>
+                Panel de Estadísticas de Empleados
+            </h1>
+            <button class="btn btn-actualizar" onclick="EstadisticasModule.cargarDatos()">
+                <i class="bi bi-arrow-clockwise"></i>
+                Actualizar Datos
             </button>
         </div>
 
-        <!-- Tarjetas de resumen -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Total Registros</div>
-                    <div class="stat-number" id="totalRegistros">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <!-- Primera fila de estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">TOTAL REGISTROS</div>
+                <div class="stat-value text-blue" id="total-registros">
+                    <div class="spinner-border spinner-blue stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Asistencia Completa</div>
-                    <div class="stat-number text-success" id="totalCompletos">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
+
+            <div class="stat-card">
+                <div class="stat-label">ASISTENCIA COMPLETA</div>
+                <div class="stat-value text-green" id="asistencia-completa">
+                    <div class="spinner-border spinner-green stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Con Retrasos</div>
-                    <div class="stat-number text-warning" id="totalRetrasos">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
+
+            <div class="stat-card">
+                <div class="stat-label">CON RETRASOS</div>
+                <div class="stat-value text-yellow" id="con-retrasos">
+                    <div class="spinner-border spinner-yellow stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Faltas</div>
-                    <div class="stat-number text-danger" id="totalFaltas">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
+
+            <div class="stat-card">
+                <div class="stat-label">FALTAS</div>
+                <div class="stat-value text-red" id="faltas">
+                    <div class="spinner-border spinner-red stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Estadísticas adicionales -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Promedio Min. Trabajados</div>
-                    <div class="stat-number text-info" id="promedioTrabajados" style="font-size: 2rem;">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <!-- Segunda fila de estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">PROMEDIO MIN. TRABAJADOS</div>
+                <div class="stat-value text-cyan" id="promedio-minutos">
+                    <div class="spinner-border spinner-cyan stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">Total Min. Extras</div>
-                    <div class="stat-number text-primary" id="totalExtras" style="font-size: 2rem;">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stats-card bg-light">
-                    <div class="stat-label">% Asistencia General</div>
-                    <div class="stat-number text-success" id="porcentajeAsistencia" style="font-size: 2rem;">
-                        <div class="spinner-border spinner-border-sm" role="status"></div>
-                    </div>
-                </div>
-            </div>
-        </div> 
 
-        <!-- Gráficos -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">📈 Distribución de Estados</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="chartEstados"></canvas>
+            <div class="stat-card">
+                <div class="stat-label">TOTAL MIN. EXTRAS</div>
+                <div class="stat-value text-blue" id="total-extras">
+                    <div class="spinner-border spinner-blue stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">⏱️ Tiempo Promedio por Empleado</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="chartTiempos"></canvas>
+
+            <div class="stat-card">
+                <div class="stat-label">% ASISTENCIA GENERAL</div>
+                <div class="stat-value text-green" id="asistencia-general">
+                    <div class="spinner-border spinner-green stat-loading" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla de registros -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">📋 Registros Detallados</h5>
+        <!-- Tabla de empleados -->
+        <div class="card mt-4" style="display: none;" id="tabla-empleados-container">
+            <div class="card-header bg-white">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-0">Detalle por Empleado</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text"
+                               class="form-control"
+                               id="buscar-empleado"
+                               placeholder="🔍 Buscar por nombre o código..."
+                               style="border-radius: 8px;">
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>ID</th>
-                                <th>Empleado</th>
-                                <th>Fecha</th>
-                                <th>Min. Trabajados</th>
-                                <th>Min. Retraso</th>
-                                <th>Min. Extras</th>
-                                <th>Asistencia</th>
-                                <th>Estado</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th class="text-center">Días Trabajados</th>
+                                <th class="text-center">Min. Retraso</th>
+                                <th class="text-center">Min. Extra</th>
+                                <th class="text-center">% Asistencia</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaEstadisticas">
-                            <tr>
-                                <td colspan="8" class="text-center">
-                                    <div class="loading-spinner">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Cargando...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="tabla-empleados-body">
                         </tbody>
                     </table>
+                </div>
+                <div id="no-resultados" style="display: none;" class="text-center py-4 text-muted">
+                    <i class="bi bi-search" style="font-size: 48px;"></i>
+                    <p class="mt-2">No se encontraron empleados con ese criterio de búsqueda</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Configuración de Toastr
-        toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "3000"
-        };
+        window.EstadisticasModule = (function () {
+            'use strict';
 
-        let chartEstados = null;
-        let chartTiempos = null;
-
-
-    const API_URL = '/api/estadisticas'; 
-        csharp[HttpGet]
-public JsonResult ObtenerEstadisticas()
-        {
-            // Obtener todos los registros de la tabla ESTADISTICA
-            var estadisticas = db.Estadisticas.ToList();
-            return Json(estadisticas, JsonRequestBehavior.AllowGet);
-        }
-
-    
-
-        // Cargar estadísticas al iniciar la página
-        $(document).ready(function () {
-            cargarEstadisticas();
-        });
-
-        function cargarEstadisticas() {
-            toastr.info('Cargando estadísticas...', 'Información');
-
-        
-            // 
-            $.ajax({
-                url: API_URL,
-                method: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // data debe ser un array con la estructura de tu tabla ESTADISTICA
-                    procesarEstadisticas(data);
-                    toastr.success('Estadísticas cargadas correctamente', 'Éxito');
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error al cargar estadísticas:', error);
-                    toastr.error('No se pudieron cargar las estadísticas. Verifica el endpoint.', 'Error');
-
-                    // Mostrar datos de ejemplo para pruebas
-                    mostrarDatosEjemplo();
-                }
-            });
-        }
-
-        function procesarEstadisticas(estadisticas) {
-            if (!estadisticas || estadisticas.length === 0) {
-                mostrarSinDatos();
-                return;
-            }
-
-            actualizarTarjetas(estadisticas);
-            actualizarTabla(estadisticas);
-            actualizarGraficos(estadisticas);
-        }
-
-        function actualizarTarjetas(estadisticas) {
-            const total = estadisticas.length;
-            const completos = estadisticas.filter(e => e.estado_dia === 'COMPLETO').length;
-            const retrasos = estadisticas.filter(e => e.estado_dia === 'RETRASO').length;
-            const faltas = estadisticas.filter(e => e.estado_dia === 'FALTA').length;
-
-            const totalTrabajados = estadisticas.reduce((sum, e) => sum + (e.minutos_trabajados || 0), 0);
-            const promedioTrabajados = total > 0 ? Math.round(totalTrabajados / total) : 0;
-
-            const totalExtras = estadisticas.reduce((sum, e) => sum + (e.minutos_extras || 0), 0);
-
-            const promedioAsistencia = estadisticas.reduce((sum, e) => sum + (e.asistencia || 0), 0) / total;
-            const porcentajeAsistencia = Math.round(promedioAsistencia * 100);
-
-            $('#totalRegistros').text(total);
-            $('#totalCompletos').text(completos);
-            $('#totalRetrasos').text(retrasos);
-            $('#totalFaltas').text(faltas);
-            $('#promedioTrabajados').text(promedioTrabajados + ' min');
-            $('#totalExtras').text(totalExtras + ' min');
-            $('#porcentajeAsistencia').text(porcentajeAsistencia + '%');
-        }
-
-        function actualizarTabla(estadisticas) {
-            const tbody = $('#tablaEstadisticas');
-
-            if (estadisticas.length === 0) {
-                tbody.html('<tr><td colspan="8" class="text-center text-muted">No hay registros disponibles</td></tr>');
-                return;
-            }
-
-            const rows = estadisticas.map(est => `
-                    <tr>
-                        <td>${est.idEstadistica || est.id_estadistica || '-'}</td>
-                        <td><span class="empleado-highlight">#${est.idEmpleado || est.id_empleado || '-'}</span></td>
-                        <td>${formatearFecha(est.fecha)}</td>
-                        <td>${est.minutos_trabajados || est.minutosTrabajados || 0} min</td>
-                        <td>${est.minutos_retraso || est.minutosRetraso || 0} min</td>
-                        <td>${est.minutos_extras || est.minutosExtras || 0} min</td>
-                        <td>${est.asistencia || 0}</td>
-                        <td><span class="badge badge-${(est.estado_dia || est.estadoDia || '').toLowerCase()}">${est.estado_dia || est.estadoDia || 'N/A'}</span></td>
-                    </tr>
-                `).join('');
-
-            tbody.html(rows);
-        }
-
-        function actualizarGraficos(estadisticas) {
-            actualizarGraficoEstados(estadisticas);
-            actualizarGraficoTiempos(estadisticas);
-        }
-
-        function actualizarGraficoEstados(estadisticas) {
-            const ctx = document.getElementById('chartEstados').getContext('2d');
-
-            const conteo = {
-                COMPLETO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'COMPLETO').length,
-                RETRASO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'RETRASO').length,
-                FALTA: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'FALTA').length,
-                JUSTIFICADO: estadisticas.filter(e => (e.estado_dia || e.estadoDia) === 'JUSTIFICADO').length
+            const state = {
+                generales: null
             };
 
-            if (chartEstados) {
-                chartEstados.destroy();
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error:', error);
+                    throw error;
+                }
             }
 
-            chartEstados = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Completo', 'Retraso', 'Falta', 'Justificado'],
-                    datasets: [{
-                        data: [conteo.COMPLETO, conteo.RETRASO, conteo.FALTA, conteo.JUSTIFICADO],
-                        backgroundColor: [
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(255, 193, 7, 0.8)',
-                            'rgba(220, 53, 69, 0.8)',
-                            'rgba(23, 162, 184, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgb(40, 167, 69)',
-                            'rgb(255, 193, 7)',
-                            'rgb(220, 53, 69)',
-                            'rgb(23, 162, 184)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
+            // Cargar Estadísticas Generales
+            async function cargarEstadisticasGenerales() {
+                try {
+                    state.generales = await apiCall('/api/estadisticas/generales?periodo=mes');
+                    calcularYMostrarEstadisticas();
+                } catch (error) {
+                    console.error('Error al cargar estadísticas:', error);
+                    mostrarError();
                 }
-            });
-        }
+            }
 
-        function actualizarGraficoTiempos(estadisticas) {
-            const ctx = document.getElementById('chartTie
+            // Calcular y mostrar estadísticas
+            function calcularYMostrarEstadisticas() {
+                if (!state.generales) return;
+
+                const { resumen, empleados } = state.generales;
+
+                // TOTAL REGISTROS - Total de días trabajados por todos los empleados
+                document.getElementById('total-registros').textContent = resumen.totalDiasTrabajados;
+
+                // ASISTENCIA COMPLETA - Empleados con 100% asistencia y sin retrasos
+                const asistenciaCompleta = empleados.filter(emp => {
+                    const porcentaje = emp.totalDias > 0 ? (emp.diasTrabajados / emp.totalDias) * 100 : 0;
+                    return porcentaje === 100 && emp.minutosRetraso === 0;
+                }).length;
+                document.getElementById('asistencia-completa').textContent = asistenciaCompleta;
+
+                // CON RETRASOS - Empleados que tienen minutos de retraso
+                const conRetrasos = empleados.filter(emp => emp.minutosRetraso > 0).length;
+                document.getElementById('con-retrasos').textContent = conRetrasos;
+
+                // FALTAS - Suma de días no trabajados
+                const totalFaltas = empleados.reduce((sum, emp) => {
+                    return sum + (emp.totalDias - emp.diasTrabajados);
+                }, 0);
+                document.getElementById('faltas').textContent = totalFaltas;
+
+                // PROMEDIO MIN. TRABAJADOS - Promedio de minutos trabajados por empleado
+                // Asumiendo 8 horas (480 min) por día trabajado
+                const totalMinutosTrabajados = empleados.reduce((sum, emp) => {
+                    return sum + (emp.diasTrabajados * 480) + emp.minutosExtra - emp.minutosRetraso;
+                }, 0);
+                const promedioMinutos = empleados.length > 0
+                    ? Math.round(totalMinutosTrabajados / empleados.length)
+                    : 0;
+                document.getElementById('promedio-minutos').textContent = promedioMinutos;
+
+                // TOTAL MIN. EXTRAS
+                document.getElementById('total-extras').textContent = resumen.totalMinutosExtra;
+
+                // % ASISTENCIA GENERAL
+                document.getElementById('asistencia-general').textContent = resumen.porcentajeAsistenciaGeneral + '%';
+
+                // Opcional: Llenar tabla de empleados
+                llenarTablaEmpleados(empleados);
+            }
+
+            // Llenar tabla de empleados (opcional)
+            function llenarTablaEmpleados(empleados) {
+                const tbody = document.getElementById('tabla-empleados-body');
+                if (!tbody) return;
+
+                tbody.innerHTML = empleados.map(emp => {
+                    const porcentaje = emp.totalDias > 0
+                        ? ((emp.diasTrabajados / emp.totalDias) * 100).toFixed(1)
+                        : 0;
+
+                    return `
+                            <tr>
+                                <td><span class="badge bg-secondary">${emp.codigo}</span></td>
+                                <td><strong>${emp.nombre}</strong></td>
+                                <td class="text-center">${emp.diasTrabajados} / ${emp.totalDias}</td>
+                                <td class="text-center">
+                                    <span class="badge ${emp.minutosRetraso > 0 ? 'bg-warning text-dark' : 'bg-light text-dark'}">
+                                        ${emp.minutosRetraso}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge ${emp.minutosExtra > 0 ? 'bg-success' : 'bg-light text-dark'}">
+                                        ${emp.minutosExtra}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-${porcentaje >= 95 ? 'success' : porcentaje >= 80 ? 'warning text-dark' : 'danger'}">
+                                        ${porcentaje}%
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                }).join('');
+
+                // Mostrar tabla si hay datos
+                document.getElementById('tabla-empleados-container').style.display = 'block';
+            }
+
+            // Mostrar error en las tarjetas
+            function mostrarError() {
+                const ids = [
+                    'total-registros',
+                    'asistencia-completa',
+                    'con-retrasos',
+                    'faltas',
+                    'promedio-minutos',
+                    'total-extras',
+                    'asistencia-general'
+                ];
+
+                ids.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.innerHTML = '<i class="bi bi-exclamation-triangle"></i>';
+                        element.style.fontSize = '32px';
+                    }
+                });
+            }
+
+            // Cargar datos
+            async function cargarDatos() {
+                // Mostrar spinners
+                const ids = [
+                    'total-registros',
+                    'asistencia-completa',
+                    'con-retrasos',
+                    'faltas',
+                    'promedio-minutos',
+                    'total-extras',
+                    'asistencia-general'
+                ];
+
+                const spinnerClasses = [
+                    'spinner-blue',
+                    'spinner-green',
+                    'spinner-yellow',
+                    'spinner-red',
+                    'spinner-cyan',
+                    'spinner-blue',
+                    'spinner-green'
+                ];
+
+                ids.forEach((id, index) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.innerHTML = `
+                                <div class="spinner-border ${spinnerClasses[index]} stat-loading" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            `;
+                    }
+                });
+
+                await cargarEstadisticasGenerales();
+            }
+
+            // Inicializar
+            async function init() {
+                await cargarDatos();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            return {
+                cargarDatos
+            };
+        })();
+    </script>
+</body>
+</html>

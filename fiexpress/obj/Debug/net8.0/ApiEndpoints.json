@@ -895,7 +895,7 @@
       },
       {
         "Name": "dto",
-        "Type": "fiexpress.Controllers.UsuarioUpdateDto",
+        "Type": "fiexpress.Controllers.UsuarioCreateDto",
         "IsRequired": true
       }
     ],

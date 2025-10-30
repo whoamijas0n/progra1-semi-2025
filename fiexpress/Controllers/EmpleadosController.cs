@@ -183,7 +183,7 @@ namespace fiexpress.Controllers
                     email = dto.Email,
                     telefono = dto.Telefono,
                     fecha_nacimiento = dto.FechaNacimiento,
-                    fecha_ingreso = dto.FechaIngreso ?? DateOnly.FromDateTime(DateTime.Now),
+                    fecha_ingreso = dto.FechaIngreso, // 👈 Directo, sin null
                     foto_url = dto.FotoUrl ?? "/images/default-avatar.png",
                     activo = true,
                     idDepartamento = dto.IdDepartamento,
@@ -477,7 +477,7 @@ namespace fiexpress.Controllers
         public string Email { get; set; }
         public string Telefono { get; set; }
         public DateOnly FechaNacimiento { get; set; }
-        public DateOnly? FechaIngreso { get; set; }
+        public DateOnly FechaIngreso { get; set; } // 👈 Ya no es nullable
         public string? FotoUrl { get; set; }
         public int IdDepartamento { get; set; }
         public int IdRol { get; set; }

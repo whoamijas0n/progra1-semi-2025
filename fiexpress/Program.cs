@@ -1,5 +1,6 @@
 ﻿using fiexpress.Data;
 using fiexpress.Models;
+using fiexpress.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -69,6 +70,7 @@ builder.Services.AddDbContext<MyDbContext>(options =>
     }
 });
 
+builder.Services.AddScoped<IEstadisticasService, EstadisticasService>();
 // ✅ CORREGIDO: Agregar cache distribuido ANTES de sesiones
 builder.Services.AddDistributedMemoryCache();
 

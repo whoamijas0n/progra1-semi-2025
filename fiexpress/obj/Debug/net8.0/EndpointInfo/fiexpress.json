@@ -432,10 +432,42 @@
         }
       }
     },
-    "/api/Estadisticas/personales": {
+    "/api/Estadisticas/generales": {
       "get": {
         "tags": [
           "Estadisticas"
+        ],
+        "parameters": [
+          {
+            "name": "inicio",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fin",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "empleadoId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "departamentoId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -444,18 +476,54 @@
         }
       }
     },
-    "/api/Estadisticas/generales": {
+    "/api/Estadisticas/empleado/{id}": {
       "get": {
         "tags": [
           "Estadisticas"
         ],
         "parameters": [
           {
-            "name": "periodo",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "inicio",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": "mes"
+              "type": "string"
+            }
+          },
+          {
+            "name": "fin",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Estadisticas/procesar-dia": {
+      "post": {
+        "tags": [
+          "Estadisticas"
+        ],
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1189,17 +1257,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             }
           }
@@ -1252,17 +1320,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Turno"
+                "$ref": "#/components/schemas/TurnoCreateDto"
               }
             }
           }
@@ -1274,6 +1342,29 @@
         }
       },
       "delete": {
+        "tags": [
+          "Turnos"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Turnos/{id}/activar": {
+      "put": {
         "tags": [
           "Turnos"
         ],
@@ -1549,52 +1640,6 @@
   },
   "components": {
     "schemas": {
-      "Auditoria": {
-        "required": [
-          "accion",
-          "descripcion",
-          "ip"
-        ],
-        "type": "object",
-        "properties": {
-          "idAuditoria": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idAuditoriaUsuario": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "usuario": {
-            "$ref": "#/components/schemas/Usuario"
-          },
-          "accion": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "entidad_afectada": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          },
-          "fecha_accion": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "ip": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "descripcion": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
       "CambiarPasswordDto": {
         "required": [
           "nuevaPassword"
@@ -1605,51 +1650,6 @@
             "maxLength": 35,
             "minLength": 6,
             "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Departamento": {
-        "required": [
-          "codigo",
-          "nombre"
-        ],
-        "type": "object",
-        "properties": {
-          "idDepartamento": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "nombre": {
-            "maxLength": 70,
-            "minLength": 1,
-            "type": "string"
-          },
-          "codigo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "activo": {
-            "type": "boolean"
-          },
-          "fecha_creacion": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "empleados": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Empleado"
-            },
-            "nullable": true
-          },
-          "supervisores": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Supervisor"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1674,133 +1674,6 @@
           "nombre": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Empleado": {
-        "required": [
-          "codigo_empleado",
-          "email",
-          "nombre",
-          "telefono"
-        ],
-        "type": "object",
-        "properties": {
-          "idEmpleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idDepartamento": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "departamento": {
-            "$ref": "#/components/schemas/Departamento"
-          },
-          "idRol": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "rol": {
-            "$ref": "#/components/schemas/Rol"
-          },
-          "codigo_empleado": {
-            "maxLength": 35,
-            "minLength": 1,
-            "type": "string"
-          },
-          "nombre": {
-            "maxLength": 65,
-            "minLength": 1,
-            "type": "string"
-          },
-          "email": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string",
-            "format": "email"
-          },
-          "telefono": {
-            "maxLength": 9,
-            "minLength": 1,
-            "type": "string"
-          },
-          "fecha_nacimiento": {
-            "type": "string",
-            "format": "date"
-          },
-          "fecha_ingreso": {
-            "type": "string",
-            "format": "date"
-          },
-          "fecha_baja": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "foto_url": {
-            "maxLength": 150,
-            "type": "string",
-            "nullable": true
-          },
-          "activo": {
-            "type": "boolean"
-          },
-          "horarios": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Horario"
-            },
-            "nullable": true
-          },
-          "fichajes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Fichaje"
-            },
-            "nullable": true
-          },
-          "estadisticas": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Estadistica"
-            },
-            "nullable": true
-          },
-          "permisos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Permiso"
-            },
-            "nullable": true
-          },
-          "rfids": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Rfid"
-            },
-            "nullable": true
-          },
-          "notificaciones": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Notificacion"
-            },
-            "nullable": true
-          },
-          "incidencias": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Incidencia"
-            },
-            "nullable": true
-          },
-          "supervisor": {
-            "$ref": "#/components/schemas/Supervisor"
-          },
-          "usuario": {
-            "$ref": "#/components/schemas/Usuario"
           }
         },
         "additionalProperties": false
@@ -1873,93 +1746,6 @@
         },
         "additionalProperties": false
       },
-      "Estadistica": {
-        "type": "object",
-        "properties": {
-          "idEstadistica": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idEmpleadoEstadistica": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "fecha": {
-            "type": "string",
-            "format": "date"
-          },
-          "minutos_trabajados": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "minutos_retraso": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "minutos_extra": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "asistencia": {
-            "type": "boolean"
-          },
-          "estado_dia": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Fichaje": {
-        "required": [
-          "tipo"
-        ],
-        "type": "object",
-        "properties": {
-          "idFichaje": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idEmpleadoFichaje": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "fecha": {
-            "type": "string",
-            "format": "date"
-          },
-          "hora": {
-            "type": "string",
-            "format": "time"
-          },
-          "tipo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "ip": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          },
-          "observacion": {
-            "maxLength": 100,
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "FichajeRFIDRequest": {
         "type": "object",
         "properties": {
@@ -1970,78 +1756,6 @@
           "ip": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Historial": {
-        "type": "object",
-        "properties": {
-          "idHistorial": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idHistorialUsuario": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "usuario": {
-            "$ref": "#/components/schemas/Usuario"
-          },
-          "tabla_afectada": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          },
-          "tipo_cambio": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          },
-          "fecha_cambio": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descripcion": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Horario": {
-        "type": "object",
-        "properties": {
-          "idHorario": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idHorario_De_Empleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "idTurno": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "turno": {
-            "$ref": "#/components/schemas/Turno"
-          },
-          "fecha_inicio": {
-            "type": "string",
-            "format": "date"
-          },
-          "fecha_fin": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "activo": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2095,110 +1809,6 @@
         },
         "additionalProperties": false
       },
-      "Incidencia": {
-        "required": [
-          "tipo"
-        ],
-        "type": "object",
-        "properties": {
-          "idIncidencia": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idIncidenciaEmpleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "idIncidenciaSupervisor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "supervisor": {
-            "$ref": "#/components/schemas/Supervisor"
-          },
-          "fecha": {
-            "type": "string",
-            "format": "date"
-          },
-          "descripcion": {
-            "maxLength": 100,
-            "type": "string",
-            "nullable": true
-          },
-          "tipo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "resuelta": {
-            "type": "boolean"
-          },
-          "fecha_de_resolucion": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "justificaciones": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Justificacion"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Justificacion": {
-        "required": [
-          "estado",
-          "motivo"
-        ],
-        "type": "object",
-        "properties": {
-          "idJustificacion": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idIncidencia": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "incidencia": {
-            "$ref": "#/components/schemas/Incidencia"
-          },
-          "idJustificacionSupervisor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "supervisor": {
-            "$ref": "#/components/schemas/Supervisor"
-          },
-          "documento_url": {
-            "maxLength": 50,
-            "type": "string",
-            "nullable": true
-          },
-          "motivo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "estado": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "fecha_revision": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "LoginRequest": {
         "type": "object",
         "properties": {
@@ -2212,44 +1822,6 @@
           },
           "rememberMe": {
             "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Notificacion": {
-        "required": [
-          "mensaje",
-          "titulo"
-        ],
-        "type": "object",
-        "properties": {
-          "idNotificacion": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idNotificacionEmpleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "titulo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "mensaje": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "leido": {
-            "type": "boolean"
-          },
-          "fecha_envio": {
-            "type": "string",
-            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -2268,94 +1840,6 @@
           "mensaje": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Permiso": {
-        "required": [
-          "estado",
-          "motivo",
-          "tipo"
-        ],
-        "type": "object",
-        "properties": {
-          "idPermiso": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idPermisoEmpleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "idPermisoSupervisor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "supervisor": {
-            "$ref": "#/components/schemas/Supervisor"
-          },
-          "tipo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "fecha_inicio": {
-            "type": "string",
-            "format": "date"
-          },
-          "fecha_fin": {
-            "type": "string",
-            "format": "date"
-          },
-          "estado": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "motivo": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "fecha_solicitud": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Rfid": {
-        "required": [
-          "codigo_rfid"
-        ],
-        "type": "object",
-        "properties": {
-          "idRfid": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "codigo_rfid": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "idEmpleadoAsignado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "fecha_asignacion": {
-            "type": "string",
-            "format": "date"
-          },
-          "activo": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2398,40 +1882,6 @@
         },
         "additionalProperties": false
       },
-      "Rol": {
-        "required": [
-          "descripcion",
-          "nombre"
-        ],
-        "type": "object",
-        "properties": {
-          "idRol": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "nombre": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "descripcion": {
-            "maxLength": 100,
-            "minLength": 1,
-            "type": "string"
-          },
-          "activo": {
-            "type": "boolean"
-          },
-          "empleados": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Empleado"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "RolDto": {
         "type": "object",
         "properties": {
@@ -2446,76 +1896,20 @@
         },
         "additionalProperties": false
       },
-      "Supervisor": {
+      "TurnoCreateDto": {
         "type": "object",
         "properties": {
-          "idSupervisor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idEmpleado_supervisor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "idDepartamento_supervisando": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "departamento": {
-            "$ref": "#/components/schemas/Departamento"
-          },
-          "activo": {
-            "type": "boolean"
-          },
-          "incidencias": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Incidencia"
-            },
-            "nullable": true
-          },
-          "permisos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Permiso"
-            },
-            "nullable": true
-          },
-          "justificaciones": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Justificacion"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Turno": {
-        "required": [
-          "nombre"
-        ],
-        "type": "object",
-        "properties": {
-          "idTurno": {
-            "type": "integer",
-            "format": "int32"
-          },
           "nombre": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "hora_entrada": {
             "type": "string",
-            "format": "time"
+            "nullable": true
           },
           "hora_salida": {
             "type": "string",
-            "format": "time"
+            "nullable": true
           },
           "tolerancia_minutos": {
             "type": "integer",
@@ -2544,66 +1938,6 @@
           },
           "activo": {
             "type": "boolean"
-          },
-          "horarios": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Horario"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Usuario": {
-        "required": [
-          "password",
-          "username"
-        ],
-        "type": "object",
-        "properties": {
-          "idUsuario": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "idUsuarioEmpleado": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empleado": {
-            "$ref": "#/components/schemas/Empleado"
-          },
-          "username": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "password": {
-            "maxLength": 35,
-            "minLength": 1,
-            "type": "string"
-          },
-          "ultimo_login": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "activo": {
-            "type": "boolean"
-          },
-          "auditorias": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Auditoria"
-            },
-            "nullable": true
-          },
-          "historiales": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Historial"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false

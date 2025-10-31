@@ -1,448 +1,711 @@
-﻿<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Estadísticas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        .stats-header {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        }
-
-            .stats-header h1 {
-                font-size: 24px;
-                font-weight: 600;
-                color: #2c3e50;
-                margin: 0;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-        .btn-actualizar {
-            background: white;
-            border: 1px solid #e0e0e0;
-            color: #3498db;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .btn-actualizar:hover {
-                background: #f8f9fa;
-                border-color: #3498db;
-            }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 42px;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .stat-loading {
-            width: 60px;
-            height: 60px;
-            display: inline-block;
-        }
-
-        .spinner-blue {
-            color: #3498db;
-        }
-
-        .spinner-green {
-            color: #2ecc71;
-        }
-
-        .spinner-yellow {
-            color: #f1c40f;
-        }
-
-        .spinner-red {
-            color: #e74c3c;
-        }
-
-        .spinner-cyan {
-            color: #1abc9c;
-        }
-
-        .text-blue {
-            color: #3498db;
-        }
-
-        .text-green {
-            color: #2ecc71;
-        }
-
-        .text-yellow {
-            color: #f1c40f;
-        }
-
-        .text-red {
-            color: #e74c3c;
-        }
-
-        .text-cyan {
-            color: #1abc9c;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid py-4">
-        <!-- Header -->
-        <div class="stats-header d-flex justify-content-between align-items-center">
-            <h1>
-                <i class="bi bi-bar-chart-fill" style="color: #3498db;"></i>
-                Panel de Estadísticas de Empleados
-            </h1>
-            <button class="btn btn-actualizar" onclick="EstadisticasModule.cargarDatos()">
-                <i class="bi bi-arrow-clockwise"></i>
-                Actualizar Datos
-            </button>
+﻿<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-graph-up text-primary"></i>
+                Panel de Estadísticas
+            </h2>
+            <p class="text-muted">Estadísticas automáticas basadas en horarios y fichajes</p>
         </div>
+    </div>
 
-        <!-- Primera fila de estadísticas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">TOTAL REGISTROS</div>
-                <div class="stat-value text-blue" id="total-registros">
-                    <div class="spinner-border spinner-blue stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">ASISTENCIA COMPLETA</div>
-                <div class="stat-value text-green" id="asistencia-completa">
-                    <div class="spinner-border spinner-green stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">CON RETRASOS</div>
-                <div class="stat-value text-yellow" id="con-retrasos">
-                    <div class="spinner-border spinner-yellow stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">FALTAS</div>
-                <div class="stat-value text-red" id="faltas">
-                    <div class="spinner-border spinner-red stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Segunda fila de estadísticas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">PROMEDIO MIN. TRABAJADOS</div>
-                <div class="stat-value text-cyan" id="promedio-minutos">
-                    <div class="spinner-border spinner-cyan stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">TOTAL MIN. EXTRAS</div>
-                <div class="stat-value text-blue" id="total-extras">
-                    <div class="spinner-border spinner-blue stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">% ASISTENCIA GENERAL</div>
-                <div class="stat-value text-green" id="asistencia-general">
-                    <div class="spinner-border spinner-green stat-loading" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla de empleados -->
-        <div class="card mt-4" style="display: none;" id="tabla-empleados-container">
-            <div class="card-header bg-white">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h5 class="mb-0">Detalle por Empleado</h5>
-                    </div>
-                    <div class="col-md-6">
+    <!-- BARRA DE BÚSQUEDA RÁPIDA -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <label class="form-label"><strong>🔍 Búsqueda Rápida de Empleados</strong></label>
+                    <div class="input-group">
                         <input type="text"
                                class="form-control"
-                               id="buscar-empleado"
-                               placeholder="🔍 Buscar por nombre o código..."
-                               style="border-radius: 8px;">
+                               id="busqueda-rapida"
+                               placeholder="Buscar por nombre, código o departamento..."
+                               style="border-right: none;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="EstadisticasModule.limpiarBusqueda()">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
                     </div>
+                    <small class="text-muted">Escribe para filtrar la lista de empleados en tiempo real</small>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th class="text-center">Días Trabajados</th>
-                                <th class="text-center">Min. Retraso</th>
-                                <th class="text-center">Min. Extra</th>
-                                <th class="text-center">% Asistencia</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-empleados-body">
-                        </tbody>
-                    </table>
-                </div>
-                <div id="no-resultados" style="display: none;" class="text-center py-4 text-muted">
-                    <i class="bi bi-search" style="font-size: 48px;"></i>
-                    <p class="mt-2">No se encontraron empleados con ese criterio de búsqueda</p>
+                <div class="col-md-4">
+                    <label class="form-label"><strong>📊 Vista Rápida</strong></label>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="EstadisticasModule.mostrarTodos()">
+                            <i class="bi bi-people"></i> Ver Todos
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        window.EstadisticasModule = (function () {
-            'use strict';
+    <!-- Filtros principales (existentes) -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Inicio</label>
+                    <input type="date" class="form-control" id="filtro-inicio" value="">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Fin</label>
+                    <input type="date" class="form-control" id="filtro-fin" value="">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Empleado</label>
+                    <select class="form-select" id="filtro-empleado">
+                        <option value="">Todos los empleados</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Departamento</label>
+                    <select class="form-select" id="filtro-departamento">
+                        <option value="">Todos los departamentos</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="EstadisticasModule.cargarEstadisticas()">
+                            <i class="bi bi-filter"></i> Aplicar Filtros
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="EstadisticasModule.limpiarFiltros()">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </button>
+                        <button class="btn btn-success" onclick="EstadisticasModule.exportarReporte()">
+                            <i class="bi bi-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            const state = {
-                generales: null
-            };
+    <!-- Resto del código permanece igual... -->
+    <!-- Resumen General -->
+    <div class="row g-4 mb-4" id="resumen-general" style="display: none;">
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Empleados</h6>
+                    <h3 id="total-empleados">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Asistencia Promedio</h6>
+                    <h3 class="text-success" id="asistencia-promedio">0%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Horas de Retraso</h6>
+                    <h3 class="text-warning" id="total-retraso">0h</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Horas Extra</h6>
+                    <h3 class="text-info" id="total-extra">0h</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // API Helper
-            async function apiCall(url, options = {}) {
-                try {
-                    const response = await fetch(url, {
-                        credentials: 'include',
-                        ...options
-                    });
+    <!-- Estadísticas Detalladas -->
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Estadísticas por Empleado
+                <span class="badge bg-primary ms-2" id="contador-empleados">0</span>
+            </h5>
+            <div>
+                <span class="text-muted me-3 small" id="ultima-actualizacion"></span>
+                <button class="btn btn-outline-primary btn-sm" onclick="EstadisticasModule.cargarEstadisticas()">
+                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="25%">Empleado</th>
+                            <th width="15%">Días Trabajados</th>
+                            <th width="15%">Asistencia</th>
+                            <th width="15%">Retraso Total</th>
+                            <th width="15%">Horas Extra</th>
+                            <th width="15%">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-estadisticas">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando estadísticas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    if (!response.ok) {
-                        throw new Error(`Error ${response.status}`);
-                    }
+<!-- Modal Detalle Empleado -->
+<div class="modal fade" id="modalDetalleEmpleado" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEmpleadoTitle">Detalle de Estadísticas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="detalle-empleado-content">
+                    <!-- Contenido cargado dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    return await response.json();
-                } catch (error) {
-                    console.error('Error:', error);
-                    throw error;
+<script>
+    // Módulo Completo de Estadísticas - CON BÚSQUEDA MEJORADA
+    window.EstadisticasModule = (function () {
+        'use strict';
+
+        const state = {
+            estadisticas: null,
+            empleados: [],
+            departamentos: [],
+            modalDetalle: null,
+            estadisticasOriginales: null // Para guardar datos originales
+        };
+
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                mostrarLoading();
+
+                const inicio = document.getElementById('filtro-inicio').value;
+                const fin = document.getElementById('filtro-fin').value;
+                const empleadoId = document.getElementById('filtro-empleado').value;
+                const departamentoId = document.getElementById('filtro-departamento').value;
+
+                if (!inicio || !fin) {
+                    mostrarAlerta('Selecciona un rango de fechas', 'warning');
+                    return;
                 }
+
+                let url = `/api/estadisticas/generales?inicio=${inicio}&fin=${fin}`;
+                if (empleadoId) url += `&empleadoId=${empleadoId}`;
+                if (departamentoId) url += `&departamentoId=${departamentoId}`;
+
+                const response = await fetchAuth(url);
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                state.estadisticas = await response.json();
+                state.estadisticasOriginales = JSON.parse(JSON.stringify(state.estadisticas)); // Guardar copia
+
+                mostrarEstadisticas();
+                actualizarResumenGeneral();
+                actualizarTimestamp();
+
+            } catch (error) {
+                console.error('❌ Error al cargar estadísticas:', error);
+                mostrarError('Error al cargar estadísticas: ' + error.message);
+            }
+        }
+
+        // Mostrar estadísticas en tabla
+        function mostrarEstadisticas() {
+            const tbody = document.getElementById('tabla-estadisticas');
+            const contador = document.getElementById('contador-empleados');
+
+            // Usar datos originales si existen
+            const datosAMostrar = state.estadisticasOriginales || state.estadisticas;
+
+            if (!datosAMostrar || !datosAMostrar.estadisticasDetalladas) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay datos</td></tr>';
+                return;
             }
 
-            // Cargar Estadísticas Generales
-            async function cargarEstadisticasGenerales() {
-                try {
-                    state.generales = await apiCall('/api/estadisticas/generales?periodo=mes');
-                    calcularYMostrarEstadisticas();
-                } catch (error) {
-                    console.error('Error al cargar estadísticas:', error);
-                    mostrarError();
+            const estadisticas = datosAMostrar.estadisticasDetalladas;
+            contador.textContent = estadisticas.length;
+
+            if (estadisticas.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        <h5>No hay estadísticas para mostrar</h5>
+                        <p class="mb-0">No se encontraron datos con los filtros aplicados</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = estadisticas.map(est => `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${est.empleado.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(est.empleado.nombre) + '&size=100'}"
+                             class="rounded-circle me-3"
+                             style="width: 40px; height: 40px; object-fit: cover;"
+                             alt="${est.empleado.nombre}">
+                        <div>
+                            <strong>${est.empleado.nombre}</strong>
+                            <br>
+                            <small class="text-muted">${est.empleado.codigo_empleado} • ${est.empleado.departamento}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <strong>${est.diasTrabajados}</strong> / ${est.totalDias} días
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                            <div class="progress-bar ${est.porcentajeAsistencia >= 90 ? 'bg-success' : est.porcentajeAsistencia >= 70 ? 'bg-warning' : 'bg-danger'}" 
+                                 style="width: ${est.porcentajeAsistencia}%">
+                            </div>
+                        </div>
+                        <span class="small">${est.porcentajeAsistencia}%</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge ${est.totalMinutosRetraso > 60 ? 'bg-danger' : est.totalMinutosRetraso > 30 ? 'bg-warning' : 'bg-secondary'}">
+                        ${Math.floor(est.totalMinutosRetraso / 60)}h ${est.totalMinutosRetraso % 60}m
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-info">
+                        ${Math.floor(est.totalMinutosExtra / 60)}h ${est.totalMinutosExtra % 60}m
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm" 
+                            onclick="EstadisticasModule.verDetalleEmpleado(${est.empleado.idEmpleado})"
+                            title="Ver detalle">
+                        <i class="bi bi-eye"></i> Detalle
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        // Mostrar estadísticas filtradas por búsqueda
+        function mostrarEstadisticasFiltradas(estadisticasFiltradas) {
+            const tbody = document.getElementById('tabla-estadisticas');
+            const contador = document.getElementById('contador-empleados');
+
+            contador.textContent = estadisticasFiltradas.length;
+
+            if (estadisticasFiltradas.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-search fs-1 d-block mb-2"></i>
+                        <h5>No se encontraron empleados</h5>
+                        <p class="mb-0">No hay resultados para tu búsqueda</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = estadisticasFiltradas.map(est => `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${est.empleado.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(est.empleado.nombre) + '&size=100'}"
+                             class="rounded-circle me-3"
+                             style="width: 40px; height: 40px; object-fit: cover;"
+                             alt="${est.empleado.nombre}">
+                        <div>
+                            <strong>${est.empleado.nombre}</strong>
+                            <br>
+                            <small class="text-muted">${est.empleado.codigo_empleado} • ${est.empleado.departamento}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <strong>${est.diasTrabajados}</strong> / ${est.totalDias} días
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                            <div class="progress-bar ${est.porcentajeAsistencia >= 90 ? 'bg-success' : est.porcentajeAsistencia >= 70 ? 'bg-warning' : 'bg-danger'}" 
+                                 style="width: ${est.porcentajeAsistencia}%">
+                            </div>
+                        </div>
+                        <span class="small">${est.porcentajeAsistencia}%</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge ${est.totalMinutosRetraso > 60 ? 'bg-danger' : est.totalMinutosRetraso > 30 ? 'bg-warning' : 'bg-secondary'}">
+                        ${Math.floor(est.totalMinutosRetraso / 60)}h ${est.totalMinutosRetraso % 60}m
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-info">
+                        ${Math.floor(est.totalMinutosExtra / 60)}h ${est.totalMinutosExtra % 60}m
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm" 
+                            onclick="EstadisticasModule.verDetalleEmpleado(${est.empleado.idEmpleado})"
+                            title="Ver detalle">
+                        <i class="bi bi-eye"></i> Detalle
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        // Ver detalle de empleado
+        async function verDetalleEmpleado(empleadoId) {
+            try {
+                const inicio = document.getElementById('filtro-inicio').value;
+                const fin = document.getElementById('filtro-fin').value;
+
+                if (!inicio || !fin) {
+                    mostrarAlerta('Selecciona un rango de fechas primero', 'warning');
+                    return;
                 }
+
+                const response = await fetchAuth(`/api/estadisticas/empleado/${empleadoId}?inicio=${inicio}&fin=${fin}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const detalle = await response.json();
+                mostrarModalDetalle(detalle);
+
+            } catch (error) {
+                console.error('❌ Error al cargar detalle:', error);
+                mostrarAlerta('Error al cargar detalle: ' + error.message, 'danger');
             }
+        }
 
-            // Calcular y mostrar estadísticas
-            function calcularYMostrarEstadisticas() {
-                if (!state.generales) return;
+        // Mostrar modal de detalle
+        function mostrarModalDetalle(detalle) {
+            const content = document.getElementById('detalle-empleado-content');
 
-                const { resumen, empleados } = state.generales;
+            content.innerHTML = `
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h4>${detalle.empleado.nombre}</h4>
+                    <p class="text-muted mb-0">${detalle.empleado.codigo_empleado} • ${detalle.empleado.departamento}</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <img src="${detalle.empleado.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(detalle.empleado.nombre) + '&size=200'}"
+                         class="rounded-circle"
+                         style="width: 80px; height: 80px; object-fit: cover;"
+                         alt="${detalle.empleado.nombre}">
+                </div>
+            </div>
 
-                // TOTAL REGISTROS - Total de días trabajados por todos los empleados
-                document.getElementById('total-registros').textContent = resumen.totalDiasTrabajados;
+            <!-- Resumen -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">${detalle.resumen.diasTrabajados}/${detalle.resumen.totalDias}</h3>
+                            <small class="text-muted">Días Trabajados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">${detalle.resumen.porcentajeAsistencia}%</h3>
+                            <small class="text-muted">Asistencia</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">${Math.floor(detalle.resumen.totalMinutosRetraso / 60)}h</h3>
+                            <small class="text-muted">Retraso Total</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">${Math.floor(detalle.resumen.totalMinutosExtra / 60)}h</h3>
+                            <small class="text-muted">Horas Extra</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                // ASISTENCIA COMPLETA - Empleados con 100% asistencia y sin retrasos
-                const asistenciaCompleta = empleados.filter(emp => {
-                    const porcentaje = emp.totalDias > 0 ? (emp.diasTrabajados / emp.totalDias) * 100 : 0;
-                    return porcentaje === 100 && emp.minutosRetraso === 0;
-                }).length;
-                document.getElementById('asistencia-completa').textContent = asistenciaCompleta;
-
-                // CON RETRASOS - Empleados que tienen minutos de retraso
-                const conRetrasos = empleados.filter(emp => emp.minutosRetraso > 0).length;
-                document.getElementById('con-retrasos').textContent = conRetrasos;
-
-                // FALTAS - Suma de días no trabajados
-                const totalFaltas = empleados.reduce((sum, emp) => {
-                    return sum + (emp.totalDias - emp.diasTrabajados);
-                }, 0);
-                document.getElementById('faltas').textContent = totalFaltas;
-
-                // PROMEDIO MIN. TRABAJADOS - Promedio de minutos trabajados por empleado
-                // Asumiendo 8 horas (480 min) por día trabajado
-                const totalMinutosTrabajados = empleados.reduce((sum, emp) => {
-                    return sum + (emp.diasTrabajados * 480) + emp.minutosExtra - emp.minutosRetraso;
-                }, 0);
-                const promedioMinutos = empleados.length > 0
-                    ? Math.round(totalMinutosTrabajados / empleados.length)
-                    : 0;
-                document.getElementById('promedio-minutos').textContent = promedioMinutos;
-
-                // TOTAL MIN. EXTRAS
-                document.getElementById('total-extras').textContent = resumen.totalMinutosExtra;
-
-                // % ASISTENCIA GENERAL
-                document.getElementById('asistencia-general').textContent = resumen.porcentajeAsistenciaGeneral + '%';
-
-                // Opcional: Llenar tabla de empleados
-                llenarTablaEmpleados(empleados);
-            }
-
-            // Llenar tabla de empleados (opcional)
-            function llenarTablaEmpleados(empleados) {
-                const tbody = document.getElementById('tabla-empleados-body');
-                if (!tbody) return;
-
-                tbody.innerHTML = empleados.map(emp => {
-                    const porcentaje = emp.totalDias > 0
-                        ? ((emp.diasTrabajados / emp.totalDias) * 100).toFixed(1)
-                        : 0;
-
-                    return `
+            <!-- Detalle por día -->
+            <h5>Detalle por Día</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Horas Trabajadas</th>
+                            <th>Retraso</th>
+                            <th>Extra</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${detalle.detallePorDia.map(dia => `
                             <tr>
-                                <td><span class="badge bg-secondary">${emp.codigo}</span></td>
-                                <td><strong>${emp.nombre}</strong></td>
-                                <td class="text-center">${emp.diasTrabajados} / ${emp.totalDias}</td>
-                                <td class="text-center">
-                                    <span class="badge ${emp.minutosRetraso > 0 ? 'bg-warning text-dark' : 'bg-light text-dark'}">
-                                        ${emp.minutosRetraso}
+                                <td>${new Date(dia.fecha).toLocaleDateString('es-ES')}</td>
+                                <td>
+                                    <span class="badge ${getBadgeClassEstado(dia.estado_dia)}">
+                                        ${getEstadoTexto(dia.estado_dia)}
                                     </span>
                                 </td>
-                                <td class="text-center">
-                                    <span class="badge ${emp.minutosExtra > 0 ? 'bg-success' : 'bg-light text-dark'}">
-                                        ${emp.minutosExtra}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-${porcentaje >= 95 ? 'success' : porcentaje >= 80 ? 'warning text-dark' : 'danger'}">
-                                        ${porcentaje}%
-                                    </span>
-                                </td>
+                                <td>${dia.horasTrabajadas}</td>
+                                <td>${dia.retrasoFormateado}</td>
+                                <td>${dia.extraFormateado}</td>
                             </tr>
-                        `;
-                }).join('');
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
 
-                // Mostrar tabla si hay datos
-                document.getElementById('tabla-empleados-container').style.display = 'block';
+            if (!state.modalDetalle) {
+                state.modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalleEmpleado'));
             }
 
-            // Mostrar error en las tarjetas
-            function mostrarError() {
-                const ids = [
-                    'total-registros',
-                    'asistencia-completa',
-                    'con-retrasos',
-                    'faltas',
-                    'promedio-minutos',
-                    'total-extras',
-                    'asistencia-general'
-                ];
+            document.getElementById('modalEmpleadoTitle').textContent = `Estadísticas - ${detalle.empleado.nombre}`;
+            state.modalDetalle.show();
+        }
 
-                ids.forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.innerHTML = '<i class="bi bi-exclamation-triangle"></i>';
-                        element.style.fontSize = '32px';
-                    }
-                });
+        // Actualizar resumen general
+        function actualizarResumenGeneral() {
+            if (!state.estadisticas || !state.estadisticas.resumenGeneral) {
+                document.getElementById('resumen-general').style.display = 'none';
+                return;
             }
 
-            // Cargar datos
-            async function cargarDatos() {
-                // Mostrar spinners
-                const ids = [
-                    'total-registros',
-                    'asistencia-completa',
-                    'con-retrasos',
-                    'faltas',
-                    'promedio-minutos',
-                    'total-extras',
-                    'asistencia-general'
-                ];
+            const resumen = state.estadisticas.resumenGeneral;
+            document.getElementById('resumen-general').style.display = 'flex';
 
-                const spinnerClasses = [
-                    'spinner-blue',
-                    'spinner-green',
-                    'spinner-yellow',
-                    'spinner-red',
-                    'spinner-cyan',
-                    'spinner-blue',
-                    'spinner-green'
-                ];
+            document.getElementById('total-empleados').textContent = state.estadisticas.totalEmpleados;
+            document.getElementById('asistencia-promedio').textContent = resumen.promedioAsistencia.toFixed(1) + '%';
+            document.getElementById('total-retraso').textContent = Math.floor(resumen.totalRetraso / 60) + 'h';
+            document.getElementById('total-extra').textContent = Math.floor(resumen.totalExtra / 60) + 'h';
+        }
 
-                ids.forEach((id, index) => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.innerHTML = `
-                                <div class="spinner-border ${spinnerClasses[index]} stat-loading" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                            `;
-                    }
-                });
+        // Cargar empleados y departamentos para filtros
+        async function cargarFiltros() {
+            try {
+                // Cargar empleados
+                const resEmpleados = await fetchAuth('/api/empleados?incluirInactivos=false');
+                if (resEmpleados.ok) {
+                    state.empleados = await resEmpleados.json();
+                    const select = document.getElementById('filtro-empleado');
+                    select.innerHTML = '<option value="">Todos los empleados</option>';
+                    state.empleados.forEach(emp => {
+                        select.innerHTML += `<option value="${emp.idEmpleado}">${emp.nombre} (${emp.codigo_empleado})</option>`;
+                    });
+                }
 
-                await cargarEstadisticasGenerales();
+                // Cargar departamentos
+                const resDeptos = await fetchAuth('/api/departamentos?incluirInactivos=false');
+                if (resDeptos.ok) {
+                    state.departamentos = await resDeptos.json();
+                    const select = document.getElementById('filtro-departamento');
+                    select.innerHTML = '<option value="">Todos los departamentos</option>';
+                    state.departamentos.forEach(depto => {
+                        select.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar filtros:', error);
             }
+        }
 
-            // Inicializar
-            async function init() {
-                await cargarDatos();
-            }
+        // Búsqueda en tiempo real
+        function configurarBusquedaRapida() {
+            const inputBusqueda = document.getElementById('busqueda-rapida');
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
+            inputBusqueda.addEventListener('input', function (e) {
+                const texto = e.target.value.toLowerCase().trim();
 
-            return {
-                cargarDatos
+                if (!state.estadisticas || !state.estadisticas.estadisticasDetalladas) return;
+
+                // Si no hay texto, mostrar todos
+                if (texto === '') {
+                    mostrarEstadisticas();
+                    return;
+                }
+
+                // Filtrar estadísticas
+                const filtradas = state.estadisticas.estadisticasDetalladas.filter(est =>
+                    est.empleado.nombre.toLowerCase().includes(texto) ||
+                    est.empleado.codigo_empleado.toLowerCase().includes(texto) ||
+                    est.empleado.departamento.toLowerCase().includes(texto)
+                );
+
+                mostrarEstadisticasFiltradas(filtradas);
+            });
+        }
+
+        // Limpiar búsqueda
+        function limpiarBusqueda() {
+            document.getElementById('busqueda-rapida').value = '';
+            mostrarEstadisticas(); // Mostrar todos otra vez
+        }
+
+        // Mostrar todos los empleados
+        function mostrarTodos() {
+            limpiarBusqueda();
+            document.getElementById('filtro-empleado').value = '';
+            document.getElementById('filtro-departamento').value = '';
+            cargarEstadisticas(); // Recargar datos
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            // Esta función se llama desde los botones existentes
+            cargarEstadisticas();
+        }
+
+        // Limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('filtro-inicio').value = '';
+            document.getElementById('filtro-fin').value = '';
+            document.getElementById('filtro-empleado').value = '';
+            document.getElementById('filtro-departamento').value = '';
+            limpiarBusqueda();
+        }
+
+        // Exportar reporte
+        function exportarReporte() {
+            mostrarAlerta('Función de exportación en desarrollo', 'info');
+            // TODO: Implementar exportación a Excel/PDF
+        }
+
+        // Funciones auxiliares
+        function getBadgeClassEstado(estado) {
+            const clases = {
+                'NORMAL': 'bg-success',
+                'RETRASO_LEVE': 'bg-warning',
+                'RETRASO_GRAVE': 'bg-danger',
+                'EXTRA_NORMAL': 'bg-info',
+                'EXTRA_ALTO': 'bg-primary',
+                'AUSENTE': 'bg-secondary',
+                'NO_LABORAL': 'bg-light text-dark',
+                'SIN_HORARIO': 'bg-dark'
             };
-        })();
-    </script>
-</body>
-</html>
+            return clases[estado] || 'bg-secondary';
+        }
+
+        function getEstadoTexto(estado) {
+            const textos = {
+                'NORMAL': 'Normal',
+                'RETRASO_LEVE': 'Retraso Leve',
+                'RETRASO_GRAVE': 'Retraso Grave',
+                'EXTRA_NORMAL': 'Extra Normal',
+                'EXTRA_ALTO': 'Extra Alto',
+                'AUSENTE': 'Ausente',
+                'NO_LABORAL': 'No Laboral',
+                'SIN_HORARIO': 'Sin Horario'
+            };
+            return textos[estado] || estado;
+        }
+
+        function mostrarLoading() {
+            const tbody = document.getElementById('tabla-estadisticas');
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    Procesando estadísticas...
+                </td>
+            </tr>
+        `;
+        }
+
+        function mostrarError(mensaje) {
+            const tbody = document.getElementById('tabla-estadisticas');
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-danger py-4">
+                    <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+                    <h5>Error al cargar estadísticas</h5>
+                    <p class="mb-0">${mensaje}</p>
+                    <button class="btn btn-primary mt-2" onclick="EstadisticasModule.cargarEstadisticas()">
+                        <i class="bi bi-arrow-clockwise"></i> Reintentar
+                    </button>
+                </td>
+            </tr>
+        `;
+        }
+
+        function actualizarTimestamp() {
+            const ahora = new Date();
+            document.getElementById('ultima-actualizacion').textContent =
+                `Actualizado: ${ahora.toLocaleTimeString()}`;
+        }
+
+        function mostrarAlerta(mensaje, tipo = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // Inicializar módulo
+        async function init() {
+            console.log('🚀 Iniciando módulo de estadísticas...');
+
+            // Establecer fechas por defecto (últimos 30 días)
+            const hoy = new Date();
+            const hace30Dias = new Date();
+            hace30Dias.setDate(hoy.getDate() - 30);
+
+            document.getElementById('filtro-inicio').value = hace30Dias.toISOString().split('T')[0];
+            document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
+
+            await cargarFiltros();
+            await cargarEstadisticas();
+
+            configurarBusquedaRapida(); // CONFIGURAR BÚSQUEDA
+
+            console.log('✅ Módulo de estadísticas iniciado');
+        }
+
+        // Iniciar cuando esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        return {
+            cargarEstadisticas,
+            verDetalleEmpleado,
+            limpiarFiltros,
+            exportarReporte,
+            limpiarBusqueda,
+            mostrarTodos,
+            aplicarFiltros
+        };
+    })();
+</script>

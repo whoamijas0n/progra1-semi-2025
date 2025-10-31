@@ -1,9 +1,8 @@
 ﻿using fiexpress.Data;
-using fiexpress.Models;
+using fiexpress.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace fiexpress.Controllers
 {
@@ -13,169 +12,208 @@ namespace fiexpress.Controllers
     public class EstadisticasController : ControllerBase
     {
         private readonly MyDbContext _context;
+        private readonly IEstadisticasService _estadisticasService;
         private readonly ILogger<EstadisticasController> _logger;
 
-        public EstadisticasController(MyDbContext context, ILogger<EstadisticasController> logger)
+        public EstadisticasController(MyDbContext context, IEstadisticasService estadisticasService, ILogger<EstadisticasController> logger)
         {
             _context = context;
+            _estadisticasService = estadisticasService;
             _logger = logger;
         }
 
-        // GET: api/estadisticas/personales
-        [HttpGet("personales")]
-        public async Task<IActionResult> GetPersonales()
-        {
-            try
-            {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Unauthorized();
-
-                var usuario = await _context.Usuarios
-                    .Include(u => u.Empleado)
-                    .FirstOrDefaultAsync(u => u.idUsuario == int.Parse(userId));
-                if (usuario == null) return Unauthorized();
-
-                var empleadoId = usuario.Empleado.idEmpleado;
-                var hoy = DateOnly.FromDateTime(DateTime.Now);
-                var inicioMes = new DateOnly(hoy.Year, hoy.Month, 1);
-                var finMes = inicioMes.AddMonths(1).AddDays(-1);
-
-                var estadisticas = await _context.Estadisticas
-                    .Where(e => e.idEmpleadoEstadistica == empleadoId && e.fecha >= inicioMes && e.fecha <= finMes)
-                    .ToListAsync();
-
-                var diasTrabajados = estadisticas.Count(e => e.asistencia);
-                var totalDiasMes = Enumerable.Range(1, finMes.Day)
-                    .Select(d => new DateOnly(hoy.Year, hoy.Month, d))
-                    .Where(d => d <= hoy)
-                    .Count();
-
-                var ultimosFichajes = await _context.Fichajes
-                    .Where(f => f.idEmpleadoFichaje == empleadoId)
-                    .OrderByDescending(f => f.fecha)
-                    .ThenByDescending(f => f.hora)
-                    .Take(5)
-                    .Select(f => new
-                    {
-                        f.fecha,
-                        hora = f.hora.ToString("HH:mm"),
-                        f.tipo,
-                        f.observacion
-                    })
-                    .ToListAsync();
-
-                return Ok(new
-                {
-                    empleado = new { usuario.Empleado.idEmpleado, usuario.Empleado.nombre },
-                    periodo = $"{inicioMes:MMM yyyy}",
-                    resumen = new
-                    {
-                        diasTrabajados,
-                        totalDias = totalDiasMes,
-                        porcentajeAsistencia = totalDiasMes > 0 ? Math.Round((double)diasTrabajados / totalDiasMes * 100, 1) : 0,
-                        minutosRetraso = estadisticas.Sum(e => e.minutos_retraso ?? 0),
-                        minutosExtra = estadisticas.Sum(e => e.minutos_extra ?? 0)
-                    },
-                    ultimosFichajes
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener estadísticas personales");
-                return StatusCode(500, new { mensaje = "Error al cargar estadísticas" });
-            }
-        }
-
-        // GET: api/estadisticas/generales
+        // GET: api/estadisticas/generales?inicio=2024-01-01&fin=2024-01-31&empleadoId=5
         [HttpGet("generales")]
         [Authorize(Roles = "Admin,Supervisor")]
-        public async Task<IActionResult> GetGenerales([FromQuery] string periodo = "mes")
+        public async Task<IActionResult> GetEstadisticasGenerales(
+            [FromQuery] string inicio,
+            [FromQuery] string fin,
+            [FromQuery] int? empleadoId = null,
+            [FromQuery] int? departamentoId = null)
         {
             try
             {
-                var hoy = DateOnly.FromDateTime(DateTime.Now);
-                DateOnly inicio, fin;
+                var fechaInicio = DateOnly.Parse(inicio);
+                var fechaFin = DateOnly.Parse(fin);
 
-                switch (periodo.ToLower())
+                // Procesar estadísticas para el rango de fechas
+                for (var fecha = fechaInicio; fecha <= fechaFin; fecha = fecha.AddDays(1))
                 {
-                    case "semana":
-                        var diasHastaLunes = (int)hoy.DayOfWeek == 0 ? 6 : (int)hoy.DayOfWeek - 1;
-                        inicio = hoy.AddDays(-diasHastaLunes);
-                        fin = inicio.AddDays(6);
-                        break;
-                    case "mes":
-                    default:
-                        inicio = new DateOnly(hoy.Year, hoy.Month, 1);
-                        fin = inicio.AddMonths(1).AddDays(-1);
-                        break;
+                    await _estadisticasService.ProcesarEstadisticasDelDia(fecha);
                 }
 
-                var estadisticas = await _context.Estadisticas
+                var query = _context.Estadisticas
                     .Include(e => e.Empleado)
-                    .Where(e => e.fecha >= inicio && e.fecha <= fin)
-                    .GroupBy(e => new { e.Empleado.idEmpleado, e.Empleado.nombre, e.Empleado.codigo_empleado })
-                    .Select(g => new
+                        .ThenInclude(emp => emp.Departamento)
+                    .Where(e => e.fecha >= fechaInicio && e.fecha <= fechaFin);
+
+                // Aplicar filtros
+                if (empleadoId.HasValue)
+                {
+                    query = query.Where(e => e.idEmpleadoEstadistica == empleadoId.Value);
+                }
+
+                if (departamentoId.HasValue)
+                {
+                    query = query.Where(e => e.Empleado.idDepartamento == departamentoId.Value);
+                }
+
+                var estadisticas = await query
+                    .Select(e => new
                     {
-                        idEmpleado = g.Key.idEmpleado,
-                        nombre = g.Key.nombre,
-                        codigo = g.Key.codigo_empleado,
-                        diasTrabajados = g.Count(e => e.asistencia),
-                        totalDias = (fin.DayNumber - inicio.DayNumber + 1),
-                        minutosRetraso = g.Sum(e => e.minutos_retraso ?? 0),
-                        minutosExtra = g.Sum(e => e.minutos_extra ?? 0)
+                        e.idEstadistica,
+                        e.fecha,
+                        e.minutos_trabajados,
+                        e.minutos_retraso,
+                        e.minutos_extra,
+                        e.asistencia,
+                        e.estado_dia,
+                        empleado = new
+                        {
+                            e.Empleado.idEmpleado,
+                            e.Empleado.codigo_empleado,
+                            e.Empleado.nombre,
+                            e.Empleado.foto_url,
+                            departamento = e.Empleado.Departamento.nombre
+                        }
                     })
                     .ToListAsync();
 
-                var todosEmpleados = await _context.Empleados
-                    .Where(e => e.activo)
-                    .Select(e => new { e.idEmpleado, e.nombre, e.codigo_empleado })
-                    .ToListAsync();
-
-                var empleadosConEstadisticas = estadisticas.ToDictionary(e => e.idEmpleado);
-                var resultadoCompleto = todosEmpleados.Select(emp =>
-                {
-                    if (empleadosConEstadisticas.TryGetValue(emp.idEmpleado, out var stats))
-                        return stats;
-                    return new
+                // Agrupar por empleado para resumen
+                var resumen = estadisticas
+                    .GroupBy(e => e.empleado.idEmpleado)
+                    .Select(g => new
                     {
-                        idEmpleado = emp.idEmpleado,
-                        nombre = emp.nombre,
-                        codigo = emp.codigo_empleado,
-                        diasTrabajados = 0,
-                        totalDias = (fin.DayNumber - inicio.DayNumber + 1),
-                        minutosRetraso = 0,
-                        minutosExtra = 0
-                    };
-                }).ToList();
-
-                var totalDiasTrabajados = resultadoCompleto.Sum(e => e.diasTrabajados);
-                var totalEmpleados = resultadoCompleto.Count;
-                var totalDiasLaborables = totalEmpleados * (fin.DayNumber - inicio.DayNumber + 1);
-                var porcentajeAsistenciaGeneral = totalDiasLaborables > 0
-                    ? Math.Round((double)totalDiasTrabajados / totalDiasLaborables * 100, 1)
-                    : 0;
+                        empleado = g.First().empleado,
+                        diasTrabajados = g.Count(e => e.asistencia),
+                        totalDias = g.Count(),
+                        totalMinutosTrabajados = g.Sum(e => e.minutos_trabajados ?? 0),
+                        totalMinutosRetraso = g.Sum(e => e.minutos_retraso ?? 0),
+                        totalMinutosExtra = g.Sum(e => e.minutos_extra ?? 0),
+                        porcentajeAsistencia = g.Count() > 0 ? Math.Round((double)g.Count(e => e.asistencia) / g.Count() * 100, 1) : 0,
+                        estados = g.GroupBy(e => e.estado_dia)
+                            .ToDictionary(x => x.Key, x => x.Count())
+                    })
+                    .OrderByDescending(r => r.diasTrabajados)
+                    .ThenBy(r => r.totalMinutosRetraso)
+                    .ToList();
 
                 return Ok(new
                 {
-                    periodo = $"{inicio:dd/MM/yyyy} - {fin:dd/MM/yyyy}",
-                    resumen = new
+                    periodo = $"{fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}",
+                    totalEmpleados = resumen.Count,
+                    resumenGeneral = new
                     {
-                        totalEmpleados,
-                        totalDiasTrabajados,
-                        porcentajeAsistenciaGeneral,
-                        totalMinutosRetraso = resultadoCompleto.Sum(e => e.minutosRetraso),
-                        totalMinutosExtra = resultadoCompleto.Sum(e => e.minutosExtra)
+                        totalDiasTrabajados = resumen.Sum(r => r.diasTrabajados),
+                        promedioAsistencia = resumen.Average(r => r.porcentajeAsistencia),
+                        totalRetraso = resumen.Sum(r => r.totalMinutosRetraso),
+                        totalExtra = resumen.Sum(r => r.totalMinutosExtra)
                     },
-                    empleados = resultadoCompleto
-                        .OrderByDescending(e => e.diasTrabajados)
-                        .ThenBy(e => e.minutosRetraso)
-                        .ToList()
+                    estadisticasDetalladas = resumen,
+                    filtrosAplicados = new { empleadoId, departamentoId }
                 });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener estadísticas generales");
-                return StatusCode(500, new { mensaje = "Error al cargar estadísticas" });
+                return StatusCode(500, new { mensaje = "Error al obtener estadísticas" });
+            }
+        }
+
+        // GET: api/estadisticas/empleado/{id}?inicio=2024-01-01&fin=2024-01-31
+        [HttpGet("empleado/{id}")]
+        public async Task<IActionResult> GetEstadisticasEmpleado(int id, [FromQuery] string inicio, [FromQuery] string fin)
+        {
+            try
+            {
+                var fechaInicio = DateOnly.Parse(inicio);
+                var fechaFin = DateOnly.Parse(fin);
+
+                // Procesar estadísticas para el rango
+                for (var fecha = fechaInicio; fecha <= fechaFin; fecha = fecha.AddDays(1))
+                {
+                    await _estadisticasService.ProcesarEstadisticasDelDia(fecha);
+                }
+
+                var estadisticas = await _context.Estadisticas
+                    .Include(e => e.Empleado)
+                    .Where(e => e.idEmpleadoEstadistica == id && e.fecha >= fechaInicio && e.fecha <= fechaFin)
+                    .OrderBy(e => e.fecha)
+                    .Select(e => new
+                    {
+                        e.fecha,
+                        e.minutos_trabajados,
+                        e.minutos_retraso,
+                        e.minutos_extra,
+                        e.asistencia,
+                        e.estado_dia,
+                        horasTrabajadas = e.minutos_trabajados.HasValue ?
+                            $"{e.minutos_trabajados.Value / 60}h {e.minutos_trabajados.Value % 60}m" : "0h",
+                        retrasoFormateado = e.minutos_retraso.HasValue ?
+                            $"{e.minutos_retraso.Value}m" : "0m",
+                        extraFormateado = e.minutos_extra.HasValue ?
+                            $"{e.minutos_extra.Value}m" : "0m"
+                    })
+                    .ToListAsync();
+
+                var empleado = await _context.Empleados
+                    .Include(e => e.Departamento)
+                    .FirstOrDefaultAsync(e => e.idEmpleado == id);
+
+                if (empleado == null)
+                {
+                    return NotFound(new { mensaje = "Empleado no encontrado" });
+                }
+
+                var resumen = new
+                {
+                    diasTrabajados = estadisticas.Count(e => e.asistencia),
+                    totalDias = estadisticas.Count,
+                    totalHorasTrabajadas = estadisticas.Sum(e => e.minutos_trabajados ?? 0) / 60,
+                    totalMinutosRetraso = estadisticas.Sum(e => e.minutos_retraso ?? 0),
+                    totalMinutosExtra = estadisticas.Sum(e => e.minutos_extra ?? 0),
+                    porcentajeAsistencia = estadisticas.Count > 0 ?
+                        Math.Round((double)estadisticas.Count(e => e.asistencia) / estadisticas.Count * 100, 1) : 0
+                };
+
+                return Ok(new
+                {
+                    empleado = new
+                    {
+                        empleado.idEmpleado,
+                        empleado.nombre,
+                        empleado.codigo_empleado,
+                        departamento = empleado.Departamento.nombre,
+                        empleado.foto_url
+                    },
+                    periodo = $"{fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}",
+                    resumen,
+                    detallePorDia = estadisticas
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener estadísticas del empleado {Id}", id);
+                return StatusCode(500, new { mensaje = "Error al obtener estadísticas" });
+            }
+        }
+
+        // POST: api/estadisticas/procesar-dia
+        [HttpPost("procesar-dia")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ProcesarEstadisticasDia([FromQuery] string fecha)
+        {
+            try
+            {
+                var fechaProcesar = DateOnly.Parse(fecha);
+                await _estadisticasService.ProcesarEstadisticasDelDia(fechaProcesar);
+
+                return Ok(new { mensaje = $"Estadísticas procesadas para {fechaProcesar:dd/MM/yyyy}" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al procesar estadísticas del día");
+                return StatusCode(500, new { mensaje = "Error al procesar estadísticas" });
             }
         }
     }

@@ -1,0 +1,1006 @@
+﻿<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-gear text-primary"></i>
+                Configuración del Sistema
+            </h2>
+            <p class="text-muted">Gestiona roles, turnos y departamentos del sistema</p>
+        </div>
+    </div>
+
+    <!-- Pestañas de Configuración -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <ul class="nav nav-tabs card-header-tabs" id="configTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="roles-tab" data-bs-toggle="tab"
+                            data-bs-target="#roles" type="button" role="tab">
+                        <i class="bi bi-person-badge"></i> Roles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="turnos-tab" data-bs-toggle="tab"
+                            data-bs-target="#turnos" type="button" role="tab">
+                        <i class="bi bi-clock"></i> Turnos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="departamentos-tab" data-bs-toggle="tab"
+                            data-bs-target="#departamentos" type="button" role="tab">
+                        <i class="bi bi-building"></i> Departamentos
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <div class="tab-content" id="configTabsContent">
+
+                <!-- PESTAÑA DE ROLES -->
+                <div class="tab-pane fade show active" id="roles" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-badge text-primary"></i> Gestión de Roles
+                        </h5>
+                        <button class="btn btn-primary" onclick="ConfiguracionModule.abrirModalRol()">
+                            <i class="bi bi-plus-lg"></i> Nuevo Rol
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-roles">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Cargando roles...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA DE TURNOS -->
+                <div class="tab-pane fade" id="turnos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock text-warning"></i> Gestión de Turnos
+                        </h5>
+                        <button class="btn btn-warning" onclick="ConfiguracionModule.abrirModalTurno()">
+                            <i class="bi bi-plus-lg"></i> Nuevo Turno
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Horario</th>
+                                    <th>Tolerancia</th>
+                                    <th>Días Activos</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-turnos">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Cargando turnos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA DE DEPARTAMENTOS -->
+                <div class="tab-pane fade" id="departamentos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-building text-success"></i> Gestión de Departamentos
+                        </h5>
+                        <button class="btn btn-success" onclick="ConfiguracionModule.abrirModalDepartamento()">
+                            <i class="bi bi-plus-lg"></i> Nuevo Departamento
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Empleados</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-departamentos">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Cargando departamentos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA ROLES -->
+<div class="modal fade" id="modalRol" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRolTitle">Nuevo Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRol">
+                    <input type="hidden" id="rolId">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Rol *</label>
+                        <input type="text" class="form-control" id="rolNombre" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción *</label>
+                        <textarea class="form-control" id="rolDescripcion" rows="3" required maxlength="100"></textarea>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="rolActivo" checked>
+                        <label class="form-check-label" for="rolActivo">Rol activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ConfiguracionModule.guardarRol()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA TURNOS -->
+<div class="modal fade" id="modalTurno" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTurnoTitle">Nuevo Turno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formTurno">
+                    <input type="hidden" id="turnoId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre del Turno *</label>
+                            <input type="text" class="form-control" id="turnoNombre" required maxlength="50">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tolerancia (minutos) *</label>
+                            <input type="number" class="form-control" id="turnoTolerancia" value="15" min="0" max="60" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hora de Entrada *</label>
+                            <input type="time" class="form-control" id="turnoEntrada" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hora de Salida *</label>
+                            <input type="time" class="form-control" id="turnoSalida" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Días Laborales *</label>
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoLunes" checked>
+                                    <label class="form-check-label" for="turnoLunes">Lunes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoMartes" checked>
+                                    <label class="form-check-label" for="turnoMartes">Martes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoMiercoles" checked>
+                                    <label class="form-check-label" for="turnoMiercoles">Miércoles</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoJueves" checked>
+                                    <label class="form-check-label" for="turnoJueves">Jueves</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoViernes" checked>
+                                    <label class="form-check-label" for="turnoViernes">Viernes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoSabado">
+                                    <label class="form-check-label" for="turnoSabado">Sábado</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="turnoDomingo">
+                                    <label class="form-check-label" for="turnoDomingo">Domingo</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="turnoActivo" checked>
+                        <label class="form-check-label" for="turnoActivo">Turno activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="ConfiguracionModule.guardarTurno()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA DEPARTAMENTOS -->
+<div class="modal fade" id="modalDepartamento" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDepartamentoTitle">Nuevo Departamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDepartamento">
+                    <input type="hidden" id="departamentoId">
+                    <div class="mb-3">
+                        <label class="form-label">Código *</label>
+                        <input type="text" class="form-control" id="departamentoCodigo" required maxlength="50">
+                        <small class="text-muted">Código único para identificar el departamento</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" class="form-control" id="departamentoNombre" required maxlength="70">
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="departamentoActivo" checked>
+                        <label class="form-check-label" for="departamentoActivo">Departamento activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="ConfiguracionModule.guardarDepartamento()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    // Módulo Completo de Configuración
+    window.ConfiguracionModule = (function () {
+        'use strict';
+
+        const state = {
+            modalRol: null,
+            modalTurno: null,
+            modalDepartamento: null
+        };
+
+        // ========== FUNCIONES GENERALES ==========
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    credentials: 'include',
+                    ...options
+                });
+
+                if (!response.ok) {
+                    // ✅ OBTENER MÁS DETALLES DEL ERROR 400
+                    let errorMessage = `Error ${response.status}: ${response.statusText}`;
+
+                    try {
+                        const errorData = await response.json();
+                        console.error('📋 Detalles del error:', errorData);
+
+                        if (errorData.errores && Array.isArray(errorData.errores)) {
+                            errorMessage += ` - ${errorData.errores.join(', ')}`;
+                        } else if (errorData.mensaje) {
+                            errorMessage += ` - ${errorData.mensaje}`;
+                        } else if (errorData.detalle) {
+                            errorMessage += ` - ${errorData.detalle}`;
+                        }
+                    } catch (parseError) {
+                        // Si no se puede parsear como JSON, usar el texto plano
+                        const textError = await response.text();
+                        console.error('📋 Error texto:', textError);
+                        errorMessage += ` - ${textError}`;
+                    }
+
+                    throw new Error(errorMessage);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('🔴 API Call Error:', error);
+                mostrarAlerta(`Error: ${error.message}`, 'danger');
+                throw error;
+            }
+        }
+
+        function mostrarAlerta(mensaje, tipo = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // ========== GESTIÓN DE ROLES ==========
+        async function cargarRoles() {
+            try {
+                const roles = await apiCall('/api/roles?incluirInactivos=true');
+                mostrarRoles(roles);
+            } catch (error) {
+                document.getElementById('tabla-roles').innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-danger">
+                        Error al cargar roles
+                    </td>
+                </tr>
+            `;
+            }
+        }
+
+        function mostrarRoles(roles) {
+            const tbody = document.getElementById('tabla-roles');
+
+            if (roles.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="bi bi-person-badge fs-1 d-block mb-2"></i>
+                        <h5>No hay roles registrados</h5>
+                        <p>Haz clic en "Nuevo Rol" para crear uno</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = roles.map(rol => `
+            <tr class="${!rol.activo ? 'table-secondary' : ''}">
+                <td>
+                    <strong>${rol.nombre}</strong>
+                </td>
+                <td>${rol.descripcion}</td>
+                <td>
+                    <span class="badge ${rol.activo ? 'bg-success' : 'bg-secondary'}">
+                        ${rol.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="ConfiguracionModule.editarRol(${rol.idRol})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${rol.activo ?
+                    `<button class="btn btn-outline-danger" onclick="ConfiguracionModule.desactivarRol(${rol.idRol}, '${rol.nombre}')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>` :
+                    `<button class="btn btn-outline-success" onclick="ConfiguracionModule.activarRol(${rol.idRol})">
+                                <i class="bi bi-check-circle"></i>
+                            </button>`
+                }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function abrirModalRol() {
+            document.getElementById('formRol').reset();
+            document.getElementById('rolId').value = '';
+            document.getElementById('modalRolTitle').textContent = 'Nuevo Rol';
+            document.getElementById('rolActivo').checked = true;
+
+            if (!state.modalRol) {
+                state.modalRol = new bootstrap.Modal(document.getElementById('modalRol'));
+            }
+            state.modalRol.show();
+        }
+
+        async function editarRol(id) {
+            try {
+                const rol = await apiCall(`/api/roles/${id}`);
+
+                document.getElementById('rolId').value = rol.idRol;
+                document.getElementById('rolNombre').value = rol.nombre;
+                document.getElementById('rolDescripcion').value = rol.descripcion;
+                document.getElementById('rolActivo').checked = rol.activo;
+                document.getElementById('modalRolTitle').textContent = 'Editar Rol';
+
+                if (!state.modalRol) {
+                    state.modalRol = new bootstrap.Modal(document.getElementById('modalRol'));
+                }
+                state.modalRol.show();
+            } catch (error) {
+                console.error('Error al cargar rol:', error);
+            }
+        }
+
+        async function guardarRol() {
+            const form = document.getElementById('formRol');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const data = {
+                Nombre: document.getElementById('rolNombre').value.trim(),
+                Descripcion: document.getElementById('rolDescripcion').value.trim()
+            };
+
+            try {
+                const rolId = document.getElementById('rolId').value;
+
+                if (rolId) {
+                    await apiCall(`/api/roles/${rolId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Rol actualizado exitosamente', 'success');
+                } else {
+                    await apiCall('/api/roles', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Rol creado exitosamente', 'success');
+                }
+
+                if (state.modalRol) state.modalRol.hide();
+                await cargarRoles();
+
+            } catch (error) {
+                console.error('Error al guardar rol:', error);
+            }
+        }
+
+        async function desactivarRol(id, nombre) {
+            if (!confirm(`¿Estás seguro de desactivar el rol "${nombre}"?`)) return;
+
+            try {
+                await apiCall(`/api/roles/${id}`, { method: 'DELETE' });
+                mostrarAlerta('Rol desactivado exitosamente', 'success');
+                await cargarRoles();
+            } catch (error) {
+                console.error('Error al desactivar rol:', error);
+            }
+        }
+
+        async function activarRol(id) {
+            try {
+                // Nota: Necesitarías crear un endpoint PUT /api/roles/{id}/activar
+                // Por ahora, usaremos editar para activar
+                const rol = await apiCall(`/api/roles/${id}`);
+                rol.activo = true;
+
+                await apiCall(`/api/roles/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Nombre: rol.nombre,
+                        Descripcion: rol.descripcion
+                    })
+                });
+
+                mostrarAlerta('Rol activado exitosamente', 'success');
+                await cargarRoles();
+            } catch (error) {
+                console.error('Error al activar rol:', error);
+            }
+        }
+
+        // ========== GESTIÓN DE TURNOS ==========
+        async function cargarTurnos() {
+            try {
+                const turnos = await apiCall('/api/turnos?incluirInactivos=true');
+                mostrarTurnos(turnos);
+            } catch (error) {
+                document.getElementById('tabla-turnos').innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-danger">
+                        Error al cargar turnos
+                    </td>
+                </tr>
+            `;
+            }
+        }
+
+        function mostrarTurnos(turnos) {
+            const tbody = document.getElementById('tabla-turnos');
+
+            if (turnos.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-clock fs-1 d-block mb-2"></i>
+                        <h5>No hay turnos registrados</h5>
+                        <p>Haz clic en "Nuevo Turno" para crear uno</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = turnos.map(turno => `
+            <tr class="${!turno.activo ? 'table-secondary' : ''}">
+                <td>
+                    <strong>${turno.nombre}</strong>
+                </td>
+                <td>
+                    <small>${turno.hora_entrada} - ${turno.hora_salida}</small>
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark">${turno.tolerancia_minutos} min</span>
+                </td>
+                <td>
+                    <small>${obtenerDiasActivos(turno)}</small>
+                </td>
+                <td>
+                    <span class="badge ${turno.activo ? 'bg-success' : 'bg-secondary'}">
+                        ${turno.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-warning" onclick="ConfiguracionModule.editarTurno(${turno.idTurno})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${turno.activo ?
+                    `<button class="btn btn-outline-danger" onclick="ConfiguracionModule.desactivarTurno(${turno.idTurno}, '${turno.nombre}')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>` :
+                    `<button class="btn btn-outline-success" onclick="ConfiguracionModule.activarTurno(${turno.idTurno})">
+                                <i class="bi bi-check-circle"></i>
+                            </button>`
+                }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function obtenerDiasActivos(turno) {
+            const dias = [];
+            if (turno.lunes) dias.push('L');
+            if (turno.martes) dias.push('M');
+            if (turno.miercoles) dias.push('X');
+            if (turno.jueves) dias.push('J');
+            if (turno.viernes) dias.push('V');
+            if (turno.sabado) dias.push('S');
+            if (turno.domingo) dias.push('D');
+            return dias.join(', ');
+        }
+
+        function abrirModalTurno() {
+            document.getElementById('formTurno').reset();
+            document.getElementById('turnoId').value = '';
+            document.getElementById('modalTurnoTitle').textContent = 'Nuevo Turno';
+            document.getElementById('turnoTolerancia').value = '15';
+            document.getElementById('turnoActivo').checked = true;
+
+            // Establecer horarios por defecto
+            document.getElementById('turnoEntrada').value = '08:00';
+            document.getElementById('turnoSalida').value = '16:00';
+
+            // Marcar días laborales por defecto (L-V)
+            document.getElementById('turnoLunes').checked = true;
+            document.getElementById('turnoMartes').checked = true;
+            document.getElementById('turnoMiercoles').checked = true;
+            document.getElementById('turnoJueves').checked = true;
+            document.getElementById('turnoViernes').checked = true;
+            document.getElementById('turnoSabado').checked = false;
+            document.getElementById('turnoDomingo').checked = false;
+
+            if (!state.modalTurno) {
+                state.modalTurno = new bootstrap.Modal(document.getElementById('modalTurno'));
+            }
+            state.modalTurno.show();
+        }
+
+        async function editarTurno(id) {
+            try {
+                const turno = await apiCall(`/api/turnos/${id}`);
+
+                document.getElementById('turnoId').value = turno.idTurno;
+                document.getElementById('turnoNombre').value = turno.nombre;
+                document.getElementById('turnoTolerancia').value = turno.tolerancia_minutos;
+                document.getElementById('turnoEntrada').value = turno.hora_entrada;
+                document.getElementById('turnoSalida').value = turno.hora_salida;
+                document.getElementById('turnoActivo').checked = turno.activo;
+
+                // Marcar días
+                document.getElementById('turnoLunes').checked = turno.lunes;
+                document.getElementById('turnoMartes').checked = turno.martes;
+                document.getElementById('turnoMiercoles').checked = turno.miercoles;
+                document.getElementById('turnoJueves').checked = turno.jueves;
+                document.getElementById('turnoViernes').checked = turno.viernes;
+                document.getElementById('turnoSabado').checked = turno.sabado;
+                document.getElementById('turnoDomingo').checked = turno.domingo;
+
+                document.getElementById('modalTurnoTitle').textContent = 'Editar Turno';
+
+                if (!state.modalTurno) {
+                    state.modalTurno = new bootstrap.Modal(document.getElementById('modalTurno'));
+                }
+                state.modalTurno.show();
+            } catch (error) {
+                console.error('Error al cargar turno:', error);
+            }
+        }
+
+        async function guardarTurno() {
+            const form = document.getElementById('formTurno');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // ✅ VALIDAR QUE LA HORA DE SALIDA SEA POSTERIOR A LA DE ENTRADA
+            const horaEntradaInput = document.getElementById('turnoEntrada').value;
+            const horaSalidaInput = document.getElementById('turnoSalida').value;
+
+            if (horaSalidaInput <= horaEntradaInput) {
+                mostrarAlerta('La hora de salida debe ser posterior a la hora de entrada', 'warning');
+                return;
+            }
+
+            // ✅ VALIDAR QUE AL MENOS UN DÍA ESTÉ SELECCIONADO
+            const diasSeleccionados = [
+                document.getElementById('turnoLunes').checked,
+                document.getElementById('turnoMartes').checked,
+                document.getElementById('turnoMiercoles').checked,
+                document.getElementById('turnoJueves').checked,
+                document.getElementById('turnoViernes').checked,
+                document.getElementById('turnoSabado').checked,
+                document.getElementById('turnoDomingo').checked
+            ].some(seleccionado => seleccionado);
+
+            if (!diasSeleccionados) {
+                mostrarAlerta('Selecciona al menos un día laboral', 'warning');
+                return;
+            }
+
+            // ✅ CORREGIDO: USAR DIRECTAMENTE EL VALOR DEL INPUT SIN AGREGAR SEGUNDOS
+            const data = {
+                nombre: document.getElementById('turnoNombre').value.trim(),
+                hora_entrada: horaEntradaInput, // ✅ "08:00" (formato correcto)
+                hora_salida: horaSalidaInput,   // ✅ "16:00" (formato correcto)
+                tolerancia_minutos: parseInt(document.getElementById('turnoTolerancia').value),
+                lunes: document.getElementById('turnoLunes').checked,
+                martes: document.getElementById('turnoMartes').checked,
+                miercoles: document.getElementById('turnoMiercoles').checked,
+                jueves: document.getElementById('turnoJueves').checked,
+                viernes: document.getElementById('turnoViernes').checked,
+                sabado: document.getElementById('turnoSabado').checked,
+                domingo: document.getElementById('turnoDomingo').checked,
+                activo: document.getElementById('turnoActivo').checked
+            };
+
+            console.log('📤 Enviando datos del turno:', data);
+
+            try {
+                const turnoId = document.getElementById('turnoId').value;
+
+                if (turnoId) {
+                    const response = await apiCall(`/api/turnos/${turnoId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Turno actualizado exitosamente', 'success');
+                } else {
+                    const response = await apiCall('/api/turnos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Turno creado exitosamente', 'success');
+                }
+
+                if (state.modalTurno) state.modalTurno.hide();
+                await cargarTurnos();
+
+            } catch (error) {
+                console.error('❌ Error al guardar turno:', error);
+                mostrarAlerta(`Error al guardar turno: ${error.message}`, 'danger');
+            }
+        }
+
+        async function desactivarTurno(id, nombre) {
+            if (!confirm(`¿Estás seguro de desactivar el turno "${nombre}"?`)) return;
+
+            try {
+                await apiCall(`/api/turnos/${id}`, { method: 'DELETE' });
+                mostrarAlerta('Turno desactivado exitosamente', 'success');
+                await cargarTurnos();
+            } catch (error) {
+                console.error('Error al desactivar turno:', error);
+            }
+        }
+
+        async function activarTurno(id) {
+            try {
+                // ✅ USAR EL NUEVO ENDPOINT ESPECÍFICO
+                await apiCall(`/api/turnos/${id}/activar`, {
+                    method: 'PUT'
+                });
+
+                mostrarAlerta('Turno activado exitosamente', 'success');
+                await cargarTurnos();
+            } catch (error) {
+                console.error('Error al activar turno:', error);
+                mostrarAlerta(`Error al activar turno: ${error.message}`, 'danger');
+            }
+        }
+
+        // ========== GESTIÓN DE DEPARTAMENTOS ==========
+        async function cargarDepartamentos() {
+            try {
+                const departamentos = await apiCall('/api/departamentos?incluirInactivos=true');
+                mostrarDepartamentos(departamentos);
+            } catch (error) {
+                document.getElementById('tabla-departamentos').innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-danger">
+                        Error al cargar departamentos
+                    </td>
+                </tr>
+            `;
+            }
+        }
+
+        function mostrarDepartamentos(departamentos) {
+            const tbody = document.getElementById('tabla-departamentos');
+
+            if (departamentos.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="bi bi-building fs-1 d-block mb-2"></i>
+                        <h5>No hay departamentos registrados</h5>
+                        <p>Haz clic en "Nuevo Departamento" para crear uno</p>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = departamentos.map(depto => `
+            <tr class="${!depto.activo ? 'table-secondary' : ''}">
+                <td>
+                    <code>${depto.codigo}</code>
+                </td>
+                <td>
+                    <strong>${depto.nombre}</strong>
+                </td>
+                <td>
+                    <span class="badge bg-primary">${depto.totalEmpleados || 0}</span>
+                </td>
+                <td>
+                    <small>${new Date(depto.fecha_creacion).toLocaleDateString('es-ES')}</small>
+                </td>
+                <td>
+                    <span class="badge ${depto.activo ? 'bg-success' : 'bg-secondary'}">
+                        ${depto.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-success" onclick="ConfiguracionModule.editarDepartamento(${depto.idDepartamento})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${depto.activo ?
+                    `<button class="btn btn-outline-danger" onclick="ConfiguracionModule.desactivarDepartamento(${depto.idDepartamento}, '${depto.nombre}')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>` :
+                    `<button class="btn btn-outline-success" onclick="ConfiguracionModule.activarDepartamento(${depto.idDepartamento})">
+                                <i class="bi bi-check-circle"></i>
+                            </button>`
+                }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        function abrirModalDepartamento() {
+            document.getElementById('formDepartamento').reset();
+            document.getElementById('departamentoId').value = '';
+            document.getElementById('modalDepartamentoTitle').textContent = 'Nuevo Departamento';
+            document.getElementById('departamentoActivo').checked = true;
+
+            if (!state.modalDepartamento) {
+                state.modalDepartamento = new bootstrap.Modal(document.getElementById('modalDepartamento'));
+            }
+            state.modalDepartamento.show();
+        }
+
+        async function editarDepartamento(id) {
+            try {
+                const departamento = await apiCall(`/api/departamentos/${id}`);
+
+                document.getElementById('departamentoId').value = departamento.idDepartamento;
+                document.getElementById('departamentoCodigo').value = departamento.codigo;
+                document.getElementById('departamentoNombre').value = departamento.nombre;
+                document.getElementById('departamentoActivo').checked = departamento.activo;
+                document.getElementById('modalDepartamentoTitle').textContent = 'Editar Departamento';
+
+                if (!state.modalDepartamento) {
+                    state.modalDepartamento = new bootstrap.Modal(document.getElementById('modalDepartamento'));
+                }
+                state.modalDepartamento.show();
+            } catch (error) {
+                console.error('Error al cargar departamento:', error);
+            }
+        }
+
+        async function guardarDepartamento() {
+            const form = document.getElementById('formDepartamento');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const data = {
+                Nombre: document.getElementById('departamentoNombre').value.trim(),
+                Codigo: document.getElementById('departamentoCodigo').value.trim()
+            };
+
+            try {
+                const departamentoId = document.getElementById('departamentoId').value;
+
+                if (departamentoId) {
+                    await apiCall(`/api/departamentos/${departamentoId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Departamento actualizado exitosamente', 'success');
+                } else {
+                    await apiCall('/api/departamentos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    mostrarAlerta('Departamento creado exitosamente', 'success');
+                }
+
+                if (state.modalDepartamento) state.modalDepartamento.hide();
+                await cargarDepartamentos();
+
+            } catch (error) {
+                console.error('Error al guardar departamento:', error);
+            }
+        }
+
+        async function desactivarDepartamento(id, nombre) {
+            if (!confirm(`¿Estás seguro de desactivar el departamento "${nombre}"?`)) return;
+
+            try {
+                await apiCall(`/api/departamentos/${id}`, { method: 'DELETE' });
+                mostrarAlerta('Departamento desactivado exitosamente', 'success');
+                await cargarDepartamentos();
+            } catch (error) {
+                console.error('Error al desactivar departamento:', error);
+            }
+        }
+
+        async function activarDepartamento(id) {
+            try {
+                // Similar a los anteriores
+                const departamento = await apiCall(`/api/departamentos/${id}`);
+                departamento.activo = true;
+
+                await apiCall(`/api/departamentos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Nombre: departamento.nombre,
+                        Codigo: departamento.codigo
+                    })
+                });
+
+                mostrarAlerta('Departamento activado exitosamente', 'success');
+                await cargarDepartamentos();
+            } catch (error) {
+                console.error('Error al activar departamento:', error);
+            }
+        }
+
+        // ========== INICIALIZACIÓN ==========
+        async function init() {
+            console.log('🚀 Iniciando módulo de configuración...');
+
+            // Cargar todos los datos
+            await Promise.all([
+                cargarRoles(),
+                cargarTurnos(),
+                cargarDepartamentos()
+            ]);
+
+            console.log('✅ Módulo de configuración iniciado');
+        }
+
+        // Iniciar cuando esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        return {
+            // Roles
+            abrirModalRol,
+            editarRol,
+            guardarRol,
+            desactivarRol,
+            activarRol,
+
+            // Turnos
+            abrirModalTurno,
+            editarTurno,
+            guardarTurno,
+            desactivarTurno,
+            activarTurno,
+
+            // Departamentos
+            abrirModalDepartamento,
+            editarDepartamento,
+            guardarDepartamento,
+            desactivarDepartamento,
+            activarDepartamento
+        };
+    })();
+</script>

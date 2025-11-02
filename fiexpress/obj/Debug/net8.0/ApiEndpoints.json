@@ -763,6 +763,58 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.RfidController",
+    "Method": "GetCaptureResult",
+    "RelativePath": "api/Rfid/capture/result",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.RfidController",
+    "Method": "StartCapture",
+    "RelativePath": "api/Rfid/capture/start",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "duration",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.RfidController",
+    "Method": "GetCaptureStatus",
+    "RelativePath": "api/Rfid/capture/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.RfidController",
+    "Method": "CaptureUnknown",
+    "RelativePath": "api/Rfid/capture/unknown",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "fiexpress.Controllers.CapturaRfidDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.RfidController",
     "Method": "GetByEmpleado",
     "RelativePath": "api/Rfid/empleado/{idEmpleado}",
     "HttpMethod": "GET",

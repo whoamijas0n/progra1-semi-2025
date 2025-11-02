@@ -1,2 +1,0 @@
-C:\Users\rousemary\Source\Repos\fiexpress-gw\fiexpress\wwwroot\views\justificaciones.html
-C:\Users\rousemary\Source\Repos\fiexpress-gw\fiexpress\wwwroot\views\justificaciones-empleado.html

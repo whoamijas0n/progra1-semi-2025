@@ -114,7 +114,20 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// ✅ Servicio para captura RFID
+builder.Services.AddSingleton<IRfidCaptureService, RfidCaptureService>();
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
+
+
+// ✅ Inyectar HttpContextAccessor en el servicio RFID
+using (var scope = app.Services.CreateScope())
+{
+    var captureService = scope.ServiceProvider.GetRequiredService<IRfidCaptureService>();
+    var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+    captureService.RegisterHttpContextAccessor(httpContextAccessor);
+}
 
 // ========================================
 // MIDDLEWARE PIPELINE
@@ -127,6 +140,8 @@ app.UseCors("AllowAll");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+
+
 // Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
@@ -138,8 +153,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 // IMPORTANTE: Orden correcto del middleware
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
 
 // Sesiones (debe ir ANTES de Authentication)
 app.UseSession();

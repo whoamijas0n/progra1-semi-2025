@@ -1036,6 +1036,84 @@
         }
       }
     },
+    "/api/Rfid/capture/start": {
+      "post": {
+        "tags": [
+          "Rfid"
+        ],
+        "parameters": [
+          {
+            "name": "duration",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Rfid/capture/result": {
+      "get": {
+        "tags": [
+          "Rfid"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Rfid/capture/status": {
+      "get": {
+        "tags": [
+          "Rfid"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Rfid/capture/unknown": {
+      "post": {
+        "tags": [
+          "Rfid"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaRfidDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaRfidDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaRfidDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Rfid": {
       "get": {
         "tags": [
@@ -1791,6 +1869,16 @@
         },
         "additionalProperties": false
       },
+      "CapturaRfidDto": {
+        "type": "object",
+        "properties": {
+          "codigoRfid": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DepartamentoCreateDto": {
         "type": "object",
         "properties": {
@@ -1836,11 +1924,11 @@
           },
           "fechaNacimiento": {
             "type": "string",
-            "format": "date"
+            "nullable": true
           },
           "fechaIngreso": {
             "type": "string",
-            "format": "date"
+            "nullable": true
           },
           "fotoUrl": {
             "type": "string",

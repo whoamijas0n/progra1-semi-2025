@@ -1,5 +1,6 @@
 ﻿using fiexpress.Data;
 using fiexpress.Models;
+using fiexpress.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,46 +13,61 @@ namespace fiexpress.Controllers
     {
         private readonly MyDbContext _context;
         private readonly ILogger<FichajesController> _logger;
-
-        public FichajesController(MyDbContext context, ILogger<FichajesController> logger)
+        private readonly IRfidCaptureService _captureService;
+        public FichajesController(MyDbContext context, ILogger<FichajesController> logger, IRfidCaptureService captureService)
         {
             _context = context;
             _logger = logger;
+            _captureService = captureService;
         }
 
         // POST: api/fichajes/rfid — Para el ESP32
+        // POST: api/fichajes/rfid
         [HttpPost("rfid")]
         [AllowAnonymous]
         public async Task<IActionResult> RegistrarFichajeRFID([FromBody] FichajeRFIDRequest request)
         {
             try
             {
+                // Buscar tarjeta RFID
                 var rfid = await _context.Rfids
                     .Include(r => r.Empleado)
                     .FirstOrDefaultAsync(r => r.codigo_rfid == request.CodigoRFID && r.activo);
 
                 if (rfid == null)
+                {
+                    // ✅ NUEVO: Notificar al servicio de captura de tarjetas desconocidas
+                    _captureService?.CaptureUnknownRfid(request.CodigoRFID);
+
+                    // Devolver error para que el ESP32 sepa que no es válida
                     return BadRequest(new { mensaje = "Tarjeta no válida" });
+                }
 
-                if (!rfid.Empleado.activo)
+                var empleado = rfid.Empleado;
+                if (!empleado.activo)
+                {
                     return BadRequest(new { mensaje = "Empleado inactivo" });
+                }
 
-                // ✅ CORREGIDO: usar DateTime.Today
-                var hoy = DateOnly.FromDateTime(DateTime.Today);
+                var hoy = DateOnly.FromDateTime(DateTime.Today); // ✅ Usar Today, no Now
                 var ahora = TimeOnly.FromDateTime(DateTime.Now);
 
+                // Determinar tipo de fichaje
                 var ultimoFichaje = await _context.Fichajes
-                    .Where(f => f.idEmpleadoFichaje == rfid.Empleado.idEmpleado && f.fecha == hoy)
+                    .Where(f => f.idEmpleadoFichaje == empleado.idEmpleado && f.fecha == hoy)
                     .OrderByDescending(f => f.hora)
                     .FirstOrDefaultAsync();
 
                 string tipoFichaje = "Entrada";
                 if (ultimoFichaje != null)
+                {
                     tipoFichaje = ultimoFichaje.tipo == "Entrada" ? "Salida" : "Entrada";
+                }
 
+                // Crear fichaje
                 var fichaje = new Fichaje
                 {
-                    idEmpleadoFichaje = rfid.Empleado.idEmpleado,
+                    idEmpleadoFichaje = empleado.idEmpleado,
                     fecha = hoy,
                     hora = ahora,
                     tipo = tipoFichaje,
@@ -65,7 +81,7 @@ namespace fiexpress.Controllers
                 return Ok(new
                 {
                     mensaje = $"Fichaje de {tipoFichaje} registrado",
-                    empleado = rfid.Empleado.nombre,
+                    empleado = empleado.nombre,
                     hora = ahora.ToString("HH:mm"),
                     tipo = tipoFichaje
                 });

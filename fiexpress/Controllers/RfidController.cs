@@ -4,10 +4,12 @@
 // ========================================
 using fiexpress.Data;
 using fiexpress.Models;
+using fiexpress.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace fiexpress.Controllers
 {
@@ -18,12 +20,62 @@ namespace fiexpress.Controllers
     {
         private readonly MyDbContext _context;
         private readonly ILogger<RfidController> _logger;
+        private readonly IRfidCaptureService _captureService;
 
-        public RfidController(MyDbContext context, ILogger<RfidController> logger)
+        public RfidController(MyDbContext context, ILogger<RfidController> logger, IRfidCaptureService captureService)
         {
             _context = context;
             _logger = logger;
+            _captureService = captureService;
         }
+
+        // POST: api/rfid/capture/start
+        [HttpPost("capture/start")]
+        [Authorize(Roles = "Admin,Supervisor")]
+        public IActionResult StartCapture([FromQuery] int duration = 30)
+        {
+            var supervisorId = int.Parse(User.FindFirst("SupervisorId")?.Value
+                              ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            _captureService.StartCapture(supervisorId, duration);
+            return Ok(new { mensaje = "Modo de captura activado", duracion_segundos = duration });
+        }
+
+        // GET: api/rfid/capture/result
+        [HttpGet("capture/result")]
+        [Authorize(Roles = "Admin,Supervisor")]
+        public IActionResult GetCaptureResult()
+        {
+            var supervisorId = int.Parse(User.FindFirst("SupervisorId")?.Value
+                              ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var rfid = _captureService.GetLastCapturedRfid(supervisorId);
+            return Ok(new { rfid });
+        }
+
+        // GET: api/rfid/capture/status
+        [HttpGet("capture/status")]
+        [Authorize(Roles = "Admin,Supervisor")]
+        public IActionResult GetCaptureStatus()
+        {
+            var supervisorId = int.Parse(User.FindFirst("SupervisorId")?.Value
+                              ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var activo = _captureService.IsCaptureActive(supervisorId);
+            return Ok(new { activo });
+        }
+
+        // POST: api/rfid/capture/unknown (para ESP32)
+        [HttpPost("capture/unknown")]
+        [AllowAnonymous]
+        public IActionResult CaptureUnknown([FromBody] CapturaRfidDto dto)
+        {
+            if (!string.IsNullOrWhiteSpace(dto.codigoRfid))
+            {
+                _captureService.CaptureUnknownRfid(dto.codigoRfid);
+                return Ok(new { mensaje = "Código RFID capturado para supervisores activos" });
+            }
+            return BadRequest(new { mensaje = "Código RFID requerido" });
+        }
+
+      
 
         // GET: api/rfid
         [HttpGet]
@@ -272,6 +324,9 @@ namespace fiexpress.Controllers
             }
         }
 
+
+
+
         // GET: api/rfid/empleados-sin-tarjeta
         [HttpGet("empleados-sin-tarjeta")]
         public async Task<IActionResult> GetEmpleadosSinTarjeta()
@@ -326,5 +381,9 @@ namespace fiexpress.Controllers
 
         [Required]
         public int IdEmpleado { get; set; }
+    }
+    public class CapturaRfidDto
+    {
+        public string codigoRfid { get; set; }
     }
 }

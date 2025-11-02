@@ -352,6 +352,32 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.FichajesController",
+    "Method": "GetAll",
+    "RelativePath": "api/Fichajes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fecha",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "empleadoId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "tipo",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.FichajesController",
     "Method": "GetFichajesPorEmpleado",
     "RelativePath": "api/Fichajes/empleado/{idEmpleado}",
     "HttpMethod": "GET",
@@ -369,16 +395,6 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.FichajesController",
-    "Method": "GetFichajesHoy",
-    "RelativePath": "api/Fichajes/hoy",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -506,142 +522,6 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.IncidenciasController",
-    "Method": "CrearIncidencia",
-    "RelativePath": "api/Incidencias",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "fiexpress.Controllers.IncidenciaCreateDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.IncidenciasController",
-    "Method": "ResolverIncidencia",
-    "RelativePath": "api/Incidencias/{id}/resolver",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.IncidenciasController",
-    "Method": "GetByEmpleado",
-    "RelativePath": "api/Incidencias/empleado/{idEmpleado}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "idEmpleado",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.IncidenciasController",
-    "Method": "GetIncidenciasPendientes",
-    "RelativePath": "api/Incidencias/pending",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "CrearJustificacion",
-    "RelativePath": "api/Justificaciones",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "fiexpress.Controllers.JustificacionCreateDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "AprobarJustificacion",
-    "RelativePath": "api/Justificaciones/{id}/aprobar",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "RechazarJustificacion",
-    "RelativePath": "api/Justificaciones/{id}/rechazar",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "GetHistorialJustificaciones",
-    "RelativePath": "api/Justificaciones/historial",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "GetMisJustificaciones",
-    "RelativePath": "api/Justificaciones/mis-justificaciones",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.JustificacionesController",
-    "Method": "GetJustificacionesPendientes",
-    "RelativePath": "api/Justificaciones/pending",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": []
   },
   {

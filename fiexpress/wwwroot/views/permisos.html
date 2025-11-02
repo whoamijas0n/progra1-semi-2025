@@ -1,89 +1,237 @@
-﻿<!-- views/permisos-supervisor.html -->
-<div class="container-fluid py-4">
+﻿<div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
-            <h2><i class="bi bi-file-text text-success"></i> Gestión de Permisos</h2>
-            <p class="text-muted">Aprueba o rechaza solicitudes de permisos</p>
+            <h2 class="mb-3">
+                <i class="bi bi-file-text text-primary"></i> Gestión de Permisos
+            </h2>
         </div>
     </div>
-    <div class="card">
+
+    <!-- 🔍 Panel de filtros (aplica a ambas pestañas) -->
+    <div class="card mb-4">
         <div class="card-body">
-            <div id="tabla-permisos-supervisor" class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Empleado</th>
-                            <th>Tipo</th>
-                            <th>Fechas</th>
-                            <th>Motivo</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-permisos">
-                        <tr><td colspan="6" class="text-center"><div class="spinner-border spinner-border-sm"></div> Cargando...</td></tr>
-                    </tbody>
-                </table>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Buscar empleado</label>
+                    <input type="text" class="form-control" id="filtro-empleado" placeholder="Nombre o código">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" id="filtro-tipo">
+                        <option value="">Todos</option>
+                        <option value="Ausencia">Ausencia</option>
+                        <option value="Vacaciones">Vacaciones</option>
+                        <option value="Enfermedad">Enfermedad</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" id="filtro-estado">
+                        <option value="">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Rechazado">Rechazado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" id="filtro-desde">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" id="filtro-hasta">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" onclick="PermisosSupervisorModule.aplicarFiltros()">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pestañas: Pendientes / Historial -->
+    <ul class="nav nav-tabs mb-4" id="permisosTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pendientes-tab" data-bs-toggle="tab" data-bs-target="#pendientes">Pendientes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial">Historial</button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Pendientes -->
+        <div class="tab-pane fade show active" id="pendientes">
+            <div id="lista-pendientes" class="row g-3">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="tab-pane fade" id="historial">
+            <div id="lista-historial" class="row g-3">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>async function cargarPermisosSupervisor() {
-        const tbody = document.getElementById('tbody-permisos');
-        try {
-            const res = await window.fetchAuth('/api/permisos?estado=Pendiente');
-            const permisos = await res.json();
+<script>
+    window.PermisosSupervisorModule = (function () {
+        let permisosPendientes = [];
+        let permisosHistorial = [];
+
+        async function cargarPendientes() {
+            try {
+                const res = await fetchAuth('/api/permisos/pending');
+                permisosPendientes = await res.json();
+                renderizarPendientes(permisosPendientes);
+            } catch (error) {
+                document.getElementById('lista-pendientes').innerHTML = `<div class="col-12"><div class="alert alert-danger">Error al cargar permisos pendientes</div></div>`;
+            }
+        }
+
+        async function cargarHistorial() {
+            try {
+                const res = await fetchAuth('/api/permisos/historial');
+                permisosHistorial = await res.json();
+                renderizarHistorial(permisosHistorial);
+            } catch (error) {
+                document.getElementById('lista-historial').innerHTML = `<div class="col-12"><div class="alert alert-danger">Error al cargar historial</div></div>`;
+            }
+        }
+
+        function aplicarFiltros() {
+            const texto = document.getElementById('filtro-empleado').value.toLowerCase();
+            const tipo = document.getElementById('filtro-tipo').value;
+            const estado = document.getElementById('filtro-estado').value;
+            const desde = document.getElementById('filtro-desde').value;
+            const hasta = document.getElementById('filtro-hasta').value;
+
+            // Filtrar pendientes (estado siempre "Pendiente")
+            let filtradosPendientes = permisosPendientes.filter(p => {
+                const matchEmpleado = p.empleado.nombre.toLowerCase().includes(texto) ||
+                    p.empleado.codigo_empleado.toLowerCase().includes(texto);
+                const matchTipo = !tipo || p.tipo === tipo;
+                const matchFecha = (!desde || p.fecha_solicitud >= desde) && (!hasta || p.fecha_solicitud <= hasta);
+                return matchEmpleado && matchTipo && matchFecha;
+            });
+            renderizarPendientes(filtradosPendientes);
+
+            // Filtrar historial (incluye estado)
+            let filtradosHistorial = permisosHistorial.filter(p => {
+                const matchEmpleado = p.empleado.nombre.toLowerCase().includes(texto) ||
+                    p.empleado.codigo_empleado.toLowerCase().includes(texto);
+                const matchTipo = !tipo || p.tipo === tipo;
+                const matchEstado = !estado || p.estado === estado;
+                const matchFecha = (!desde || p.fecha_solicitud >= desde) && (!hasta || p.fecha_solicitud <= hasta);
+                return matchEmpleado && matchTipo && matchEstado && matchFecha;
+            });
+            renderizarHistorial(filtradosHistorial);
+        }
+
+        function renderizarPendientes(permisos) {
+            const container = document.getElementById('lista-pendientes');
             if (permisos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay solicitudes pendientes</td></tr>';
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">No hay permisos pendientes</div></div>';
                 return;
             }
-            tbody.innerHTML = permisos.map(p => `
-                <tr>
-                    <td>${p.empleado.nombre}</td>
-                    <td><span class="badge bg-info">${p.tipo}</span></td>
-                    <td>${p.fecha_inicio} → ${p.fecha_fin}</td>
-                    <td>${p.motivo}</td>
-                    <td><span class="badge bg-warning">Pendiente</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-success me-1" onclick="aprobarPermiso(${p.idPermiso})">
-                            <i class="bi bi-check"></i> Aprobar
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="rechazarPermiso(${p.idPermiso})">
-                            <i class="bi bi-x"></i> Rechazar
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        } catch (error) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error al cargar permisos</td></tr>';
-        }
-    }
 
-    async function aprobarPermiso(id) {
-        if (!confirm('¿Aprobar esta solicitud?')) return;
-        try {
-            const res = await window.fetchAuth(`/api/permisos/${id}/aprobar`, { method: 'PUT' });
-            if (res.ok) {
-                alert('Permiso aprobado');
-                cargarPermisosSupervisor();
+            container.innerHTML = permisos.map(p => `
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>${p.empleado.nombre} (${p.empleado.codigo_empleado})</h6>
+                        <p class="text-muted mb-1">${p.motivo}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> ${p.fecha_inicio} al ${p.fecha_fin} |
+                            <i class="bi bi-building"></i> ${p.empleado.departamento} |
+                            <span class="badge bg-warning">${p.tipo}</span>
+                        </small>
+                        <div class="mt-3">
+                            <button class="btn btn-success btn-sm me-2" onclick="PermisosSupervisorModule.aprobar(${p.idPermiso})">
+                                <i class="bi bi-check"></i> Aprobar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="PermisosSupervisorModule.rechazar(${p.idPermiso})">
+                                <i class="bi bi-x"></i> Rechazar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        function renderizarHistorial(permisos) {
+            const container = document.getElementById('lista-historial');
+            if (permisos.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">No hay historial de permisos</div></div>';
+                return;
             }
-        } catch (error) {
-            alert('Error al aprobar');
-        }
-    }
 
-    async function rechazarPermiso(id) {
-        if (!confirm('¿Rechazar esta solicitud?')) return;
-        try {
-            const res = await window.fetchAuth(`/api/permisos/${id}/rechazar`, { method: 'PUT' });
-            if (res.ok) {
-                alert('Permiso rechazado');
-                cargarPermisosSupervisor();
+            container.innerHTML = permisos.map(p => `
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h6>${p.empleado.nombre} (${p.empleado.codigo_empleado})</h6>
+                            <span class="badge ${p.estado === 'Aprobado' ? 'bg-success' : 'bg-danger'}">${p.estado}</span>
+                        </div>
+                        <p class="text-muted mb-1">${p.motivo}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> ${p.fecha_inicio} al ${p.fecha_fin} |
+                            <i class="bi bi-person"></i> ${p.supervisor || 'N/A'} |
+                            <span class="badge bg-secondary">${p.tipo}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        async function aprobar(id) {
+            if (!confirm('¿Aprobar esta solicitud?')) return;
+            try {
+                await fetchAuth(`/api/permisos/${id}/aprobar`, { method: 'PUT' });
+                alert('✅ Aprobado');
+                cargarPendientes();
+                cargarHistorial();
+            } catch (error) {
+                alert('❌ Error al aprobar');
             }
-        } catch (error) {
-            alert('Error al rechazar');
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', cargarPermisosSupervisor);</script>
+        async function rechazar(id) {
+            if (!confirm('¿Rechazar esta solicitud?')) return;
+            try {
+                await fetchAuth(`/api/permisos/${id}/rechazar`, { method: 'PUT' });
+                alert('✅ Rechazado');
+                cargarPendientes();
+                cargarHistorial();
+            } catch (error) {
+                alert('❌ Error al rechazar');
+            }
+        }
+
+        // Inicializar
+        cargarPendientes();
+        cargarHistorial();
+
+        return {
+            aprobar,
+            rechazar,
+            aplicarFiltros
+        };
+    })();
+</script>

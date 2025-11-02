@@ -53,6 +53,7 @@ namespace fiexpress.Models
 
         // ✅ AGREGADAS - Relaciones que faltaban
         public ICollection<Incidencia> Incidencias { get; set; }
+        public ICollection<Justificacion> Justificaciones { get; set; }
 
         // ✅ AGREGADAS - Relaciones 1:1
         public Supervisor Supervisor { get; set; }

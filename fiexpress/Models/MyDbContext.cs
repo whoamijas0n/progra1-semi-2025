@@ -110,16 +110,18 @@ namespace fiexpress.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ✅ Justificacion -> Incidencia y Supervisor
-            modelBuilder.Entity<Justificacion>()
-                .HasOne(j => j.Incidencia)
-                .WithMany(i => i.Justificaciones)
-                .HasForeignKey(j => j.idIncidencia)
-                .OnDelete(DeleteBehavior.Restrict);
+  
 
             modelBuilder.Entity<Justificacion>()
                 .HasOne(j => j.Supervisor)
                 .WithMany(s => s.Justificaciones)
                 .HasForeignKey(j => j.idJustificacionSupervisor)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Justificacion>()
+                .HasOne(j => j.Empleado)
+                .WithMany(s => s.Justificaciones)
+                .HasForeignKey(j => j.idJustificacionEmpleado)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Notificacion -> Empleado

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-dep\\fiexpress\\fiexpress.csproj": {}
+    "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-gw\\fiexpress\\fiexpress.csproj": {}
   },
   "projects": {
-    "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-dep\\fiexpress\\fiexpress.csproj": {
+    "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-gw\\fiexpress\\fiexpress.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-dep\\fiexpress\\fiexpress.csproj",
+        "projectUniqueName": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-gw\\fiexpress\\fiexpress.csproj",
         "projectName": "fiexpress",
-        "projectPath": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-dep\\fiexpress\\fiexpress.csproj",
+        "projectPath": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-gw\\fiexpress\\fiexpress.csproj",
         "packagesPath": "C:\\Users\\rousemary\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-dep\\fiexpress\\obj\\",
+        "outputPath": "C:\\Users\\rousemary\\Source\\Repos\\fiexpress-gw\\fiexpress\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

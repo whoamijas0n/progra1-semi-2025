@@ -10,13 +10,13 @@ namespace fiexpress.Models
         [Key]
         public int idJustificacion { get; set; }
 
-        [ForeignKey("Incidencia")]
-        public int idIncidencia { get; set; }
-        public Incidencia Incidencia { get; set; }
 
         [ForeignKey("Supervisor")]
-        public int idJustificacionSupervisor { get; set; }
+        public int? idJustificacionSupervisor { get; set; }
         public Supervisor Supervisor { get; set; }
+        [ForeignKey("Empleado")]
+        public int? idJustificacionEmpleado { get; set; }
+        public Empleado Empleado { get; set; }
 
         [MaxLength(50)]
         public string documento_url { get; set; }

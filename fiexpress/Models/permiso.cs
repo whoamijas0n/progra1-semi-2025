@@ -15,7 +15,7 @@ namespace fiexpress.Models
         public Empleado Empleado { get; set; }
 
         [ForeignKey("Supervisor")]
-        public int idPermisoSupervisor { get; set; }
+        public int? idPermisoSupervisor { get; set; }
         public Supervisor Supervisor { get; set; }
 
         [Required, MaxLength(50)]

@@ -509,6 +509,142 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "fiexpress.Controllers.IncidenciasController",
+    "Method": "CrearIncidencia",
+    "RelativePath": "api/Incidencias",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "fiexpress.Controllers.IncidenciaCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.IncidenciasController",
+    "Method": "ResolverIncidencia",
+    "RelativePath": "api/Incidencias/{id}/resolver",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.IncidenciasController",
+    "Method": "GetByEmpleado",
+    "RelativePath": "api/Incidencias/empleado/{idEmpleado}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idEmpleado",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.IncidenciasController",
+    "Method": "GetIncidenciasPendientes",
+    "RelativePath": "api/Incidencias/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "CrearJustificacion",
+    "RelativePath": "api/Justificaciones",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "fiexpress.Controllers.JustificacionCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "AprobarJustificacion",
+    "RelativePath": "api/Justificaciones/{id}/aprobar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "RechazarJustificacion",
+    "RelativePath": "api/Justificaciones/{id}/rechazar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "GetHistorialJustificaciones",
+    "RelativePath": "api/Justificaciones/historial",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "GetMisJustificaciones",
+    "RelativePath": "api/Justificaciones/mis-justificaciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.JustificacionesController",
+    "Method": "GetJustificacionesPendientes",
+    "RelativePath": "api/Justificaciones/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "fiexpress.Controllers.NotificacionesController",
     "Method": "GetAll",
     "RelativePath": "api/Notificaciones",
@@ -577,6 +713,84 @@
     "Method": "MarcarTodasComoLeidas",
     "RelativePath": "api/Notificaciones/leer-todas",
     "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "SolicitarPermiso",
+    "RelativePath": "api/Permisos",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "fiexpress.Controllers.PermisoCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "AprobarPermiso",
+    "RelativePath": "api/Permisos/{id}/aprobar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "RechazarPermiso",
+    "RelativePath": "api/Permisos/{id}/rechazar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "GetHistorialPermisos",
+    "RelativePath": "api/Permisos/historial",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "GetMisPermisos",
+    "RelativePath": "api/Permisos/mis-permisos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.PermisosController",
+    "Method": "GetPermisosPendientes",
+    "RelativePath": "api/Permisos/pending",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],

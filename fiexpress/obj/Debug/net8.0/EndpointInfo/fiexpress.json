@@ -224,34 +224,6 @@
               "type": "boolean",
               "default": false
             }
-          },
-          {
-            "name": "departamento",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "estado",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "rol",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "buscar",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -397,14 +369,14 @@
         }
       }
     },
-    "/api/Empleados/por-departamento/{idDepartamento}": {
-      "get": {
+    "/api/Empleados/{id}/regenerar-avatar": {
+      "put": {
         "tags": [
           "Empleados"
         ],
         "parameters": [
           {
-            "name": "idDepartamento",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -412,18 +384,6 @@
               "format": "int32"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Empleados/estadisticas": {
-      "get": {
-        "tags": [
-          "Empleados"
         ],
         "responses": {
           "200": {

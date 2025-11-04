@@ -1,4 +1,5 @@
-﻿using fiexpress.Data;
+﻿using fiexpress.Controllers;
+using fiexpress.Data;
 using fiexpress.Models;
 using fiexpress.Services;
 using Microsoft.EntityFrameworkCore;
@@ -113,10 +114,12 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+builder.Services.AddScoped<EmpleadosController>(); // Si no está ya
 
 // ✅ Servicio para captura RFID
 builder.Services.AddSingleton<IRfidCaptureService, RfidCaptureService>();
 builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 

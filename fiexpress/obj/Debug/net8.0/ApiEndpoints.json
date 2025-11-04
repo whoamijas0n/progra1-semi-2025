@@ -132,7 +132,7 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "GetAll",
+    "Method": "GetEmpleados",
     "RelativePath": "api/Empleados",
     "HttpMethod": "GET",
     "IsController": true,
@@ -142,33 +142,13 @@
         "Name": "incluirInactivos",
         "Type": "System.Boolean",
         "IsRequired": false
-      },
-      {
-        "Name": "departamento",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "estado",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "rol",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "buscar",
-        "Type": "System.String",
-        "IsRequired": false
       }
     ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "Create",
+    "Method": "CrearEmpleado",
     "RelativePath": "api/Empleados",
     "HttpMethod": "POST",
     "IsController": true,
@@ -184,7 +164,7 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "GetById",
+    "Method": "GetEmpleado",
     "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -200,7 +180,7 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "Update",
+    "Method": "ActualizarEmpleado",
     "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -221,7 +201,7 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "Delete",
+    "Method": "DesactivarEmpleado",
     "RelativePath": "api/Empleados/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -237,7 +217,7 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "Activar",
+    "Method": "ActivarEmpleado",
     "RelativePath": "api/Empleados/{id}/activar",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -253,24 +233,14 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "GetEstadisticas",
-    "RelativePath": "api/Empleados/estadisticas",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.EmpleadosController",
-    "Method": "GetByDepartamento",
-    "RelativePath": "api/Empleados/por-departamento/{idDepartamento}",
-    "HttpMethod": "GET",
+    "Method": "RegenerarAvatar",
+    "RelativePath": "api/Empleados/{id}/regenerar-avatar",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "idDepartamento",
+        "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
       }

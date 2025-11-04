@@ -389,41 +389,57 @@
             }
             state.modalEditar.show();
         }
-
         async function guardarEdicion() {
             const id = document.getElementById('editTarjetaId').value;
             const codigo = document.getElementById('editCodigoRFID').value.trim();
             const activo = document.getElementById('editActivo').checked;
+
             if (!codigo) {
                 mostrarAlerta('El código RFID es obligatorio', 'warning');
                 return;
             }
+
             toggleBotonGuardar(true);
+
             try {
                 const t = state.tarjetas.find(x => x.idRfid == id);
-                if (!t) throw new Error('Tarjeta no encontrada');
+                if (!t || !t.empleado) {
+                    mostrarAlerta('No se puede editar: la tarjeta no está asignada a un empleado', 'danger');
+                    return;
+                }
+
+                // ✅ CORREGIDO: Usar t.empleado.idEmpleado (no t.idEmpleadoAsignado)
                 const res = await fetchAuth(`/api/rfid/${id}`, {
                     method: 'PUT',
-                    body: JSON.stringify({ codigoRfid: codigo, idEmpleado: t.idEmpleadoAsignado })
+                    body: JSON.stringify({
+                        codigoRfid: codigo,
+                        idEmpleado: t.empleado.idEmpleado
+                    })
                 });
+
                 if (res.ok) {
+                    // Si el estado de activo cambió, gestionar por separado
                     if (activo !== t.activo) {
                         const url = activo ? `/api/rfid/${id}/activar` : `/api/rfid/${id}`;
-                        await fetchAuth(url, { method: activo ? 'PUT' : 'DELETE' });
+                        const method = activo ? 'PUT' : 'DELETE';
+                        await fetchAuth(url, { method });
                     }
-                    mostrarAlerta('✅ Tarjeta actualizada', 'success');
+
+                    mostrarAlerta('✅ Tarjeta actualizada correctamente', 'success');
                     state.modalEditar.hide();
                     await cargarTarjetas();
                 } else {
                     const err = await res.json();
-                    mostrarAlerta(err.mensaje || 'Error al actualizar', 'danger');
+                    mostrarAlerta(err.mensaje || 'Error al actualizar la tarjeta', 'danger');
                 }
             } catch (err) {
-                mostrarAlerta('Error al guardar', 'danger');
+                console.error('Error en guardarEdicion:', err);
+                mostrarAlerta('Error al guardar los cambios', 'danger');
             } finally {
                 toggleBotonGuardar(false);
             }
         }
+       
 
         async function cambiarEstado(id, activar) {
             try {

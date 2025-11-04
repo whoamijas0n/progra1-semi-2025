@@ -369,6 +369,16 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.FichajesController",
+    "Method": "GetFichajesHoy",
+    "RelativePath": "api/Fichajes/hoy",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.FichajesController",
     "Method": "RegistrarFichajeRFID",
     "RelativePath": "api/Fichajes/rfid",
     "HttpMethod": "POST",

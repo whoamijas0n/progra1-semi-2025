@@ -1,136 +1,245 @@
-﻿<!-- views/estadisticas-personales.html -->
+﻿<!-- /views/estadisticas-personales.html -->
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="mb-3">
-                <i class="bi bi-graph-up text-primary"></i>
-                Mis Estadísticas
+                <i class="bi bi-graph-up text-primary"></i> Mis Estadísticas
             </h2>
-            <p class="text-muted">Resumen de tu desempeño este mes</p>
+            <p class="text-muted">Tus estadísticas de asistencia basadas en tus fichajes y horarios</p>
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Días Trabajados</h6>
-                    <h3 class="mb-0 text-success" id="dias-trabajados">0</h3>
-                    <small class="text-muted" id="total-dias-mes">de 0 días</small>
+    <!-- Filtros de fechas -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Inicio</label>
+                    <input type="date" class="form-control" id="filtro-inicio">
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Asistencia</h6>
-                    <h3 class="mb-0 text-warning" id="porcentaje-asistencia">0%</h3>
-                    <small class="text-muted">Este mes</small>
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Fin</label>
+                    <input type="date" class="form-control" id="filtro-fin">
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-danger border-4 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Minutos de Retraso</h6>
-                    <h3 class="mb-0 text-danger" id="minutos-retraso">0</h3>
-                    <small class="text-muted">Total mensual</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Horas Extras</h6>
-                    <h3 class="mb-0 text-info" id="minutos-extra">0</h3>
-                    <small class="text-muted">Total mensual</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Resumen del Mes</h5>
-                </div>
-                <div class="card-body">
-                    <div class="progress mb-3" style="height: 20px;">
-                        <div class="progress-bar bg-success" role="progressbar" id="barra-asistencia" style="width: 0%"></div>
-                    </div>
-                    <p class="text-muted" id="detalle-asistencia">Cargando...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock-history"></i> Últimos Fichajes
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Hora</th>
-                                    <th>Tipo</th>
-                                    <th>Observación</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-fichajes-personales">
-                                <tr><td colspan="4" class="text-center text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</td></tr>
-                            </tbody>
-                        </table>
+                <div class="col-md-4">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="EstadisticasEmpleadoModule.cargarEstadisticas()">
+                            <i class="bi bi-filter"></i> Ver Estadísticas
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen personal -->
+    <div class="row g-4 mb-4" id="resumen-personal" style="display: none;">
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Días Trabajados</h6>
+                    <h3 id="dias-trabajados">0</h3>
+                    <small class="text-muted">Total del período</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Asistencia</h6>
+                    <h3 class="text-info" id="asistencia-porcentaje">0%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Retraso Total</h6>
+                    <h3 class="text-warning" id="total-retraso">0h</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Horas Extra</h6>
+                    <h3 class="text-primary" id="total-extra">0h</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle por día -->
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i> Detalle por Día
+            </h5>
+            <span class="text-muted small" id="periodo-seleccionado">Últimos 30 días</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Horas Trabajadas</th>
+                            <th>Retraso</th>
+                            <th>Extra</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-detalle">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Selecciona un rango de fechas para ver tus estadísticas
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    async function cargarEstadisticasPersonales() {
-        try {
-            const res = await window.fetchAuth('/api/estadisticas/personales');
-            const data = await res.json();
+    // Módulo de Estadísticas para Empleados
+    window.EstadisticasEmpleadoModule = (function () {
+        'use strict';
 
-            document.getElementById('dias-trabajados').textContent = data.resumen.diasTrabajados;
-            document.getElementById('total-dias-mes').textContent = `de ${data.resumen.totalDias} días`;
-            document.getElementById('porcentaje-asistencia').textContent = `${data.resumen.porcentajeAsistencia}%`;
-            document.getElementById('minutos-retraso').textContent = data.resumen.minutosRetraso;
-            document.getElementById('minutos-extra').textContent = data.resumen.minutosExtra;
+        async function cargarEstadisticas() {
+            const inicio = document.getElementById('filtro-inicio').value;
+            const fin = document.getElementById('filtro-fin').value;
 
-            const barra = document.getElementById('barra-asistencia');
-            const detalle = document.getElementById('detalle-asistencia');
-            barra.style.width = `${data.resumen.porcentajeAsistencia}%`;
-            barra.textContent = `${data.resumen.porcentajeAsistencia}%`;
-            detalle.textContent = `Has asistido ${data.resumen.diasTrabajados} de ${data.resumen.totalDias} días laborables este mes.`;
-
-            const tbody = document.getElementById('tabla-fichajes-personales');
-            if (data.ultimosFichajes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fichajes recientes</td></tr>';
+            if (!inicio || !fin) {
+                mostrarAlerta('Selecciona ambas fechas', 'warning');
                 return;
             }
-            tbody.innerHTML = data.ultimosFichajes.map(f => `
+
+            const empleadoId = window.app.usuario?.idEmpleado;
+            if (!empleadoId) {
+                mostrarError('No se pudo obtener tu ID de empleado');
+                return;
+            }
+
+            mostrarLoading();
+
+            try {
+                const response = await window.fetchAuth(`/api/estadisticas/empleado/${empleadoId}?inicio=${inicio}&fin=${fin}`);
+                if (!response.ok) throw new Error('Error al cargar estadísticas');
+
+                const data = await response.json();
+                renderizarEstadisticas(data);
+                document.getElementById('periodo-seleccionado').textContent =
+                    `${new Date(inicio).toLocaleDateString('es-ES')} - ${new Date(fin).toLocaleDateString('es-ES')}`;
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('No se pudieron cargar tus estadísticas: ' + error.message);
+            }
+        }
+
+        function renderizarEstadisticas(data) {
+            const resumen = data.resumen;
+            document.getElementById('resumen-personal').style.display = 'flex';
+            document.getElementById('dias-trabajados').textContent = `${resumen.diasTrabajados}/${resumen.totalDias}`;
+            document.getElementById('asistencia-porcentaje').textContent = `${resumen.porcentajeAsistencia}%`;
+            document.getElementById('total-retraso').textContent = `${Math.floor(resumen.totalMinutosRetraso / 60)}h`;
+            document.getElementById('total-extra').textContent = `${Math.floor(resumen.totalMinutosExtra / 60)}h`;
+
+            const tbody = document.getElementById('tabla-detalle');
+            if (data.detallePorDia.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No hay datos en este período</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.detallePorDia.map(dia => `
                 <tr>
-                    <td>${f.fecha}</td>
-                    <td>${f.hora}</td>
-                    <td><span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">${f.tipo}</span></td>
-                    <td>${f.observacion || '—'}</td>
+                    <td>${new Date(dia.fecha).toLocaleDateString('es-ES')}</td>
+                    <td><span class="badge ${getBadgeClass(dia.estado_dia)}">${getEstadoTexto(dia.estado_dia)}</span></td>
+                    <td>${dia.horasTrabajadas}</td>
+                    <td>${dia.retrasoFormateado}</td>
+                    <td>${dia.extraFormateado}</td>
                 </tr>
             `).join('');
-        } catch (error) {
-            console.error('Error:', error);
-            document.getElementById('tabla-fichajes-personales').innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error al cargar datos</td></tr>';
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', cargarEstadisticasPersonales);
+        function getBadgeClass(estado) {
+            const clases = {
+                'NORMAL': 'bg-success',
+                'RETRASO_LEVE': 'bg-warning',
+                'RETRASO_GRAVE': 'bg-danger',
+                'EXTRA_NORMAL': 'bg-info',
+                'EXTRA_ALTO': 'bg-primary',
+                'AUSENTE': 'bg-secondary',
+                'NO_LABORAL': 'bg-light text-dark',
+                'SIN_HORARIO': 'bg-dark'
+            };
+            return clases[estado] || 'bg-secondary';
+        }
+
+        function getEstadoTexto(estado) {
+            const textos = {
+                'NORMAL': 'Normal',
+                'RETRASO_LEVE': 'Retraso Leve',
+                'RETRASO_GRAVE': 'Retraso Grave',
+                'EXTRA_NORMAL': 'Extra Normal',
+                'EXTRA_ALTO': 'Extra Alto',
+                'AUSENTE': 'Ausente',
+                'NO_LABORAL': 'No Laboral',
+                'SIN_HORARIO': 'Sin Horario'
+            };
+            return textos[estado] || estado;
+        }
+
+        function mostrarLoading() {
+            document.getElementById('tabla-detalle').innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Cargando tus estadísticas...
+                    </td>
+                </tr>
+            `;
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('tabla-detalle').innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-danger py-4">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+                        <p class="mb-0">${mensaje}</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function mostrarAlerta(mensaje, tipo = 'info') {
+            const div = document.createElement('div');
+            div.className = `alert alert-${tipo} position-fixed bottom-0 end-0 m-3`;
+            div.style.zIndex = '9999';
+            div.innerHTML = `${mensaje} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        // Inicializar fechas por defecto (últimos 30 días)
+        function init() {
+            const hoy = new Date();
+            const hace30 = new Date();
+            hace30.setDate(hoy.getDate() - 30);
+            document.getElementById('filtro-inicio').value = hace30.toISOString().split('T')[0];
+            document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        return {
+            cargarEstadisticas
+        };
+    })();
 </script>

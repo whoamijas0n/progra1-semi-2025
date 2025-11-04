@@ -440,6 +440,9 @@
             const hoy = new Date().toISOString().split('T')[0];
             document.getElementById('fechaIngreso').value = hoy;
 
+            document.getElementById('codigoEmpleado').disabled = false;
+
+
             // ✅ ASEGURAR que el campo oculto esté en true
             document.getElementById('empleadoActivo').value = 'true';
 
@@ -491,7 +494,6 @@
                 return;
             }
 
-            // Validaciones adicionales
             const fechaNacimiento = new Date(document.getElementById('fechaNacimiento').value);
             const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
             if (edad < 14) {
@@ -502,7 +504,6 @@
             const empleadoId = document.getElementById('empleadoId').value;
             const esEdicion = !!empleadoId;
 
-            // ✅ CORREGIDO: Incluir la propiedad 'activo' en true
             const datos = {
                 CodigoEmpleado: document.getElementById('codigoEmpleado').value.trim(),
                 Nombre: document.getElementById('nombreEmpleado').value.trim(),
@@ -512,22 +513,15 @@
                 FechaIngreso: document.getElementById('fechaIngreso').value,
                 FotoUrl: document.getElementById('fotoUrl').value.trim() || null,
                 IdDepartamento: parseInt(document.getElementById('selectDepartamento').value),
-                IdRol: parseInt(document.getElementById('selectRol').value),
-               // Activo: true // ✅ AGREGAR ESTA PROPIEDAD
+                IdRol: parseInt(document.getElementById('selectRol').value)
             };
 
-            // ✅ VERIFICAR que los datos sean correctos
-            console.log('📤 Enviando datos:', datos);
-
             toggleBotonGuardar(true);
-
             try {
                 let response;
                 if (esEdicion) {
-                    // Para edición, usar EmpleadoUpdateDto (sin Activo)
                     response = await fetchAuth(`/api/empleados/${empleadoId}`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             Nombre: datos.Nombre,
                             Email: datos.Email,
@@ -537,29 +531,43 @@
                         })
                     });
                 } else {
-                    // Para creación, usar EmpleadoCreateDto CON Activo
                     response = await fetchAuth('/api/empleados', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(datos)
                     });
                 }
 
+                // ✅ MANEJO SEGURO DE LA RESPUESTA
+                let mensajeExito = esEdicion
+                    ? "Empleado actualizado exitosamente"
+                    : "Empleado creado exitosamente";
+                let tieneError = false;
+                let mensajeError = "Error al guardar empleado";
+
                 if (response.ok) {
-                    const resultado = await response.json();
-                    mostrarAlerta(resultado.mensaje, 'success');
-
-                    if (state.modalEmpleado) {
-                        state.modalEmpleado.hide();
+                    // Intentar parsear JSON, pero si falla, asumir éxito
+                    try {
+                        const resultado = await response.json();
+                        if (resultado.mensaje) {
+                            mensajeExito = resultado.mensaje;
+                        }
+                    } catch (e) {
+                        // Respuesta no es JSON -> asumir éxito genérico
                     }
-
+                    mostrarAlerta(mensajeExito, 'success');
+                    if (state.modalEmpleado) state.modalEmpleado.hide();
                     await cargarEmpleados();
-
                 } else {
-                    const errorData = await response.json();
-                    mostrarAlerta(errorData.mensaje || 'Error al guardar empleado', 'danger');
+                    // Intentar obtener mensaje de error
+                    try {
+                        const errorData = await response.json();
+                        mensajeError = errorData.mensaje || mensajeError;
+                    } catch (e) {
+                        // No se pudo parsear JSON del error
+                        mensajeError = `Error ${response.status}: ${response.statusText}`;
+                    }
+                    mostrarAlerta(mensajeError, 'danger');
                 }
-
             } catch (error) {
                 console.error('❌ Error al guardar empleado:', error);
                 mostrarAlerta('Error de conexión al guardar empleado', 'danger');

@@ -93,6 +93,37 @@ namespace fiexpress.Controllers
             }
         }
 
+        // GET: api/fichajes/hoy
+        [HttpGet("hoy")]
+        [Authorize(Roles = "Admin,Supervisor")]
+        public async Task<IActionResult> GetFichajesHoy()
+        {
+            try
+            {
+                var hoy = DateOnly.FromDateTime(DateTime.Today);
+                var fichajes = await _context.Fichajes
+                    .Include(f => f.Empleado)
+                    .Where(f => f.fecha == hoy)
+                    .OrderByDescending(f => f.hora)
+                    .Select(f => new
+                    {
+                        f.idFichaje,
+                        empleado = f.Empleado.nombre,
+                        f.tipo,
+                        hora = f.hora.ToString("HH:mm"),
+                        f.ip
+                    })
+                    .ToListAsync();
+
+                return Ok(fichajes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener fichajes de hoy");
+                return StatusCode(500, new { mensaje = "Error al obtener fichajes de hoy" });
+            }
+        }
+
         // GET: api/fichajes/empleado/{id}?fecha=...
         [HttpGet("empleado/{idEmpleado}")]
         [Authorize]

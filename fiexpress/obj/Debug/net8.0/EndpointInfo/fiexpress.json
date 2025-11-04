@@ -525,6 +525,18 @@
         }
       }
     },
+    "/api/Fichajes/hoy": {
+      "get": {
+        "tags": [
+          "Fichajes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Fichajes/empleado/{idEmpleado}": {
       "get": {
         "tags": [

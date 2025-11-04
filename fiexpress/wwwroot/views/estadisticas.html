@@ -174,7 +174,7 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <script>
     // Módulo Completo de Estadísticas - CON BÚSQUEDA MEJORADA
     window.EstadisticasModule = (function () {
@@ -590,8 +590,77 @@
 
         // Exportar reporte
         function exportarReporte() {
-            mostrarAlerta('Función de exportación en desarrollo', 'info');
-            // TODO: Implementar exportación a Excel/PDF
+            if (!state.estadisticas) {
+                mostrarAlerta('No hay datos para exportar', 'warning');
+                return;
+            }
+
+            try {
+                const wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: "Reporte de Estadísticas - FiExpress",
+                    Author: "FiExpress",
+                    CreatedDate: new Date()
+                };
+
+                // === HOJA 1: Resumen General ===
+                wb.SheetNames.push("Resumen General");
+                const resumen = state.estadisticas.resumenGeneral || {};
+                const resumenData = [
+                    ["Período", state.estadisticas.periodo || "No especificado"],
+                    ["Total Empleados", state.estadisticas.totalEmpleados || "N/A"],
+                    ["Asistencia Promedio", `${(resumen.promedioAsistencia || 0).toFixed(1)}%`],
+                    ["Total Retraso (min)", resumen.totalRetraso || 0],
+                    ["Total Horas Extra (min)", resumen.totalExtra || 0],
+                    ["Días Trabajados Totales", resumen.totalDiasTrabajados || 0]
+                ];
+                const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+                wb.Sheets["Resumen General"] = wsResumen;
+
+                // === HOJA 2: Detalle por Empleado ===
+                let detalleData = [];
+
+                // Caso 1: Múltiples empleados → viene en estadisticasDetalladas
+                if (state.estadisticas.estadisticasDetalladas) {
+                    detalleData = state.estadisticas.estadisticasDetalladas.map(est => ({
+                        "Código Empleado": est.empleado?.codigo_empleado || "—",
+                        "Nombre": est.empleado?.nombre || "—",
+                        "Departamento": est.empleado?.departamento || "—",
+                        "Días Trabajados": `${est.diasTrabajados || 0}/${est.totalDias || 0}`,
+                        "Asistencia (%)": `${(est.porcentajeAsistencia || 0).toFixed(1)}%`,
+                        "Retraso Total (min)": est.totalMinutosRetraso || 0,
+                        "Horas Extra (min)": est.totalMinutosExtra || 0
+                    }));
+                }
+                // Caso 2: Un solo empleado → viene en empleado + resumen
+                else if (state.estadisticas.empleado) {
+                    const est = state.estadisticas;
+                    detalleData = [{
+                        "Código Empleado": est.empleado.codigo_empleado,
+                        "Nombre": est.empleado.nombre,
+                        "Departamento": est.empleado.departamento,
+                        "Días Trabajados": `${est.resumen.diasTrabajados || 0}/${est.resumen.totalDias || 0}`,
+                        "Asistencia (%)": `${(est.resumen.porcentajeAsistencia || 0).toFixed(1)}%`,
+                        "Retraso Total (min)": est.resumen.totalMinutosRetraso || 0,
+                        "Horas Extra (min)": est.resumen.totalMinutosExtra || 0
+                    }];
+                }
+
+                if (detalleData.length > 0) {
+                    wb.SheetNames.push("Detalle por Empleado");
+                    const wsDetalle = XLSX.utils.json_to_sheet(detalleData);
+                    wb.Sheets["Detalle por Empleado"] = wsDetalle;
+                }
+
+                // === Generar archivo ===
+                const fecha = new Date().toISOString().split('T')[0];
+                const fileName = `Estadisticas_FiExpress_${fecha}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                mostrarAlerta('✅ Reporte exportado correctamente', 'success');
+            } catch (error) {
+                console.error('Error al exportar:', error);
+                mostrarAlerta('❌ Error al generar el archivo Excel', 'danger');
+            }
         }
 
         // Funciones auxiliares

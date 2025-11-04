@@ -1,4 +1,5 @@
 ﻿using fiexpress.Data;
+using fiexpress.Extensions;
 using fiexpress.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,18 +62,18 @@ namespace fiexpress.Services
                 throw;
             }
         }
-
         public async Task<Estadistica> CalcularEstadisticaEmpleado(int empleadoId, DateOnly fecha)
         {
             try
             {
-                // Obtener horario activo del empleado
+                // 🔸 BUSCAR EL HORARIO QUE CUBRE ESA FECHA EXACTA (ACTIVO O NO)
+                // ✅ BUSCAR EL HORARIO QUE ERA VÁLIDO EN ESA FECHA, SIN IMPORTAR SI HOY ESTÁ ACTIVO
                 var horario = await _context.Horarios
                     .Include(h => h.Turno)
                     .Where(h => h.idHorario_De_Empleado == empleadoId &&
-                               h.activo &&
                                h.fecha_inicio <= fecha &&
                                (h.fecha_fin == null || h.fecha_fin >= fecha))
+                    .OrderByDescending(h => h.fecha_inicio) // Por si hay solapamiento, el más reciente del período
                     .FirstOrDefaultAsync();
 
                 // Obtener fichajes del día
@@ -92,6 +93,7 @@ namespace fiexpress.Services
                     minutos_extra = 0
                 };
 
+                // Si no tiene horario asignado ese día → no laboral
                 if (horario == null || !EsDiaLaboral(horario.Turno, fecha))
                 {
                     estadistica.estado_dia = "NO_LABORAL";
@@ -101,7 +103,7 @@ namespace fiexpress.Services
                 var entradaFichaje = fichajes.FirstOrDefault(f => f.tipo == "Entrada");
                 var salidaFichaje = fichajes.LastOrDefault(f => f.tipo == "Salida");
 
-                // Si no hay fichajes de entrada, es ausente
+                // Sin entrada → ausente
                 if (entradaFichaje == null)
                 {
                     return estadistica;
@@ -110,24 +112,27 @@ namespace fiexpress.Services
                 estadistica.asistencia = true;
                 var horaEntradaReal = entradaFichaje.hora;
                 var horaSalidaReal = salidaFichaje?.hora;
+                var turno = horario.Turno;
 
-                // Calcular retraso
-                var tolerancia = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(horario.Turno.tolerancia_minutos));
-                var horaEntradaEsperada = horario.Turno.hora_entrada;
+                // 🔸 CALCULAR RETRASO
+                var tolerancia = TimeSpan.FromMinutes(turno.tolerancia_minutos);
+                var horaEntradaEsperada = turno.hora_entrada.ToTimeSpan();
+                var horaEntradaRealTs = horaEntradaReal.ToTimeSpan();
 
-                if (horaEntradaReal > horaEntradaEsperada.Add(tolerancia.ToTimeSpan()))
+                if (horaEntradaRealTs > horaEntradaEsperada + tolerancia)
                 {
-                    var retraso = (int)(horaEntradaReal - horaEntradaEsperada).TotalMinutes;
-                    estadistica.minutos_retraso = Math.Max(0, retraso - horario.Turno.tolerancia_minutos);
+                    var retrasoTotal = (int)(horaEntradaRealTs - horaEntradaEsperada).TotalMinutes;
+                    estadistica.minutos_retraso = Math.Max(0, retrasoTotal - turno.tolerancia_minutos);
                 }
 
-                // Calcular horas trabajadas y extras
+                // 🔸 CALCULAR TIEMPO TRABAJADO Y EXTRA
                 if (horaSalidaReal.HasValue)
                 {
-                    var horasTrabajadas = (int)(horaSalidaReal.Value - horaEntradaReal).TotalMinutes;
+                    var salidaTs = horaSalidaReal.Value.ToTimeSpan();
+                    var horasTrabajadas = (int)(salidaTs - horaEntradaRealTs).TotalMinutes;
                     estadistica.minutos_trabajados = Math.Max(0, horasTrabajadas);
 
-                    var horasEsperadas = (int)(horario.Turno.hora_salida - horario.Turno.hora_entrada).TotalMinutes;
+                    var horasEsperadas = (int)(turno.hora_salida.ToTimeSpan() - turno.hora_entrada.ToTimeSpan()).TotalMinutes;
 
                     if (horasTrabajadas > horasEsperadas)
                     {
@@ -135,8 +140,8 @@ namespace fiexpress.Services
                     }
                 }
 
-                // Determinar estado del día
-                estadistica.estado_dia = DeterminarEstadoDia(estadistica, horario.Turno);
+                // 🔸 DETERMINAR ESTADO DEL DÍA
+                estadistica.estado_dia = DeterminarEstadoDia(estadistica, turno);
 
                 return estadistica;
             }
@@ -146,6 +151,7 @@ namespace fiexpress.Services
                 throw;
             }
         }
+
 
         private bool EsDiaLaboral(Turno turno, DateOnly fecha)
         {

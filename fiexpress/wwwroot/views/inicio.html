@@ -154,27 +154,27 @@
     </div>
 </div>
 
-<script>// Cargar datos del dashboard
+<script>
+    // Cargar datos del dashboard
     async function cargarDashboard() {
         try {
             // Cargar empleados
-            const respEmpleados = await fetch('/api/empleados', { credentials: 'include' });
+            const respEmpleados = await fetchAuth('/api/empleados?incluirInactivos=false');
             if (respEmpleados.ok) {
                 const empleadosData = await respEmpleados.json();
                 document.getElementById('total-empleados-dash').textContent = empleadosData.length;
-                document.getElementById('empleados-activos-dash').textContent =
-                    empleadosData.filter(e => e.activo).length;
+                document.getElementById('empleados-activos-dash').textContent = empleadosData.filter(e => e.activo).length;
             }
 
             // Cargar departamentos
-            const respDeptos = await fetch('/api/departamentos', { credentials: 'include' });
+            const respDeptos = await fetchAuth('/api/departamentos?incluirInactivos=false');
             if (respDeptos.ok) {
                 const deptosData = await respDeptos.json();
                 document.getElementById('total-departamentos').textContent = deptosData.length;
             }
 
-            // Cargar fichajes de hoy
-            const respFichajes = await fetch('/api/fichajes/hoy', { credentials: 'include' });
+            // ✅ Cargar fichajes de hoy (endpoint corregido)
+            const respFichajes = await fetchAuth('/api/fichajes/hoy'); // ✅ Ahora existe
             if (respFichajes.ok) {
                 const fichajesData = await respFichajes.json();
                 document.getElementById('fichajes-hoy').textContent = fichajesData.length;
@@ -182,30 +182,32 @@
             }
         } catch (error) {
             console.error('Error al cargar dashboard:', error);
+            // No romper el dashboard si fallan los fichajes
         }
     }
 
     function mostrarUltimosFichajes(fichajes) {
         const tbody = document.getElementById('ultimos-fichajes');
-
         if (fichajes.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fichajes hoy</td></tr>';
             return;
         }
-
-        tbody.innerHTML = fichajes.slice(0, 10).map(f => `
-            <tr>
-                <td>${f.empleado}</td>
-                <td>
-                    <span class="badge ${f.tipo === 'ENTRADA' ? 'bg-success' : 'bg-danger'}">
-                        ${f.tipo}
-                    </span>
-                </td>
-                <td>${f.hora}</td>
-                <td><span class="badge bg-info">Normal</span></td>
-            </tr>
-        `).join('');
+        // Mostrar los últimos 10
+        const ultimos = fichajes.slice(0, 10);
+        tbody.innerHTML = ultimos.map(f => `
+        <tr>
+            <td>${f.empleado || '—'}</td>
+            <td>
+                <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">
+                    ${f.tipo}
+                </span>
+            </td>
+            <td>${f.hora || '—'}</td>
+            <td><span class="badge bg-info">Normal</span></td>
+        </tr>
+    `).join('');
     }
 
     // Cargar al mostrar la vista
-    cargarDashboard();</script>
+    cargarDashboard();
+</script>

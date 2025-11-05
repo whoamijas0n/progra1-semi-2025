@@ -1,0 +1,370 @@
+﻿<!-- /views/notificaciones-admin.html -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-3">
+                    <i class="bi bi-bell-fill text-primary"></i> Gestión de Notificaciones
+                </h2>
+                <p class="text-muted">Envía mensajes o revisa alertas del sistema</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEnviarSimple">
+                    <i class="bi bi-send"></i> Enviar
+                </button>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEnviarMultiple">
+                    <i class="bi bi-send-check"></i> Múltiple
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-4 mb-4" id="resumen-notif">
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Total</h6>
+                    <h3 id="total-notif">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">No leídas</h6>
+                    <h3 class="text-warning" id="no-leidas-notif">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Hoy</h6>
+                    <h3 class="text-success" id="hoy-notif">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Leídas</h6>
+                    <h3 class="text-info" id="leidas-notif">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Empleado</label>
+                    <select class="form-select" id="filtro-notif-empleado">
+                        <option value="">Todos los empleados</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" id="filtro-notif-estado">
+                        <option value="">Todas</option>
+                        <option value="no-leidas">No leídas</option>
+                        <option value="leidas">Leídas</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" onclick="NotificacionesAdminModule.cargarTodo()">
+                        <i class="bi bi-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-inbox"></i> Notificaciones del Sistema
+                <span class="badge bg-primary ms-2" id="contador-notif-admin">0</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Título</th>
+                            <th>Mensaje</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-notif-admin">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Enviar simple -->
+<div class="modal fade" id="modalEnviarSimple" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5><i class="bi bi-send text-primary"></i> Enviar Notificación</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Empleado *</label>
+                    <select class="form-select" id="notif-empleado-simple" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Título *</label>
+                    <input type="text" class="form-control" id="notif-titulo" maxlength="50" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mensaje *</label>
+                    <textarea class="form-control" id="notif-mensaje" rows="3" maxlength="200" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="NotificacionesAdminModule.enviarSimple()">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Enviar múltiple -->
+<div class="modal fade" id="modalEnviarMultiple" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5><i class="bi bi-send-check text-primary"></i> Notificación Múltiple</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Empleados *</label>
+                        <select class="form-select" id="notif-empleados-multiple" multiple size="8" required>
+                            <!-- Llenado dinámico -->
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="notif-titulo-multi" maxlength="50" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mensaje *</label>
+                            <textarea class="form-control" id="notif-mensaje-multi" rows="3" maxlength="200" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="NotificacionesAdminModule.enviarMultiple()">Enviar a todos</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    window.NotificacionesAdminModule = (function () {
+        'use strict';
+        const state = { empleados: [] };
+
+        async function cargarEstadisticas() {
+            try {
+                const res = await window.fetchAuth('/api/notificaciones/estadisticas');
+                const stats = await res.json();
+                document.getElementById('total-notif').textContent = stats.totalNotificaciones;
+                document.getElementById('no-leidas-notif').textContent = stats.noLeidas;
+                document.getElementById('leidas-notif').textContent = stats.leidas;
+                document.getElementById('hoy-notif').textContent = stats.notificacionesHoy;
+            } catch (err) {
+                console.error('Error al cargar estadísticas:', err);
+            }
+        }
+
+        async function cargarNotificaciones() {
+            try {
+                const empleadoId = document.getElementById('filtro-notif-empleado').value;
+                const estado = document.getElementById('filtro-notif-estado').value;
+                let url = '/api/notificaciones';
+                const params = new URLSearchParams();
+                if (empleadoId) params.append('empleadoId', empleadoId);
+                if (estado === 'no-leidas') params.append('soloNoLeidas', 'true');
+                if (params.toString()) url += `?${params.toString()}`;
+
+                const res = await window.fetchAuth(url);
+                const notificaciones = await res.json();
+                renderizar(notificaciones);
+            } catch (err) {
+                console.error('Error al cargar notificaciones:', err);
+                document.getElementById('tabla-notif-admin').innerHTML = `
+                    <tr><td colspan="6" class="text-center text-danger py-4">Error al cargar</td></tr>
+                `;
+            }
+        }
+
+        async function cargarEmpleados() {
+            const res = await window.fetchAuth('/api/empleados?incluirInactivos=false');
+            state.empleados = await res.json();
+
+            // Para filtro
+            const filtroSelect = document.getElementById('filtro-notif-empleado');
+            filtroSelect.innerHTML = '<option value="">Todos los empleados</option>';
+
+            // Para modales
+            const simpleSelect = document.getElementById('notif-empleado-simple');
+            const multiSelect = document.getElementById('notif-empleados-multiple');
+            simpleSelect.innerHTML = '<option value="">Seleccionar...</option>';
+            multiSelect.innerHTML = '';
+
+            state.empleados.forEach(e => {
+                filtroSelect.innerHTML += `<option value="${e.idEmpleado}">${e.nombre} (${e.codigo_empleado})</option>`;
+                simpleSelect.innerHTML += `<option value="${e.idEmpleado}">${e.nombre}</option>`;
+                multiSelect.innerHTML += `<option value="${e.idEmpleado}">${e.nombre} (${e.codigo_empleado})</option>`;
+            });
+        }
+
+        function renderizar(notificaciones) {
+            const tbody = document.getElementById('tabla-notif-admin');
+            const contador = document.getElementById('contador-notif-admin');
+            contador.textContent = notificaciones.length;
+
+            if (notificaciones.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No hay notificaciones</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = notificaciones.map(n => `
+                <tr>
+                    <td><strong>${n.empleado.nombre}</strong><br><small>${n.empleado.codigo_empleado}</small></td>
+                    <td>${n.titulo}</td>
+                    <td>${n.mensaje}</td>
+                    <td>${new Date(n.fecha_envio).toLocaleString('es-ES')}</td>
+                    <td>
+                        <span class="badge ${n.leido ? 'bg-secondary' : 'bg-warning'}">
+                            ${n.leido ? 'Leída' : 'No leída'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="NotificacionesAdminModule.eliminar(${n.idNotificacion})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function enviarSimple() {
+            const empleadoId = document.getElementById('notif-empleado-simple').value;
+            const titulo = document.getElementById('notif-titulo').value.trim();
+            const mensaje = document.getElementById('notif-mensaje').value.trim();
+
+            if (!empleadoId || !titulo || !mensaje) {
+                alert('Completa todos los campos');
+                return;
+            }
+
+            try {
+                const res = await window.fetchAuth('/api/notificaciones', {
+                    method: 'POST',
+                    body: JSON.stringify({ IdEmpleado: parseInt(empleadoId), Titulo: titulo, Mensaje: mensaje })
+                });
+                if (res.ok) {
+                    alert('✅ Notificación enviada');
+                    document.querySelector('#modalEnviarSimple .btn-close').click();
+                    cargarTodo();
+                } else {
+                    const err = await res.json();
+                    alert('❌ ' + (err.mensaje || 'Error al enviar'));
+                }
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function enviarMultiple() {
+            const empleados = Array.from(document.getElementById('notif-empleados-multiple').selectedOptions)
+                .map(o => parseInt(o.value));
+            const titulo = document.getElementById('notif-titulo-multi').value.trim();
+            const mensaje = document.getElementById('notif-mensaje-multi').value.trim();
+
+            if (empleados.length === 0 || !titulo || !mensaje) {
+                alert('Selecciona empleados y completa todos los campos');
+                return;
+            }
+
+            try {
+                const res = await window.fetchAuth('/api/notificaciones/multiple', {
+                    method: 'POST',
+                    body: JSON.stringify({ IdsEmpleados: empleados, Titulo: titulo, Mensaje: mensaje })
+                });
+                if (res.ok) {
+                    const resultado = await res.json();
+                    alert(`✅ ${resultado.mensaje}\nEnviadas: ${resultado.notificacionesCreadas}`);
+                    document.querySelector('#modalEnviarMultiple .btn-close').click();
+                    cargarTodo();
+                } else {
+                    const err = await res.json();
+                    alert('❌ ' + (err.mensaje || 'Error al enviar'));
+                }
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function eliminar(id) {
+            if (!confirm('¿Eliminar esta notificación?')) return;
+            try {
+                await window.fetchAuth(`/api/notificaciones/${id}`, { method: 'DELETE' });
+                cargarTodo();
+            } catch (err) {
+                alert('Error al eliminar');
+            }
+        }
+
+        async function cargarTodo() {
+            await cargarNotificaciones();
+            await cargarEstadisticas();
+        }
+
+        async function init() {
+            await cargarEmpleados();
+            await cargarTodo();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        return {
+            cargarTodo,
+            enviarSimple,
+            enviarMultiple,
+            eliminar
+        };
+    })();
+</script>

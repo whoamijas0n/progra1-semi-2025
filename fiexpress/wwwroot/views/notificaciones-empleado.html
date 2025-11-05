@@ -1,0 +1,147 @@
+﻿<!-- /views/notificaciones-empleado.html -->
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="bi bi-bell text-primary"></i> Mis Notificaciones
+            </h2>
+            <p class="text-muted">Mensajes importantes del sistema o tu supervisor</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-primary active" onclick="NotificacionesEmpleadoModule.cargarNotificaciones(false)">
+                    <i class="bi bi-inbox"></i> Todas
+                </button>
+                <button class="btn btn-outline-warning" onclick="NotificacionesEmpleadoModule.cargarNotificaciones(true)">
+                    <i class="bi bi-exclamation-triangle"></i> No leídas
+                </button>
+            </div>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <button class="btn btn-secondary" onclick="NotificacionesEmpleadoModule.marcarTodasLeidas()">
+                <i class="bi bi-check-all"></i> Marcar todas como leídas
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list"></i> Lista de Notificaciones
+                <span class="badge bg-primary ms-2" id="contador-notif-empleado">0</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Mensaje</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-notif-empleado">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando tus notificaciones...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    window.NotificacionesEmpleadoModule = (function () {
+        'use strict';
+
+        async function cargarNotificaciones(soloNoLeidas = false) {
+            try {
+                const url = `/api/notificaciones/mis-notificaciones${soloNoLeidas ? '?soloNoLeidas=true' : ''}`;
+                const res = await window.fetchAuth(url);
+                const notificaciones = await res.json();
+                renderizar(notificaciones);
+            } catch (err) {
+                console.error('Error al cargar notificaciones:', err);
+                mostrarError('No se pudieron cargar tus notificaciones');
+            }
+        }
+
+        function renderizar(notificaciones) {
+            const tbody = document.getElementById('tabla-notif-empleado');
+            const contador = document.getElementById('contador-notif-empleado');
+            contador.textContent = notificaciones.length;
+
+            if (notificaciones.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No tienes notificaciones</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = notificaciones.map(n => `
+                <tr class="${!n.leido ? 'table-info' : ''}">
+                    <td><strong>${n.titulo}</strong></td>
+                    <td>${n.mensaje}</td>
+                    <td>${new Date(n.fecha_envio).toLocaleString('es-ES')}</td>
+                    <td>
+                        <span class="badge ${n.leido ? 'bg-secondary' : 'bg-warning'}">
+                            ${n.leido ? 'Leída' : 'Nueva'}
+                        </span>
+                    </td>
+                    <td>
+                        ${!n.leido ? `<button class="btn btn-sm btn-outline-primary" onclick="NotificacionesEmpleadoModule.marcarLeida(${n.idNotificacion})">Marcar como leída</button>` : '—'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function marcarLeida(id) {
+            try {
+                await window.fetchAuth(`/api/notificaciones/${id}/leer`, { method: 'PUT' });
+                cargarNotificaciones(); // Recargar
+            } catch (error) {
+                console.error('Error al marcar como leída:', error);
+                alert('No se pudo actualizar el estado');
+            }
+        }
+
+        async function marcarTodasLeidas() {
+            if (!confirm('¿Marcar todas tus notificaciones como leídas?')) return;
+            try {
+                await window.fetchAuth('/api/notificaciones/leer-todas', { method: 'PUT' });
+                cargarNotificaciones();
+            } catch (error) {
+                console.error('Error al marcar todas:', error);
+                alert('No se pudieron marcar todas como leídas');
+            }
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('tabla-notif-empleado').innerHTML = `
+                <tr><td colspan="5" class="text-center text-danger py-4">${mensaje}</td></tr>
+            `;
+        }
+
+        // Inicializar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => cargarNotificaciones());
+        } else {
+            cargarNotificaciones();
+        }
+
+        return {
+            cargarNotificaciones,
+            marcarLeida,
+            marcarTodasLeidas
+        };
+    })();
+</script>

@@ -1,0 +1,357 @@
+﻿<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-3">
+                        <i class="bi bi-person-circle text-primary"></i>
+                        Mi Perfil
+                    </h2>
+                    <p class="text-muted">Información personal y datos de contacto</p>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Perfil -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Columna Izquierda - Foto y Info Básica -->
+                        <div class="col-md-4 text-center border-end">
+                            <div class="mb-4">
+                                <img id="foto-perfil-grande" src=""
+                                     class="rounded-circle img-thumbnail mb-3"
+                                     width="150" height="150"
+                                     style="object-fit: cover;"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=Usuario&background=007bff&color=fff&size=150'">
+                                <h4 id="nombre-perfil" class="mb-1">Cargando...</h4>
+                                <p class="text-muted mb-2" id="codigo-empleado-perfil">-</p>
+                                <span class="badge bg-success" id="estado-empleado-perfil">Activo</span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="PerfilEmpleadoModule.cambiarFoto()">
+                                    <i class="bi bi-camera me-2"></i>Cambiar Foto
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha - Información Detallada -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="mb-4">
+                                        <i class="bi bi-info-circle text-primary me-2"></i>
+                                        Información Personal
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Información Básica -->
+                            <div class="row mb-4">
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Nombre Completo</label>
+                                    <div class="fw-semibold" id="info-nombre">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Código de Empleado</label>
+                                    <div class="fw-semibold" id="info-codigo">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Email</label>
+                                    <div class="fw-semibold" id="info-email">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Teléfono</label>
+                                    <div class="fw-semibold" id="info-telefono">-</div>
+                                </div>
+                            </div>
+
+                            <!-- Información Laboral -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">
+                                        <i class="bi bi-briefcase text-primary me-2"></i>
+                                        Información Laboral
+                                    </h6>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Departamento</label>
+                                    <div class="fw-semibold" id="info-departamento">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Rol</label>
+                                    <div class="fw-semibold" id="info-rol">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Fecha de Ingreso</label>
+                                    <div class="fw-semibold" id="info-fecha-ingreso">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Estado</label>
+                                    <div>
+                                        <span class="badge bg-success" id="info-estado">Activo</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Información Adicional -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6 class="border-bottom pb-2 mb-3">
+                                        <i class="bi bi-calendar-event text-primary me-2"></i>
+                                        Información Adicional
+                                    </h6>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Fecha de Nacimiento</label>
+                                    <div class="fw-semibold" id="info-fecha-nacimiento">-</div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label text-muted small mb-1">Último Login</label>
+                                    <div class="fw-semibold" id="info-ultimo-login">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Estadísticas Rápidas -->
+            <div class="row mt-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center py-3">
+                            <i class="bi bi-clock-history fs-4 mb-2"></i>
+                            <h6 class="mb-1">Fichajes Hoy</h6>
+                            <h4 class="mb-0" id="stats-fichajes-hoy">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center py-3">
+                            <i class="bi bi-calendar-check fs-4 mb-2"></i>
+                            <h6 class="mb-1">Asistencia Mes</h6>
+                            <h4 class="mb-0" id="stats-asistencia-mes">0%</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center py-3">
+                            <i class="bi bi-bell fs-4 mb-2"></i>
+                            <h6 class="mb-1">Notificaciones</h6>
+                            <h4 class="mb-0" id="stats-notificaciones">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center py-3">
+                            <i class="bi bi-file-text fs-4 mb-2"></i>
+                            <h6 class="mb-1">Permisos Activos</h6>
+                            <h4 class="mb-0" id="stats-permisos">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>window.PerfilEmpleadoModule = (function () {
+        'use strict';
+
+        const state = {
+            empleadoId: null,
+            usuario: null
+        };
+
+        async function init() {
+            await cargarInformacionUsuario();
+            await cargarDatosPerfil();
+            await cargarEstadisticasRapidas();
+        }
+
+        async function cargarInformacionUsuario() {
+            try {
+                state.usuario = window.app.usuario;
+                state.empleadoId = state.usuario.idEmpleado || state.usuario.id;
+                console.log('👤 Cargando perfil para empleado:', state.empleadoId);
+            } catch (error) {
+                console.error('Error cargando información usuario:', error);
+            }
+        }
+
+        async function cargarDatosPerfil() {
+            try {
+                if (!state.usuario) {
+                    console.error('❌ No hay información de usuario disponible');
+                    return;
+                }
+
+                console.log('📋 Datos del usuario:', state.usuario);
+
+                // ✅ Foto de perfil
+                const fotoPerfil = document.getElementById('foto-perfil-grande');
+                if (fotoPerfil && state.usuario.foto_url) {
+                    fotoPerfil.src = state.usuario.foto_url;
+                }
+
+                // ✅ Información básica
+                actualizarElemento('nombre-perfil', state.usuario.nombre);
+                actualizarElemento('info-nombre', state.usuario.nombre);
+                actualizarElemento('codigo-empleado-perfil', state.usuario.codigo_empleado || 'N/A');
+                actualizarElemento('info-codigo', state.usuario.codigo_empleado || 'N/A');
+                actualizarElemento('info-email', state.usuario.email || 'No especificado');
+                actualizarElemento('info-telefono', state.usuario.telefono || 'No especificado');
+
+                // ✅ Información laboral
+                actualizarElemento('info-departamento', state.usuario.departamento || 'No asignado');
+                actualizarElemento('info-rol', state.usuario.rol || 'Empleado');
+
+                // ✅ Fechas
+                if (state.usuario.fecha_ingreso) {
+                    const fechaIngreso = formatearFecha(state.usuario.fecha_ingreso);
+                    actualizarElemento('info-fecha-ingreso', fechaIngreso);
+                }
+
+                if (state.usuario.fecha_nacimiento) {
+                    const fechaNacimiento = formatearFecha(state.usuario.fecha_nacimiento);
+                    actualizarElemento('info-fecha-nacimiento', fechaNacimiento);
+                }
+
+                // ✅ Estado
+                const estado = state.usuario.activo ? 'Activo' : 'Inactivo';
+                const badgeClase = state.usuario.activo ? 'bg-success' : 'bg-danger';
+
+                actualizarElemento('estado-empleado-perfil', estado);
+                actualizarElemento('info-estado', estado);
+
+                const badgeElement = document.getElementById('info-estado');
+                if (badgeElement) {
+                    badgeElement.className = `badge ${badgeClase}`;
+                }
+
+                // ✅ Último login
+                if (state.usuario.ultimo_login) {
+                    const ultimoLogin = formatearFechaHora(state.usuario.ultimo_login);
+                    actualizarElemento('info-ultimo-login', ultimoLogin);
+                } else {
+                    actualizarElemento('info-ultimo-login', 'Nunca');
+                }
+
+            } catch (error) {
+                console.error('❌ Error cargando datos del perfil:', error);
+            }
+        }
+
+        async function cargarEstadisticasRapidas() {
+            try {
+                if (!state.empleadoId) return;
+
+                // Fichajes de hoy
+                await cargarFichajesHoy();
+
+                // Notificaciones pendientes
+                await cargarNotificacionesPendientes();
+
+                // Los otros stats los dejamos en 0 por ahora
+                actualizarElemento('stats-asistencia-mes', '0%');
+                actualizarElemento('stats-permisos', '0');
+
+            } catch (error) {
+                console.error('❌ Error cargando estadísticas rápidas:', error);
+            }
+        }
+
+        async function cargarFichajesHoy() {
+            try {
+                const hoy = new Date().toISOString().split('T')[0];
+                const resp = await fetchAuth(`/api/fichajes/empleado/${state.empleadoId}?fecha=${hoy}`);
+
+                if (resp.ok) {
+                    const fichajes = await resp.json();
+                    const totalFichajes = Array.isArray(fichajes) ? fichajes.length : 0;
+                    actualizarElemento('stats-fichajes-hoy', totalFichajes);
+                }
+            } catch (error) {
+                console.error('Error cargando fichajes hoy:', error);
+                actualizarElemento('stats-fichajes-hoy', '0');
+            }
+        }
+
+        async function cargarNotificacionesPendientes() {
+            try {
+                const resp = await fetchAuth('/api/notificaciones/mis-notificaciones?soloNoLeidas=true');
+                if (resp.ok) {
+                    const notificaciones = await resp.json();
+                    actualizarElemento('stats-notificaciones', notificaciones.length);
+                }
+            } catch (error) {
+                console.error('Error cargando notificaciones:', error);
+                actualizarElemento('stats-notificaciones', '0');
+            }
+        }
+
+        // Funciones auxiliares
+        function actualizarElemento(id, valor) {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.textContent = valor;
+            } else {
+                console.warn(`⚠️ Elemento #${id} no encontrado`);
+            }
+        }
+
+        function formatearFecha(fecha) {
+            try {
+                if (typeof fecha === 'string') {
+                    // Si es string en formato YYYY-MM-DD
+                    if (fecha.includes('-')) {
+                        const [year, month, day] = fecha.split('-');
+                        return new Date(year, month - 1, day).toLocaleDateString('es-ES');
+                    }
+                    // Si es string ISO
+                    return new Date(fecha).toLocaleDateString('es-ES');
+                }
+                // Si es objeto Date o similar
+                return new Date(fecha).toLocaleDateString('es-ES');
+            } catch (error) {
+                console.warn('Error formateando fecha:', fecha, error);
+                return 'Fecha inválida';
+            }
+        }
+
+        function formatearFechaHora(fecha) {
+            try {
+                const date = new Date(fecha);
+                return date.toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (error) {
+                console.warn('Error formateando fecha/hora:', fecha, error);
+                return 'Fecha inválida';
+            }
+        }
+
+        function cambiarFoto() {
+            // Función simple para cambiar foto (placeholder)
+            alert('📸 Función de cambiar foto en desarrollo\n\nPor ahora, contacta con administración para actualizar tu foto de perfil.');
+        }
+
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        return {
+            cambiarFoto
+        };
+    })();</script>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace fiexpress.Models
@@ -14,15 +13,15 @@ namespace fiexpress.Models
         public int idNotificacionEmpleado { get; set; }
         public Empleado Empleado { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(100)]
         public string titulo { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(500)]
         public string mensaje { get; set; }
 
-        public bool leido { get; set; }
+        [Required]
+        public bool leido { get; set; } = false; // ✅ Valor por defecto
 
-        // ✅ CORREGIDO - fecha_envio según BD
         public DateTime fecha_envio { get; set; }
     }
 }

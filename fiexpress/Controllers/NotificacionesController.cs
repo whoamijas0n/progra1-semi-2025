@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using fiexpress.Data;
+﻿using fiexpress.Data;
 using fiexpress.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace fiexpress.Controllers
@@ -21,10 +22,10 @@ namespace fiexpress.Controllers
             _logger = logger;
         }
 
-        // GET: api/notificaciones (Para Admin/Supervisor - Todas las notificaciones)
+        // GET: api/notificaciones
         [HttpGet]
         [Authorize(Roles = "Admin,Supervisor")]
-        public async Task<IActionResult> GetNotificaciones([FromQuery] bool soloNoLeidas = false)
+        public async Task<IActionResult> GetNotificaciones([FromQuery] bool soloNoLeidas = false, [FromQuery] int? empleadoId = null)
         {
             try
             {
@@ -36,6 +37,11 @@ namespace fiexpress.Controllers
                 if (soloNoLeidas)
                 {
                     query = query.Where(n => !n.leido);
+                }
+
+                if (empleadoId.HasValue)
+                {
+                    query = query.Where(n => n.idNotificacionEmpleado == empleadoId.Value);
                 }
 
                 var notificaciones = await query
@@ -66,7 +72,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // GET: api/notificaciones/mis-notificaciones (Para empleados - sus propias notificaciones)
+        // GET: api/notificaciones/mis-notificaciones
         [HttpGet("mis-notificaciones")]
         public async Task<IActionResult> GetMisNotificaciones([FromQuery] bool soloNoLeidas = false)
         {
@@ -108,7 +114,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // GET: api/notificaciones/estadisticas (Para Admin/Supervisor)
+        // GET: api/notificaciones/estadisticas
         [HttpGet("estadisticas")]
         [Authorize(Roles = "Admin,Supervisor")]
         public async Task<IActionResult> GetEstadisticas()
@@ -123,25 +129,12 @@ namespace fiexpress.Controllers
                 var notificacionesHoy = await _context.Notificaciones
                     .CountAsync(n => n.fecha_envio.Date == hoy);
 
-                var notificacionesPorDepartamento = await _context.Notificaciones
-                    .Include(n => n.Empleado)
-                    .ThenInclude(e => e.Departamento)
-                    .GroupBy(n => n.Empleado.Departamento.nombre)
-                    .Select(g => new
-                    {
-                        departamento = g.Key,
-                        total = g.Count(),
-                        noLeidas = g.Count(n => !n.leido)
-                    })
-                    .ToListAsync();
-
                 return Ok(new
                 {
                     totalNotificaciones,
                     noLeidas,
                     leidas,
-                    notificacionesHoy,
-                    notificacionesPorDepartamento
+                    notificacionesHoy
                 });
             }
             catch (Exception ex)
@@ -150,63 +143,67 @@ namespace fiexpress.Controllers
                 return StatusCode(500, new { mensaje = "Error al obtener estadísticas" });
             }
         }
-
-        // POST: api/notificaciones (Para Admin/Supervisor - Crear notificación)
-        [HttpPost]
+        // POST: api/notificaciones/fallback
+        [HttpPost("fallback")]
         [Authorize(Roles = "Admin,Supervisor")]
-        public async Task<IActionResult> Create([FromBody] NotificacionCreateDto dto)
+        public async Task<IActionResult> CreateFallback([FromBody] NotificacionCreateDto dto)
         {
             try
             {
-                // ✅ Validar que el empleado exista
+                // Validaciones
+                if (dto.IdEmpleado <= 0 || string.IsNullOrWhiteSpace(dto.Titulo) || string.IsNullOrWhiteSpace(dto.Mensaje))
+                {
+                    return BadRequest(new { mensaje = "Datos incompletos" });
+                }
+
+                // Verificar empleado
                 var empleadoExiste = await _context.Empleados
                     .AnyAsync(e => e.idEmpleado == dto.IdEmpleado && e.activo);
 
                 if (!empleadoExiste)
                 {
-                    return BadRequest(new { mensaje = "El empleado no existe o está inactivo" });
+                    return BadRequest(new { mensaje = "Empleado no encontrado" });
                 }
 
-                // ✅ Crear notificación SIN asignar la navegación Empleado
-                var notificacion = new Notificacion
+                // ✅ SQL DIRECTO para evitar problemas con EF
+                var connection = _context.Database.GetDbConnection();
+                await connection.OpenAsync();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = @"
+            INSERT INTO notificacion (idNotificacionEmpleado, titulo, mensaje, leido, fecha_envio)
+            VALUES (@empleadoId, @titulo, @mensaje, @leido, @fecha);
+            SELECT SCOPE_IDENTITY();";
+
+                command.Parameters.Add(new SqlParameter("@empleadoId", dto.IdEmpleado));
+                command.Parameters.Add(new SqlParameter("@titulo", dto.Titulo.Trim()));
+                command.Parameters.Add(new SqlParameter("@mensaje", dto.Mensaje.Trim()));
+                command.Parameters.Add(new SqlParameter("@leido", false)); // ✅ False explícito
+                command.Parameters.Add(new SqlParameter("@fecha", DateTime.Now));
+
+                var nuevoId = await command.ExecuteScalarAsync();
+
+                _logger.LogInformation("✅ Notificación creada con SQL directo. ID: {Id}", nuevoId);
+
+                return Ok(new
                 {
-                    idNotificacionEmpleado = dto.IdEmpleado,
-                    titulo = dto.Titulo?.Trim() ?? string.Empty,
-                    mensaje = dto.Mensaje?.Trim() ?? string.Empty,
-                    leido = false,
-                    fecha_envio = DateTime.Now
-                };
-
-                _context.Notificaciones.Add(notificacion);
-                await _context.SaveChangesAsync(); // ✅ Esto debería funcionar
-
-                // Registrar auditoría (opcional)
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (int.TryParse(userId, out int usuarioId))
-                {
-                    var auditoria = new Auditoria
-                    {
-                        idAuditoriaUsuario = usuarioId,
-                        accion = "CREAR_NOTIFICACION",
-                        entidad_afectada = "Notificacion",
-                        fecha_accion = DateTime.Now,
-                        ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
-                        descripcion = $"Notificación enviada a empleado ID {dto.IdEmpleado}"
-                    };
-                    _context.Auditorias.Add(auditoria);
-                    await _context.SaveChangesAsync();
-                }
-
-                return Ok(new { mensaje = "Notificación enviada exitosamente" });
+                    mensaje = "Notificación enviada exitosamente",
+                    id = Convert.ToInt32(nuevoId)
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al crear notificación para empleado {Id}", dto.IdEmpleado);
-                return StatusCode(500, new { mensaje = "Error al crear notificación" });
+                _logger.LogError(ex, "❌ Error en fallback");
+                return StatusCode(500, new
+                {
+                    mensaje = "Error al crear notificación",
+                    error = ex.Message
+                });
             }
         }
 
-        // POST: api/notificaciones/multiple (Para Admin/Supervisor - Notificación múltiple)
+
+        // POST: api/notificaciones/multiple
         [HttpPost("multiple")]
         [Authorize(Roles = "Admin,Supervisor")]
         public async Task<IActionResult> CrearNotificacionMultiple([FromBody] NotificacionMultipleCreateDto dto)
@@ -276,7 +273,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // PUT: api/notificaciones/{id}/leer (Marcar como leída)
+        // PUT: api/notificaciones/{id}/leer
         [HttpPut("{id}/leer")]
         public async Task<IActionResult> MarcarComoLeida(int id)
         {
@@ -312,7 +309,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // PUT: api/notificaciones/leer-todas (Marcar todas como leídas)
+        // PUT: api/notificaciones/leer-todas
         [HttpPut("leer-todas")]
         public async Task<IActionResult> MarcarTodasComoLeidas()
         {
@@ -344,7 +341,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // DELETE: api/notificaciones/{id} (Eliminar notificación - Solo Admin/Supervisor)
+        // DELETE: api/notificaciones/{id}
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Supervisor")]
         public async Task<IActionResult> EliminarNotificacion(int id)
@@ -385,33 +382,9 @@ namespace fiexpress.Controllers
                 return StatusCode(500, new { mensaje = "Error al eliminar notificación" });
             }
         }
-
-        // GET: api/notificaciones/contador (Obtener contador de no leídas)
-        [HttpGet("contador")]
-        public async Task<IActionResult> GetContadorNoLeidas()
-        {
-            try
-            {
-                var empleadoId = User.FindFirst("EmpleadoId")?.Value;
-                if (string.IsNullOrEmpty(empleadoId))
-                {
-                    return Unauthorized(new { mensaje = "No se pudo identificar al empleado" });
-                }
-
-                var contador = await _context.Notificaciones
-                    .CountAsync(n => n.idNotificacionEmpleado == int.Parse(empleadoId) && !n.leido);
-
-                return Ok(new { contadorNoLeidas = contador });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener contador de notificaciones");
-                return StatusCode(500, new { mensaje = "Error al obtener contador" });
-            }
-        }
     }
 
-    // DTOs
+    // DTOs - Asegúrate de que coincidan con lo que envían tus vistas
     public class NotificacionCreateDto
     {
         public int IdEmpleado { get; set; }

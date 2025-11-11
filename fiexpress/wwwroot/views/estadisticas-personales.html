@@ -1,237 +1,695 @@
-﻿<!-- /views/estadisticas-personales.html -->
-<div class="container-fluid py-4">
+﻿<div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="mb-3">
-                <i class="bi bi-graph-up text-primary"></i> Mis Estadísticas
+                <i class="bi bi-graph-up text-primary"></i>
+                Mis Estadísticas
             </h2>
-            <p class="text-muted">Tus estadísticas de asistencia basadas en tus fichajes y horarios</p>
+            <p class="text-muted">Consulta tu rendimiento, asistencia y tiempos de trabajo</p>
         </div>
     </div>
 
-    <!-- Filtros de fechas -->
+    <!-- Filtros de Fechas -->
     <div class="card mb-4">
         <div class="card-body">
             <div class="row g-3 align-items-end">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Fecha Inicio</label>
-                    <input type="date" class="form-control" id="filtro-inicio">
+                    <input type="date" class="form-control" id="fecha-inicio">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Fecha Fin</label>
-                    <input type="date" class="form-control" id="filtro-fin">
+                    <input type="date" class="form-control" id="fecha-fin">
                 </div>
-                <div class="col-md-4">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary" onclick="EstadisticasEmpleadoModule.cargarEstadisticas()">
-                            <i class="bi bi-filter"></i> Ver Estadísticas
-                        </button>
+                <div class="col-md-3">
+                    <label class="form-label">Vista Rápida</label>
+                    <select class="form-select" id="vista-rapida">
+                        <option value="hoy">Hoy</option>
+                        <option value="semana">Esta Semana</option>
+                        <option value="mes" selected>Este Mes</option>
+                        <option value="trimestre">Este Trimestre</option>
+                        <option value="personalizado">Personalizado</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="EstadisticasPersonalesModule.cargarEstadisticas()">
+                        <i class="bi bi-filter"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen de Estadísticas -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-start border-primary border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Días Trabajados</h6>
+                            <h3 class="mb-0" id="dias-trabajados">0</h3>
+                            <small class="text-muted" id="total-dias">de 0 días</small>
+                        </div>
+                        <div class="text-primary fs-1">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-success border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Horas Trabajadas</h6>
+                            <h3 class="mb-0 text-success" id="horas-totales">0h</h3>
+                            <small class="text-muted" id="promedio-diario">0h/día</small>
+                        </div>
+                        <div class="text-success fs-1">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-warning border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Tasa de Asistencia</h6>
+                            <h3 class="mb-0 text-warning" id="porcentaje-asistencia">0%</h3>
+                            <small class="text-muted" id="dias-asistencia">0 de 0 días</small>
+                        </div>
+                        <div class="text-warning fs-1">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-start border-info border-4 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Horas Extra</h6>
+                            <h3 class="mb-0 text-info" id="horas-extra">0h</h3>
+                            <small class="text-muted" id="promedio-extra">0h/día</small>
+                        </div>
+                        <div class="text-info fs-1">
+                            <i class="bi bi-plus-circle"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Resumen personal -->
-    <div class="row g-4 mb-4" id="resumen-personal" style="display: none;">
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4">
+    <!-- Gráficos y Detalles -->
+    <div class="row">
+        <!-- Gráfico de Asistencia Semanal -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bar-chart"></i> Asistencia Semanal
+                    </h5>
+                </div>
                 <div class="card-body">
-                    <h6 class="text-muted">Días Trabajados</h6>
-                    <h3 id="dias-trabajados">0</h3>
-                    <small class="text-muted">Total del período</small>
+                    <div id="grafico-asistencia" style="height: 300px;">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-bar-chart fs-1"></i>
+                            <p class="mt-2">Cargando gráfico de asistencia...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Asistencia</h6>
-                    <h3 class="text-info" id="asistencia-porcentaje">0%</h3>
+
+        <!-- Distribución de Estados -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart"></i> Distribución de Estados
+                    </h5>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4">
                 <div class="card-body">
-                    <h6 class="text-muted">Retraso Total</h6>
-                    <h3 class="text-warning" id="total-retraso">0h</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-primary border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Horas Extra</h6>
-                    <h3 class="text-primary" id="total-extra">0h</h3>
+                    <div id="grafico-estados" style="height: 300px;">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-pie-chart fs-1"></i>
+                            <p class="mt-2">Cargando distribución...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Detalle por día -->
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-list-ul"></i> Detalle por Día
-            </h5>
-            <span class="text-muted small" id="periodo-seleccionado">Últimos 30 días</span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Horas Trabajadas</th>
-                            <th>Retraso</th>
-                            <th>Extra</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-detalle">
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Selecciona un rango de fechas para ver tus estadísticas
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- Detalle por Día -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-week"></i> Detalle por Día
+                    </h5>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="EstadisticasPersonalesModule.exportarPDF()">
+                            <i class="bi bi-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Día</th>
+                                    <th>Entrada</th>
+                                    <th>Salida</th>
+                                    <th>Horas Trabajadas</th>
+                                    <th>Horas Extra</th>
+                                    <th>Retraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-detalle">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                        Cargando detalle de estadísticas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Librerías para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Módulo de Estadísticas para Empleados
-    window.EstadisticasEmpleadoModule = (function () {
+    // Funciones auxiliares para fechas
+    function getFechaHoy() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function getFechaInicioMes() {
+        const hoy = new Date();
+        return new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+    }
+
+    function getFechaInicioSemana() {
+        const hoy = new Date();
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+        return inicioSemana.toISOString().split('T')[0];
+    }
+
+    function getFechaInicioTrimestre() {
+        const hoy = new Date();
+        const inicioTrimestre = new Date(hoy.getFullYear(), Math.floor(hoy.getMonth() / 3) * 3, 1);
+        return inicioTrimestre.toISOString().split('T')[0];
+    }
+
+    window.EstadisticasPersonalesModule = (function () {
         'use strict';
 
-        async function cargarEstadisticas() {
-            const inicio = document.getElementById('filtro-inicio').value;
-            const fin = document.getElementById('filtro-fin').value;
+        const state = {
+            empleadoId: null,
+            estadisticas: [],
+            chartAsistencia: null,
+            chartEstados: null
+        };
 
-            if (!inicio || !fin) {
-                mostrarAlerta('Selecciona ambas fechas', 'warning');
-                return;
-            }
+        async function init() {
+            await cargarInformacionUsuario();
+            configurarFechasPorDefecto();
+            configurarEventos();
+            await cargarEstadisticas();
+        }
 
-            const empleadoId = window.app.usuario?.idEmpleado;
-            if (!empleadoId) {
-                mostrarError('No se pudo obtener tu ID de empleado');
-                return;
-            }
-
-            mostrarLoading();
-
+        async function cargarInformacionUsuario() {
             try {
-                const response = await window.fetchAuth(`/api/estadisticas/empleado/${empleadoId}?inicio=${inicio}&fin=${fin}`);
-                if (!response.ok) throw new Error('Error al cargar estadísticas');
+                const usuario = window.app.usuario;
+                state.empleadoId = usuario.idEmpleado || usuario.id;
+                console.log('👤 Cargando estadísticas para empleado:', state.empleadoId);
+            } catch (error) {
+                console.error('Error cargando información usuario:', error);
+            }
+        }
+
+        function configurarFechasPorDefecto() {
+            // Establecer fechas por defecto (este mes)
+            document.getElementById('fecha-inicio').value = getFechaInicioMes();
+            document.getElementById('fecha-fin').value = getFechaHoy();
+        }
+
+        function configurarEventos() {
+            // Vista rápida
+            document.getElementById('vista-rapida').addEventListener('change', function () {
+                const vista = this.value;
+                const fechaInicio = document.getElementById('fecha-inicio');
+                const fechaFin = document.getElementById('fecha-fin');
+
+                switch (vista) {
+                    case 'hoy':
+                        fechaInicio.value = getFechaHoy();
+                        fechaFin.value = getFechaHoy();
+                        break;
+                    case 'semana':
+                        fechaInicio.value = getFechaInicioSemana();
+                        fechaFin.value = getFechaHoy();
+                        break;
+                    case 'mes':
+                        fechaInicio.value = getFechaInicioMes();
+                        fechaFin.value = getFechaHoy();
+                        break;
+                    case 'trimestre':
+                        fechaInicio.value = getFechaInicioTrimestre();
+                        fechaFin.value = getFechaHoy();
+                        break;
+                    case 'personalizado':
+                        // No hacer nada, dejar las fechas como están
+                        break;
+                }
+
+                if (vista !== 'personalizado') {
+                    cargarEstadisticas();
+                }
+            });
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                mostrarLoading();
+
+                const fechaInicio = document.getElementById('fecha-inicio').value;
+                const fechaFin = document.getElementById('fecha-fin').value;
+
+                // ✅ CORREGIDO: Validar que las fechas no estén vacías
+                if (!fechaInicio || !fechaFin) {
+                    throw new Error('Las fechas de inicio y fin son requeridas');
+                }
+
+                console.log('📅 Cargando estadísticas:', fechaInicio, 'a', fechaFin);
+
+                // Cargar estadísticas desde la API
+                const url = `/api/estadisticas/empleado/${state.empleadoId}?inicio=${fechaInicio}&fin=${fechaFin}`;
+                const response = await window.fetchAuth(url);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
 
                 const data = await response.json();
-                renderizarEstadisticas(data);
-                document.getElementById('periodo-seleccionado').textContent =
-                    `${new Date(inicio).toLocaleDateString('es-ES')} - ${new Date(fin).toLocaleDateString('es-ES')}`;
+                console.log('📊 Datos recibidos:', data);
+
+                state.estadisticas = data.detallePorDia || [];
+
+                actualizarResumen(data.resumen);
+                actualizarDetalleDias();
+                actualizarGraficos();
+
             } catch (error) {
-                console.error('Error:', error);
-                mostrarError('No se pudieron cargar tus estadísticas: ' + error.message);
+                console.error('❌ Error cargando estadísticas:', error);
+                mostrarError('Error al cargar las estadísticas: ' + error.message);
             }
         }
 
-        function renderizarEstadisticas(data) {
-            const resumen = data.resumen;
-            document.getElementById('resumen-personal').style.display = 'flex';
-            document.getElementById('dias-trabajados').textContent = `${resumen.diasTrabajados}/${resumen.totalDias}`;
-            document.getElementById('asistencia-porcentaje').textContent = `${resumen.porcentajeAsistencia}%`;
-            document.getElementById('total-retraso').textContent = `${Math.floor(resumen.totalMinutosRetraso / 60)}h`;
-            document.getElementById('total-extra').textContent = `${Math.floor(resumen.totalMinutosExtra / 60)}h`;
-
-            const tbody = document.getElementById('tabla-detalle');
-            if (data.detallePorDia.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No hay datos en este período</td></tr>`;
+        function actualizarResumen(resumen) {
+            if (!resumen) {
+                console.warn('⚠️ No hay resumen disponible');
+                mostrarResumenVacio();
                 return;
             }
 
-            tbody.innerHTML = data.detallePorDia.map(dia => `
-                <tr>
-                    <td>${new Date(dia.fecha).toLocaleDateString('es-ES')}</td>
-                    <td><span class="badge ${getBadgeClass(dia.estado_dia)}">${getEstadoTexto(dia.estado_dia)}</span></td>
-                    <td>${dia.horasTrabajadas}</td>
-                    <td>${dia.retrasoFormateado}</td>
-                    <td>${dia.extraFormateado}</td>
-                </tr>
-            `).join('');
+            // ✅ CORREGIDO: Verificar que los elementos existen antes de acceder
+            const diasTrabajadosElement = document.getElementById('dias-trabajados');
+            const totalDiasElement = document.getElementById('total-dias');
+            const horasTotalesElement = document.getElementById('horas-totales');
+            const promedioDiarioElement = document.getElementById('promedio-diario');
+            const porcentajeAsistenciaElement = document.getElementById('porcentaje-asistencia');
+            const diasAsistenciaElement = document.getElementById('dias-asistencia');
+            const horasExtraElement = document.getElementById('horas-extra');
+            const promedioExtraElement = document.getElementById('promedio-extra');
+
+            if (!diasTrabajadosElement || !horasTotalesElement || !porcentajeAsistenciaElement) {
+                console.warn('⚠️ Elementos del resumen no encontrados en el DOM');
+                return;
+            }
+
+            // Días trabajados
+            diasTrabajadosElement.textContent = resumen.diasTrabajados || 0;
+            if (totalDiasElement) {
+                totalDiasElement.textContent = `de ${resumen.totalDias || 0} días`;
+            }
+
+            // Horas trabajadas
+            const horasTotales = Math.floor((resumen.totalMinutosTrabajados || 0) / 60);
+            const horasExtra = Math.floor((resumen.totalMinutosExtra || 0) / 60);
+
+            horasTotalesElement.textContent = `${horasTotales}h`;
+            horasExtraElement.textContent = `${horasExtra}h`;
+
+            // Promedios
+            const diasTrabajados = resumen.diasTrabajados || 1;
+            const promedioDiario = Math.floor(horasTotales / diasTrabajados);
+            const promedioExtra = Math.floor(horasExtra / diasTrabajados);
+
+            if (promedioDiarioElement) {
+                promedioDiarioElement.textContent = `${promedioDiario}h/día`;
+            }
+            if (promedioExtraElement) {
+                promedioExtraElement.textContent = `${promedioExtra}h/día`;
+            }
+
+            // Asistencia
+            const porcentaje = resumen.porcentajeAsistencia || 0;
+            porcentajeAsistenciaElement.textContent = `${porcentaje}%`;
+            if (diasAsistenciaElement) {
+                diasAsistenciaElement.textContent =
+                    `${resumen.diasTrabajados || 0} de ${resumen.totalDias || 0} días`;
+            }
         }
 
-        function getBadgeClass(estado) {
-            const clases = {
+        function mostrarResumenVacio() {
+            const elementos = [
+                'dias-trabajados', 'total-dias', 'horas-totales', 'promedio-diario',
+                'porcentaje-asistencia', 'dias-asistencia', 'horas-extra', 'promedio-extra'
+            ];
+
+            elementos.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'porcentaje-asistencia') {
+                        element.textContent = '0%';
+                    } else if (id === 'horas-totales' || id === 'horas-extra') {
+                        element.textContent = '0h';
+                    } else if (id === 'dias-trabajados') {
+                        element.textContent = '0';
+                    } else if (id === 'total-dias') {
+                        element.textContent = 'de 0 días';
+                    } else if (id === 'promedio-diario' || id === 'promedio-extra') {
+                        element.textContent = '0h/día';
+                    } else if (id === 'dias-asistencia') {
+                        element.textContent = '0 de 0 días';
+                    }
+                }
+            });
+        }
+
+        function actualizarDetalleDias() {
+            const tbody = document.getElementById('tabla-detalle');
+
+            if (!tbody) {
+                console.error('❌ Tabla de detalle no encontrada en el DOM');
+                return;
+            }
+
+            if (!state.estadisticas || state.estadisticas.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i> No hay datos para el período seleccionado
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = state.estadisticas.map(dia => {
+                const fecha = new Date(dia.fecha);
+                const diaSemana = fecha.toLocaleDateString('es-ES', { weekday: 'long' });
+                const horasTrabajadas = formatHorasMinutos(dia.minutos_trabajados);
+                const horasExtra = formatHorasMinutos(dia.minutos_extra);
+                const retraso = formatMinutos(dia.minutos_retraso);
+
+                return `
+                    <tr>
+                        <td>${fecha.toLocaleDateString('es-ES')}</td>
+                        <td class="text-capitalize">${diaSemana}</td>
+                        <td>${obtenerHoraEntrada(dia.fecha) || '--:--'}</td>
+                        <td>${obtenerHoraSalida(dia.fecha) || '--:--'}</td>
+                        <td>
+                            <span class="badge ${horasTrabajadas === '0h 0m' ? 'bg-secondary' : 'bg-success'}">
+                                ${horasTrabajadas}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${horasExtra === '0m' ? 'bg-secondary' : 'bg-warning'}">
+                                ${horasExtra}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${retraso === '0m' ? 'bg-secondary' : 'bg-danger'}">
+                                ${retraso}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${getBadgeClaseEstado(dia.estado_dia)}">
+                                ${getTextoEstado(dia.estado_dia)}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function actualizarGraficos() {
+            // Destruir gráficos existentes
+            if (state.chartAsistencia) {
+                state.chartAsistencia.destroy();
+            }
+            if (state.chartEstados) {
+                state.chartEstados.destroy();
+            }
+
+            // Gráfico de asistencia semanal
+            const ctxAsistencia = document.getElementById('grafico-asistencia');
+            if (ctxAsistencia) {
+                const datosSemana = prepararDatosSemana();
+                state.chartAsistencia = new Chart(ctxAsistencia, {
+                    type: 'bar',
+                    data: datosSemana,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Horas Trabajadas por Día'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Horas'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de distribución de estados
+            const ctxEstados = document.getElementById('grafico-estados');
+            if (ctxEstados) {
+                const datosEstados = prepararDatosEstados();
+                state.chartEstados = new Chart(ctxEstados, {
+                    type: 'doughnut',
+                    data: datosEstados,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Distribución de Estados'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function prepararDatosSemana() {
+            // Agrupar por día de la semana
+            const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            const horasPorDia = Array(7).fill(0);
+            const conteoPorDia = Array(7).fill(0);
+
+            state.estadisticas.forEach(dia => {
+                const fecha = new Date(dia.fecha);
+                const diaSemana = fecha.getDay(); // 0: Domingo, 1: Lunes, etc.
+                const index = diaSemana === 0 ? 6 : diaSemana - 1; // Ajustar para que Lun=0
+
+                if (dia.minutos_trabajados) {
+                    horasPorDia[index] += dia.minutos_trabajados / 60;
+                    conteoPorDia[index]++;
+                }
+            });
+
+            // Calcular promedio
+            const promedios = horasPorDia.map((total, index) =>
+                conteoPorDia[index] > 0 ? total / conteoPorDia[index] : 0
+            );
+
+            return {
+                labels: diasSemana,
+                datasets: [{
+                    label: 'Horas Promedio',
+                    data: promedios,
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+        }
+
+        function prepararDatosEstados() {
+            const conteoEstados = {};
+
+            state.estadisticas.forEach(dia => {
+                const estado = dia.estado_dia || 'AUSENTE';
+                conteoEstados[estado] = (conteoEstados[estado] || 0) + 1;
+            });
+
+            const estados = Object.keys(conteoEstados);
+            const counts = Object.values(conteoEstados);
+            const colores = estados.map(estado => getColorEstado(estado));
+
+            return {
+                labels: estados.map(estado => getTextoEstado(estado)),
+                datasets: [{
+                    data: counts,
+                    backgroundColor: colores,
+                    borderWidth: 1
+                }]
+            };
+        }
+
+        // Funciones auxiliares
+        function formatHorasMinutos(minutos) {
+            if (!minutos) return '0h 0m';
+            const horas = Math.floor(minutos / 60);
+            const mins = minutos % 60;
+            return `${horas}h ${mins}m`;
+        }
+
+        function formatMinutos(minutos) {
+            if (!minutos) return '0m';
+            return `${minutos}m`;
+        }
+
+        function obtenerHoraEntrada(fecha) {
+            // Buscar en los fichajes del día (necesitaríamos cargar los fichajes)
+            // Por ahora devolvemos un placeholder
+            return '--:--';
+        }
+
+        function obtenerHoraSalida(fecha) {
+            // Buscar en los fichajes del día
+            return '--:--';
+        }
+
+        function getBadgeClaseEstado(estado) {
+            const estados = {
                 'NORMAL': 'bg-success',
                 'RETRASO_LEVE': 'bg-warning',
                 'RETRASO_GRAVE': 'bg-danger',
                 'EXTRA_NORMAL': 'bg-info',
                 'EXTRA_ALTO': 'bg-primary',
                 'AUSENTE': 'bg-secondary',
-                'NO_LABORAL': 'bg-light text-dark',
-                'SIN_HORARIO': 'bg-dark'
+                'NO_LABORAL': 'bg-light text-dark'
             };
-            return clases[estado] || 'bg-secondary';
+            return estados[estado] || 'bg-secondary';
         }
 
-        function getEstadoTexto(estado) {
+        function getTextoEstado(estado) {
             const textos = {
                 'NORMAL': 'Normal',
                 'RETRASO_LEVE': 'Retraso Leve',
                 'RETRASO_GRAVE': 'Retraso Grave',
-                'EXTRA_NORMAL': 'Extra Normal',
-                'EXTRA_ALTO': 'Extra Alto',
+                'EXTRA_NORMAL': 'Horas Extra',
+                'EXTRA_ALTO': 'Muchas Horas Extra',
                 'AUSENTE': 'Ausente',
-                'NO_LABORAL': 'No Laboral',
-                'SIN_HORARIO': 'Sin Horario'
+                'NO_LABORAL': 'No Laboral'
             };
             return textos[estado] || estado;
         }
 
+        function getColorEstado(estado) {
+            const colores = {
+                'NORMAL': 'rgba(40, 167, 69, 0.8)',
+                'RETRASO_LEVE': 'rgba(255, 193, 7, 0.8)',
+                'RETRASO_GRAVE': 'rgba(220, 53, 69, 0.8)',
+                'EXTRA_NORMAL': 'rgba(23, 162, 184, 0.8)',
+                'EXTRA_ALTO': 'rgba(0, 123, 255, 0.8)',
+                'AUSENTE': 'rgba(108, 117, 125, 0.8)',
+                'NO_LABORAL': 'rgba(248, 249, 250, 0.8)'
+            };
+            return colores[estado] || 'rgba(108, 117, 125, 0.8)';
+        }
+
         function mostrarLoading() {
-            document.getElementById('tabla-detalle').innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center text-muted py-4">
-                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        Cargando tus estadísticas...
-                    </td>
-                </tr>
-            `;
+            const tbody = document.getElementById('tabla-detalle');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            Cargando estadísticas...
+                        </td>
+                    </tr>
+                `;
+            }
         }
 
         function mostrarError(mensaje) {
-            document.getElementById('tabla-detalle').innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center text-danger py-4">
-                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
-                        <p class="mb-0">${mensaje}</p>
-                    </td>
-                </tr>
-            `;
+            const tbody = document.getElementById('tabla-detalle');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger py-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            ${mensaje}
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // También mostrar resumen vacío
+            mostrarResumenVacio();
         }
 
-        function mostrarAlerta(mensaje, tipo = 'info') {
-            const div = document.createElement('div');
-            div.className = `alert alert-${tipo} position-fixed bottom-0 end-0 m-3`;
-            div.style.zIndex = '9999';
-            div.innerHTML = `${mensaje} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 5000);
+        function exportarPDF() {
+            // Implementación básica de exportación
+            alert('🚧 Función de exportación PDF en desarrollo');
+            // En una implementación real, aquí se generaría un PDF con las estadísticas
         }
 
-        // Inicializar fechas por defecto (últimos 30 días)
-        function init() {
-            const hoy = new Date();
-            const hace30 = new Date();
-            hace30.setDate(hoy.getDate() - 30);
-            document.getElementById('filtro-inicio').value = hace30.toISOString().split('T')[0];
-            document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
-        }
-
+        // Inicializar cuando el DOM esté listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
@@ -239,7 +697,8 @@
         }
 
         return {
-            cargarEstadisticas
+            cargarEstadisticas,
+            exportarPDF
         };
     })();
 </script>

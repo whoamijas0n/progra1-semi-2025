@@ -1,5 +1,4 @@
-﻿<!-- /views/notificaciones-empleado.html -->
-<div class="container-fluid py-4">
+﻿<div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="mb-3">
@@ -72,7 +71,7 @@
                 const notificaciones = await res.json();
                 renderizar(notificaciones);
             } catch (err) {
-                console.error('Error al cargar notificaciones:', err);
+                console.error('❌ Error al cargar notificaciones:', err);
                 mostrarError('No se pudieron cargar tus notificaciones');
             }
         }
@@ -83,7 +82,7 @@
             contador.textContent = notificaciones.length;
 
             if (notificaciones.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No tienes notificaciones</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">📭 No tienes notificaciones</td></tr>`;
                 return;
             }
 
@@ -94,11 +93,16 @@
                     <td>${new Date(n.fecha_envio).toLocaleString('es-ES')}</td>
                     <td>
                         <span class="badge ${n.leido ? 'bg-secondary' : 'bg-warning'}">
-                            ${n.leido ? 'Leída' : 'Nueva'}
+                            ${n.leido ? '📭 Leída' : '📬 Nueva'}
                         </span>
                     </td>
                     <td>
-                        ${!n.leido ? `<button class="btn btn-sm btn-outline-primary" onclick="NotificacionesEmpleadoModule.marcarLeida(${n.idNotificacion})">Marcar como leída</button>` : '—'}
+                        ${!n.leido ? `
+                            <button class="btn btn-sm btn-outline-primary"
+                                    onclick="NotificacionesEmpleadoModule.marcarLeida(${n.idNotificacion})">
+                                <i class="bi bi-check"></i> Marcar como leída
+                            </button>
+                        ` : '—'}
                     </td>
                 </tr>
             `).join('');
@@ -107,10 +111,11 @@
         async function marcarLeida(id) {
             try {
                 await window.fetchAuth(`/api/notificaciones/${id}/leer`, { method: 'PUT' });
+                mostrarMensaje('✅ Notificación marcada como leída', 'success');
                 cargarNotificaciones(); // Recargar
             } catch (error) {
-                console.error('Error al marcar como leída:', error);
-                alert('No se pudo actualizar el estado');
+                console.error('❌ Error al marcar como leída:', error);
+                mostrarMensaje('❌ No se pudo actualizar el estado', 'danger');
             }
         }
 
@@ -118,17 +123,36 @@
             if (!confirm('¿Marcar todas tus notificaciones como leídas?')) return;
             try {
                 await window.fetchAuth('/api/notificaciones/leer-todas', { method: 'PUT' });
+                mostrarMensaje('✅ Todas las notificaciones marcadas como leídas', 'success');
                 cargarNotificaciones();
             } catch (error) {
-                console.error('Error al marcar todas:', error);
-                alert('No se pudieron marcar todas como leídas');
+                console.error('❌ Error al marcar todas:', error);
+                mostrarMensaje('❌ No se pudieron marcar todas como leídas', 'danger');
             }
         }
 
         function mostrarError(mensaje) {
             document.getElementById('tabla-notif-empleado').innerHTML = `
-                <tr><td colspan="5" class="text-center text-danger py-4">${mensaje}</td></tr>
+                <tr><td colspan="5" class="text-center text-danger py-4">❌ ${mensaje}</td></tr>
             `;
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+            alerta.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alerta.innerHTML = `
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(alerta);
+
+            setTimeout(() => {
+                if (alerta.parentNode) {
+                    alerta.remove();
+                }
+            }, 4000);
         }
 
         // Inicializar

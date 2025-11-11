@@ -516,22 +516,11 @@
         "Name": "soloNoLeidas",
         "Type": "System.Boolean",
         "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "fiexpress.Controllers.NotificacionesController",
-    "Method": "Create",
-    "RelativePath": "api/Notificaciones",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
+      },
       {
-        "Name": "dto",
-        "Type": "fiexpress.Controllers.NotificacionCreateDto",
-        "IsRequired": true
+        "Name": "empleadoId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -570,8 +559,8 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.NotificacionesController",
-    "Method": "GetContadorNoLeidas",
-    "RelativePath": "api/Notificaciones/contador",
+    "Method": "GetEstadisticas",
+    "RelativePath": "api/Notificaciones/estadisticas",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -580,12 +569,18 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.NotificacionesController",
-    "Method": "GetEstadisticas",
-    "RelativePath": "api/Notificaciones/estadisticas",
-    "HttpMethod": "GET",
+    "Method": "CreateFallback",
+    "RelativePath": "api/Notificaciones/fallback",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "fiexpress.Controllers.NotificacionCreateDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

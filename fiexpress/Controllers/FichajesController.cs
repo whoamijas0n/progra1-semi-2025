@@ -14,42 +14,76 @@ namespace fiexpress.Controllers
         private readonly MyDbContext _context;
         private readonly ILogger<FichajesController> _logger;
         private readonly IRfidCaptureService _captureService;
-        public FichajesController(MyDbContext context, ILogger<FichajesController> logger, IRfidCaptureService captureService)
+        private readonly ITelegramService _telegramService; 
+
+        public FichajesController(MyDbContext context, ILogger<FichajesController> logger,
+                                IRfidCaptureService captureService,
+                                ITelegramService telegramService) 
         {
             _context = context;
             _logger = logger;
             _captureService = captureService;
+            _telegramService = telegramService; 
         }
 
-        // POST: api/fichajes/rfid — Para el ESP32
-        // POST: api/fichajes/rfid
         [HttpPost("rfid")]
         [AllowAnonymous]
         public async Task<IActionResult> RegistrarFichajeRFID([FromBody] FichajeRFIDRequest request)
         {
             try
             {
+                _logger.LogInformation($"📥 RFID recibido: {request.CodigoRFID} desde IP: {request.IP}");
+
+                // DEBUG: Verificar si el servicio Telegram está disponible
+                if (_telegramService == null)
+                {
+                    _logger.LogError("❌ CRÍTICO: _telegramService es NULL");
+                    return StatusCode(500, new { mensaje = "Error de configuración del servicio" });
+                }
+                else
+                {
+                    _logger.LogInformation("✅ TelegramService está disponible");
+                }
+
                 // Buscar tarjeta RFID
                 var rfid = await _context.Rfids
                     .Include(r => r.Empleado)
                     .FirstOrDefaultAsync(r => r.codigo_rfid == request.CodigoRFID && r.activo);
 
+                _logger.LogInformation($"🔍 Resultado búsqueda RFID: {(rfid != null ? "ENCONTRADA" : "NO ENCONTRADA")}");
+
                 if (rfid == null)
                 {
-                    // ✅ NUEVO: Notificar al servicio de captura de tarjetas desconocidas
+                    _logger.LogWarning($"❌ Tarjeta no registrada: {request.CodigoRFID}");
+
+                    // ✅ 1. ALERTA INMEDIATA POR TELEGRAM
+                    _logger.LogInformation("📤 Intentando enviar alerta por Telegram...");
+                    var telegramSent = await _telegramService.SendRFIDAlertAsync(request.CodigoRFID, request.IP);
+                    _logger.LogInformation($"📤 Resultado Telegram: {(telegramSent ? "ÉXITO" : "FALLÓ")}");
+
+
+                    // ✅ 3. Enviar a captura
                     _captureService?.CaptureUnknownRfid(request.CodigoRFID);
 
-                    // Devolver error para que el ESP32 sepa que no es válida
-                    return BadRequest(new { mensaje = "Tarjeta no válida" });
+                    return BadRequest(new
+                    {
+                        mensaje = "Tarjeta no válida",
+                        telegram_enviado = telegramSent,
+                        codigo_rfid = request.CodigoRFID
+                    });
                 }
 
                 var empleado = rfid.Empleado;
+                _logger.LogInformation($"✅ Tarjeta válida para: {empleado.nombre}");
+
                 if (!empleado.activo)
                 {
+                    _logger.LogWarning($"❌ Empleado inactivo: {empleado.nombre}");
                     return BadRequest(new { mensaje = "Empleado inactivo" });
                 }
 
-                var hoy = DateOnly.FromDateTime(DateTime.Today); // ✅ Usar Today, no Now
+                // ... resto del código para fichajes válidos
+                var hoy = DateOnly.FromDateTime(DateTime.Today);
                 var ahora = TimeOnly.FromDateTime(DateTime.Now);
 
                 // Determinar tipo de fichaje
@@ -62,6 +96,7 @@ namespace fiexpress.Controllers
                 if (ultimoFichaje != null)
                 {
                     tipoFichaje = ultimoFichaje.tipo == "Entrada" ? "Salida" : "Entrada";
+                    _logger.LogInformation($"🔄 Cambiando tipo a: {tipoFichaje} (último: {ultimoFichaje.tipo})");
                 }
 
                 // Crear fichaje
@@ -78,6 +113,8 @@ namespace fiexpress.Controllers
                 _context.Fichajes.Add(fichaje);
                 await _context.SaveChangesAsync();
 
+                _logger.LogInformation($"✅ Fichaje de {tipoFichaje} registrado para {empleado.nombre}");
+
                 return Ok(new
                 {
                     mensaje = $"Fichaje de {tipoFichaje} registrado",
@@ -88,10 +125,48 @@ namespace fiexpress.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al registrar fichaje RFID");
-                return StatusCode(500, new { mensaje = "Error interno" });
+                _logger.LogError(ex, "❌ Error al registrar fichaje RFID");
+                return StatusCode(500, new { mensaje = "Error interno del servidor" });
             }
         }
+
+
+        // ✅ ENDPOINT DE PRUEBA PARA TELEGRAM
+        [HttpPost("test-telegram")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestTelegram([FromBody] TestTelegramRequest request)
+        {
+            try
+            {
+                _logger.LogInformation($"🧪 TEST TELEGRAM solicitado: {request.Message}");
+
+                var result = await _telegramService.SendToAdminsAsync($"🧪 TEST: {request.Message}");
+
+                return Ok(new
+                {
+                    mensaje = "Test de Telegram completado",
+                    enviado = result,
+                    timestamp = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Error en test Telegram");
+                return StatusCode(500, new { mensaje = "Error en test", error = ex.Message });
+            }
+        }
+
+        public class TestTelegramRequest
+        {
+            public string Message { get; set; }
+        }
+
+
+
+
+
+
+
 
         // GET: api/fichajes/hoy
         [HttpGet("hoy")]

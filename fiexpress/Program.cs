@@ -114,11 +114,28 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddScoped<EmpleadosController>(); // Si no está ya
 
-// ✅ Servicio para captura RFID
+//AGREGANDO SERVICIOS
+//SERVICIO PARA EMPLEADO
+builder.Services.AddScoped<EmpleadosController>(); 
+
+//Servicio para captura RFID
 builder.Services.AddSingleton<IRfidCaptureService, RfidCaptureService>();
 builder.Services.AddHttpContextAccessor();
+
+//SERVICIO PARA MANDAR MENSAJES DE TELEGRAM
+
+builder.Services.Configure<TelegramSettings>(
+    builder.Configuration.GetSection("TelegramSettings"));
+
+// 2. HttpClient para Telegram
+builder.Services.AddHttpClient<ITelegramService, TelegramService>();
+
+// 3. Registro del servicio
+builder.Services.AddScoped<ITelegramService, TelegramService>();
+
+
+
 
 
 var app = builder.Build();

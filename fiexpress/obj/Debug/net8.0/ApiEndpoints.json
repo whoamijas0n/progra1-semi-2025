@@ -394,6 +394,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "fiexpress.Controllers.FichajesController",
+    "Method": "TestTelegram",
+    "RelativePath": "api/Fichajes/test-telegram",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "fiexpress.Controllers.FichajesController\u002BTestTelegramRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "fiexpress.Controllers.HorariosController",
     "Method": "GetAll",
     "RelativePath": "api/Horarios",
@@ -962,6 +978,38 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.TelegramNotificationsController",
+    "Method": "NotificarFichajeInvalido",
+    "RelativePath": "api/TelegramNotifications/fichaje-invalido",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "fiexpress.Controllers.NotificacionFichajeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.TelegramNotificationsController",
+    "Method": "TestNotificacion",
+    "RelativePath": "api/TelegramNotifications/test",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "fiexpress.Controllers.TestNotificacionRequest",
         "IsRequired": true
       }
     ],

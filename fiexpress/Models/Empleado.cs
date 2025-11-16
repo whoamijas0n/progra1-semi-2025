@@ -42,6 +42,8 @@ namespace fiexpress.Models
         public string? foto_url { get; set; }
 
         public bool activo { get; set; }
+        public long? telegram_chat_id { get; set; }
+
 
         // ✅ Colecciones existentes
         public ICollection<Horario> Horarios { get; set; }

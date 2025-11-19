@@ -10,131 +10,329 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        body {
-            overflow-x: hidden;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --hover-color: #3a506b;
+            --text-light: #ecf0f1;
+            --text-muted: #bdc3c7;
+            --transition-speed: 0.3s;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* Panel lateral */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== SIDEBAR MEJORADO ===== */
         #sidebar {
-            height: 100vh;
-            width: 250px;
             position: fixed;
             top: 0;
             left: 0;
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            color: white;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: var(--text-light);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-collapsed {
+            transform: translateX(calc(var(--sidebar-collapsed) - var(--sidebar-width)));
+        }
+
+        /* Header del sidebar */
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+            position: relative;
+
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content:center;
+            align-items: center;
+            gap: 12px;
+            transition: all var(--transition-speed);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(52, 152, 219, 0.3));
             transition: transform 0.3s ease;
         }
 
-            /* Título del panel */
-            #sidebar h4 {
-                padding: 20px;
-                text-align: center;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                margin: 0;
-                font-weight: 600;
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        /* Toggle button */
+        .sidebar-toggle {
+            position: absolute;
+            top: 50%;
+            right: -12px;
+            transform: translateY(-50%);
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+
+            .sidebar-toggle:hover {
+                transform: translateY(-50%) scale(1.1);
+                background: #2980b9;
             }
 
-        /* Enlaces del menú */
-        #menu {
-            flex-grow: 1;
-            padding-top: 10px;
+        /* Menú de navegación */
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
-            #menu a {
-                color: rgba(255, 255, 255, 0.8);
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 12px 20px;
-                text-decoration: none;
-                transition: all 0.2s;
-                border-left: 3px solid transparent;
+        .menu-section {
+            margin-bottom: 10px;
+        }
+
+        .menu-label {
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            transition: all var(--transition-speed);
+            white-space: nowrap;
+        }
+
+        .sidebar-collapsed .menu-label {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 3px solid transparent;
+            gap: 15px;
+        }
+
+            .menu-item:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-left-color: var(--accent-color);
+                padding-left: 25px;
             }
 
-                #menu a:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                    border-left-color: #0d6efd;
-                }
-
-                #menu a.active {
-                    background: rgba(13, 110, 253, 0.2);
-                    color: white;
-                    border-left-color: #0d6efd;
-                }
-
-            #menu hr {
-                margin: 10px 20px;
-                opacity: 0.2;
+            .menu-item.active {
+                background: linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, transparent 100%);
+                border-left-color: var(--accent-color);
+                color: white;
             }
 
-        /* Usuario abajo */
-        #user-section {
+                .menu-item.active::before {
+                    content: '';
+                    position: absolute;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    background: var(--accent-color);
+                    border-radius: 2px;
+                }
+
+        .menu-icon {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item:hover .menu-icon {
+            transform: scale(1.1);
+        }
+
+        .menu-text {
+            font-weight: 500;
+            white-space: nowrap;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar-collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Separador */
+        .menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            margin: 15px 20px;
+        }
+
+        /* Sección de usuario */
+        .user-section {
+            padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.1);
         }
 
-            #user-section i.bi-person-circle {
-                font-size: 2rem;
-                margin-right: 10px;
-            }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all var(--transition-speed);
+        }
 
-        #username {
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-color), #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar-collapsed .user-details {
+            opacity: 0;
+        }
+
+        .user-name {
             font-weight: 600;
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        #user-role {
+        .user-role {
             font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-muted);
         }
 
-        #logout {
-            font-size: 1.2rem;
-            transition: transform 0.2s;
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-            #logout:hover {
+            .logout-btn:hover {
+                color: #e74c3c;
+                background: rgba(231, 76, 60, 0.1);
                 transform: scale(1.1);
             }
 
         /* Contenido principal */
         #main {
-            margin-left: 250px;
-            padding: 25px;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
             min-height: 100vh;
+            transition: margin-left var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Breadcrumb */
-        .breadcrumb {
+        .main-expanded {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Breadcrumb mejorado */
+        .breadcrumb-container {
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent-color);
         }
 
-        /* Botón hamburguesa */
-        #menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 999;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        .breadcrumb {
+            margin: 0;
+            background: transparent;
         }
+
+        .breadcrumb-item a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+            .breadcrumb-item a:hover {
+                color: #2980b9;
+            }
 
         /* Overlay para móviles */
         #overlay {
@@ -146,23 +344,65 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
+            backdrop-filter: blur(2px);
         }
 
+        /* Botón hamburguesa móvil */
+        #mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+            #mobile-toggle:hover {
+                transform: scale(1.1);
+                background: #2980b9;
+            }
+
+        /* Scrollbar personalizado */
+        .sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+            .sidebar-menu::-webkit-scrollbar-thumb:hover {
+                background: #2980b9;
+            }
+
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             #sidebar {
                 transform: translateX(-100%);
             }
 
-                #sidebar.show {
-                    transform: translateX(0);
-                }
-
-            #main {
-                margin-left: 0;
+            .sidebar-mobile-open {
+                transform: translateX(0);
             }
 
-            #menu-toggle {
+            #main {
+                margin-left: 0 !important;
+            }
+
+            #mobile-toggle {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -173,112 +413,210 @@
             }
         }
 
-        /* Loader */
-        .loader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
+        .menu-item {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+            .menu-item:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+
+            .menu-item:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .menu-item:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+
+            .menu-item:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+            .menu-item:nth-child(5) {
+                animation-delay: 0.5s;
+            }
+
+            .menu-item:nth-child(6) {
+                animation-delay: 0.6s;
+            }
+
+        /* Tooltips para sidebar colapsado */
+        .sidebar-collapsed .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-collapsed .menu-item:hover::after {
+            opacity: 1;
+            visibility: visible;
+            left: calc(100% + 10px);
         }
     </style>
 </head>
 <body>
-    <!-- Botón hamburguesa (solo móvil) -->
-    <button id="menu-toggle" class="btn btn-dark">
+    <!-- Botón hamburguesa móvil -->
+    <button id="mobile-toggle" class="btn">
         <i class="bi bi-list"></i>
     </button>
 
-    <!-- Overlay (solo móvil) -->
+    <!-- Overlay móvil -->
     <div id="overlay"></div>
 
-    <!-- Menú lateral -->
+    <!-- Sidebar mejorado -->
     <div id="sidebar">
-        <div>
-            <h4>
-                <i class="bi bi-clock-history"></i> FiExpress
-            </h4>
-            <div id="menu">
-                <a href="#" data-form="inicio" data-title="Inicio">
-                    <i class="bi bi-house-door"></i> Inicio
-                </a>
-                <a href="#" data-form="empleados" data-title="Empleados">
-                    <i class="bi bi-person-badge"></i> Empleados
-                </a>
-                <a href="#" data-form="fichajes" data-title="Fichajes">
-                    <i class="bi bi-clock-history"></i> Fichajes
-                </a>
-                <a href="#" data-form="Rfid" data-title="Rfid">
-                    <i class="bi bi-card-heading"></i> Tarjetas RFID
-                </a>
-                <a href="#" data-form="horarios" data-title="Horarios">
-                    <i class="bi bi-calendar3"></i> Horarios
-                </a>
-                <a href="#" data-form="estadisticas" data-title="Estadísticas">
-                    <i class="bi bi-graph-up"></i> Estadísticas
-                </a>
-                <a href="#" data-form="permisos" data-title="Permisos">
-                    <i class="bi bi-file-text"></i> Permisos
-                </a>
-                <a href="#" data-form="notificaciones-admin" data-title="Notificaciones">
-                    <i class="bi bi-bell"></i> Notificaciones
-                </a>
-
-
-                <hr>
-                <a href="#" data-form="usuarios" data-title="Usuarios" class="admin-only">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-                <a href="#" data-form="configuracion" data-title="Configuración" class="admin-only">
-                    <i class="bi bi-gear"></i> Configuración
-                </a>
+        <!-- Header -->
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <i class="bi bi-clock-history logo-icon"></i>
+                <span class="logo-text">FiExpress</span>
             </div>
-        </div>
-
-        <!-- Sección de usuario -->
-        <div id="user-section" class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-person-circle"></i>
-                <div>
-                    <div id="username">Cargando...</div>
-                    <small id="user-role">...</small>
-                </div>
-            </div>
-            <a href="#" id="logout" class="text-danger" title="Cerrar sesión">
-                <i class="bi bi-box-arrow-right"></i>
-            </a>
-        </div>
+            <!--  <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="bi bi-chevron-left"></i> 
+        </button>-->
     </div>
 
-    <!-- Contenedor principal -->
-    <div id="main">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">
-                    <a href="#" data-form="inicio">
-                        <i class="bi bi-house-door"></i> Inicio
+    <!-- Menú de navegación -->
+            <div class="sidebar-menu">
+                <!-- Sección Principal -->
+                <div class="menu-section">
+                    <div class="menu-label">Principal</div>
+                    <a href="#" class="menu-item active" data-form="inicio" data-title="Inicio" data-tooltip="Inicio">
+                        <i class="bi bi-house-door menu-icon"></i>
+                        <span class="menu-text">Inicio</span>
                     </a>
-                </li>
-                <li class="breadcrumb-item active" id="breadcrumb-actual">Dashboard</li>
-            </ol>
-        </nav>
+                    <a href="#" class="menu-item" data-form="empleados" data-title="Empleados" data-tooltip="Empleados">
+                        <i class="bi bi-people menu-icon"></i>
+                        <span class="menu-text">Empleados</span>
+                    </a>
+                    <a href="#" class="menu-item" data-form="fichajes" data-title="Fichajes" data-tooltip="Fichajes">
+                        <i class="bi bi-clock-history menu-icon"></i>
+                        <span class="menu-text">Fichajes</span>
+                    </a>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <!-- Sección Gestión -->
+                <div class="menu-section">
+                    <div class="menu-label">Gestión</div>
+                    <a href="#" class="menu-item" data-form="Rfid" data-title="RFID" data-tooltip="Tarjetas RFID">
+                        <i class="bi bi-credit-card menu-icon"></i>
+                        <span class="menu-text">Tarjetas RFID</span>
+                    </a>
+                    <a href="#" class="menu-item" data-form="horarios" data-title="Horarios" data-tooltip="Horarios">
+                        <i class="bi bi-calendar-week menu-icon"></i>
+                        <span class="menu-text">Horarios</span>
+                    </a>
+                    <a href="#" class="menu-item" data-form="permisos" data-title="Permisos" data-tooltip="Permisos">
+                        <i class="bi bi-clipboard-check menu-icon"></i>
+                        <span class="menu-text">Permisos</span>
+                    </a>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <!-- Sección Reportes -->
+                <div class="menu-section">
+                    <div class="menu-label">Reportes</div>
+                    <a href="#" class="menu-item" data-form="estadisticas" data-title="Estadísticas" data-tooltip="Estadísticas">
+                        <i class="bi bi-graph-up menu-icon"></i>
+                        <span class="menu-text">Estadísticas</span>
+                       
+                    </a>
+                    <a href="#" class="menu-item" data-form="notificaciones-admin" data-title="Notificaciones" data-tooltip="Notificaciones">
+                        <i class="bi bi-bell menu-icon"></i>
+                        <span class="menu-text">Notificaciones</span>
+                       
+                    </a>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <!-- Sección Administración -->
+                <div class="menu-section">
+                    <div class="menu-label">Administración</div>
+                    <a href="#" class="menu-item admin-only" data-form="usuarios" data-title="Usuarios" data-tooltip="Usuarios">
+                        <i class="bi bi-person-gear menu-icon"></i>
+                        <span class="menu-text">Usuarios</span>
+                    </a>
+                    <a href="#" class="menu-item admin-only" data-form="configuracion" data-title="Configuración" data-tooltip="Configuración">
+                        <i class="bi bi-sliders menu-icon"></i>
+                        <span class="menu-text">Configuración</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sección de usuario -->
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name" id="username">Cargando...</div>
+                        <div class="user-role" id="user-role">...</div>
+                    </div>
+                    <button class="logout-btn" id="logout" title="Cerrar sesión">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    <!-- Contenido principal -->
+    <div id="main">
+        <!-- Breadcrumb mejorado -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#" data-form="inicio">
+                            <i class="bi bi-house-door me-1"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" id="breadcrumb-actual">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
 
         <!-- Contenido dinámico -->
         <div id="contenido"></div>
     </div>
 
-    <!-- Scripts -->
     <script>
         // Estado de la aplicación
         const app = {
             usuario: null,
-            vistaActual: 'inicio'
+            vistaActual: 'inicio',
+            sidebarCollapsed: false
         };
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -295,7 +633,10 @@
             // Inicializar menú
             inicializarMenu();
 
-            // Inicializar botón hamburguesa (móvil)
+            // Inicializar sidebar toggle
+         //   inicializarSidebarToggle();
+
+            // Inicializar menú móvil
             inicializarMenuMovil();
 
             // Configurar logout
@@ -336,28 +677,18 @@
 
                 app.usuario = await res.json();
 
-
-
                 const rol = app.usuario.rol;
                 const esSupervisor = app.usuario.esSupervisor;
+
                 if (rol !== 'Admin' && !esSupervisor) {
                     alert('Acceso denegado. Redirigiendo a tu panel.');
                     window.location.href = '/panel-empleado.html';
                     return;
                 }
 
-
                 // Actualizar UI
-                document.getElementById('username').textContent =
-                    `${app.usuario.nombre} ${app.usuario.apellido || ''}`.trim();
-                document.getElementById('user-role').textContent =
-                    app.usuario.rol || 'Empleado';
-
-                // Dentro de la función cargarUsuario(), después de obtener app.usuario
-                if (app.usuario.rol !== 'Admin' && !app.usuario.esSupervisor) {
-                    window.location.href = '/panel-empleado.html';
-                    return;
-                }
+                document.getElementById('username').textContent = app.usuario.nombre;
+                document.getElementById('user-role').textContent = app.usuario.rol || 'Empleado';
 
             } catch (error) {
                 console.error('Error al cargar usuario:', error);
@@ -381,19 +712,19 @@
 
         // Inicializar menú
         function inicializarMenu() {
-            const links = document.querySelectorAll("#menu a");
+            const menuItems = document.querySelectorAll(".menu-item");
 
-            links.forEach(link => {
-                link.addEventListener("click", e => {
+            menuItems.forEach(item => {
+                item.addEventListener("click", e => {
                     e.preventDefault();
 
                     // Actualizar clases activas
-                    links.forEach(l => l.classList.remove("active"));
-                    link.classList.add("active");
+                    menuItems.forEach(i => i.classList.remove("active"));
+                    item.classList.add("active");
 
                     // Cargar vista
-                    const vista = link.dataset.form;
-                    const titulo = link.dataset.title || vista;
+                    const vista = item.dataset.form;
+                    const titulo = item.dataset.title || vista;
                     cargarVista(vista, titulo);
 
                     // Cerrar menú en móvil
@@ -404,22 +735,43 @@
             // Click en breadcrumb inicio
             document.querySelector('.breadcrumb-item a').addEventListener('click', e => {
                 e.preventDefault();
-                links.forEach(l => l.classList.remove("active"));
-                links[0].classList.add("active");
+                menuItems.forEach(i => i.classList.remove("active"));
+                menuItems[0].classList.add("active");
                 cargarVista('inicio', 'Dashboard');
                 cerrarMenuMovil();
             });
         }
 
+        // Inicializar toggle del sidebar
+     //   function inicializarSidebarToggle() {
+       //     const toggle = document.getElementById('sidebar-toggle');
+         //   const sidebar = document.getElementById('sidebar');
+        //    const main = document.getElementById('main');
+
+          //  toggle.addEventListener('click', () => {
+           //     app.sidebarCollapsed = !app.sidebarCollapsed;
+
+//                if (app.sidebarCollapsed) {
+  //                  sidebar.classList.add('sidebar-collapsed');
+    //                main.classList.add('main-expanded');
+      //              toggle.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        //        } else {
+          //          sidebar.classList.remove('sidebar-collapsed');
+            //        main.classList.remove('main-expanded');
+              //      toggle.innerHTML = '<i class="bi bi-chevron-left"></i>';
+           //     }
+         //   });
+     //   }
+
         // Inicializar menú móvil
         function inicializarMenuMovil() {
-            const toggle = document.getElementById('menu-toggle');
+            const mobileToggle = document.getElementById('mobile-toggle');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
 
-            toggle.addEventListener('click', () => {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.add('sidebar-mobile-open');
+                overlay.classList.add('show');
             });
 
             overlay.addEventListener('click', cerrarMenuMovil);
@@ -427,7 +779,7 @@
 
         // Cerrar menú móvil
         function cerrarMenuMovil() {
-            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('sidebar').classList.remove('sidebar-mobile-open');
             document.getElementById('overlay').classList.remove('show');
         }
 
@@ -439,9 +791,9 @@
             app.vistaActual = vista;
             breadcrumb.textContent = titulo;
 
-            // Mostrar loader
+            // Mostrar loader con animación
             contenedor.innerHTML = `
-                    <div class="loader">
+                    <div class="loader" style="animation: fadeIn 0.5s ease;">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
@@ -456,13 +808,19 @@
                     return res.text();
                 })
                 .then(html => {
-                    contenedor.innerHTML = html;
-                    // Ejecutar scripts si existen en la vista cargada
-                    ejecutarScriptsVista(contenedor);
+                    contenedor.style.opacity = '0';
+                    setTimeout(() => {
+                        contenedor.innerHTML = html;
+                        contenedor.style.opacity = '1';
+                        contenedor.style.transition = 'opacity 0.3s ease';
+
+                        // Ejecutar scripts si existen en la vista cargada
+                        ejecutarScriptsVista(contenedor);
+                    }, 200);
                 })
                 .catch(err => {
                     contenedor.innerHTML = `
-                            <div class="alert alert-danger d-flex align-items-center">
+                            <div class="alert alert-danger d-flex align-items-center" style="animation: fadeIn 0.5s ease;">
                                 <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
                                 <div>
                                     <strong>Error al cargar la vista</strong><br>
@@ -490,44 +848,32 @@
         function configurarLogout() {
             document.getElementById("logout").addEventListener("click", async e => {
                 e.preventDefault();
-                if (!confirm("¿Estás seguro de cerrar sesión?")) return;
+
+                // Animación de confirmación
+                const logoutBtn = e.currentTarget;
+                logoutBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i>';
+                logoutBtn.style.background = 'rgba(231, 76, 60, 0.2)';
+
+                if (!confirm("¿Estás seguro de cerrar sesión?")) {
+                    logoutBtn.style.background = '';
+                    return;
+                }
+
                 try {
                     await fetch('/api/auth/logout', {
                         method: 'POST',
-                        credentials: 'include' // ✅ Esencial
+                        credentials: 'include'
                     });
-                    // ✅ Redirigir directamente al login SIN parámetros
                     window.location.href = '/login.html';
                 } catch (error) {
                     alert('Error al cerrar sesión');
+                    logoutBtn.style.background = '';
                 }
             });
         }
 
-        // Función auxiliar para hacer fetch con autenticación
-        async function fetchAuth(url, options = {}) {
-            const defaultOptions = {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
-            };
-
-            const response = await fetch(url, { ...defaultOptions, ...options });
-
-            // Si es 401, redirigir al login
-            if (response.status === 401) {
-                window.location.href = '/login.html';
-                throw new Error('No autenticado');
-            }
-
-            return response;
-        }
-
-        // Exponer funciones globales para que las vistas puedan usarlas
+        // Exponer funciones globales
         window.app = app;
-        window.fetchAuth = fetchAuth;
         window.cargarVista = cargarVista;
     </script>
 </body>

@@ -1,295 +1,535 @@
-﻿<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-clock-history text-primary"></i>
-                Gestión de Fichajes
-            </h2>
-            <p class="text-muted">Vista en tiempo real de todos los fichajes del sistema</p>
-        </div>
-    </div>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Fichajes - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        .stat-card {
+            transition: transform 0.2s ease;
+        }
 
-    <!-- Tarjetas de Estadísticas -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-primary border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Total Fichajes</h6>
-                    <h3 id="total-fichajes">0</h3>
-                    <small class="text-muted" id="info-fichajes">Cargando...</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Entradas</h6>
-                    <h3 class="text-success" id="total-entradas">0</h3>
-                    <small class="text-muted">Registros de entrada</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-danger border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Salidas</h6>
-                    <h3 class="text-danger" id="total-salidas">0</h3>
-                    <small class="text-muted">Registros de salida</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Neto (Entradas - Salidas)</h6>
-                    <h3 class="text-warning" id="empleados-neto">0</h3>
-                    <small class="text-muted">Diferencia total</small>
-                </div>
-            </div>
-        </div>
-    </div>
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
 
-    <!-- Controles de Filtro -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Fecha</label>
-                    <input type="date" class="form-control" id="filtro-fecha">
+        .badge-fichaje {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+
+        .time-badge {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.025);
+        }
+
+        .avatar-table {
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Gestión de Fichajes -->
+    <div class="container-fluid py-4" id="fichajes-container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-clock-history text-primary"></i>
+                    Gestión de Fichajes
+                </h2>
+                <p class="text-muted">Vista en tiempo real de todos los fichajes del sistema.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Fichajes</h6>
+                                <h3 id="stat-total" class="mb-0">0</h3>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-primary opacity-25"></i>
+                        </div>
+                        <small class="text-muted" id="info-filtros">Hoy</small>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Empleado</label>
-                    <select class="form-select" id="filtro-empleado">
-                        <option value="">Todos los empleados</option>
-                    </select>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Entradas</h6>
+                                <h3 class="text-success mb-0" id="stat-entradas">0</h3>
+                            </div>
+                            <i class="bi bi-box-arrow-in-right fs-1 text-success opacity-25"></i>
+                        </div>
+                        <small class="text-muted">Registros de entrada</small>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Tipo</label>
-                    <select class="form-select" id="filtro-tipo">
-                        <option value="">Todos</option>
-                        <option value="Entrada">Entrada</option>
-                        <option value="Salida">Salida</option>
-                    </select>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-danger border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Salidas</h6>
+                                <h3 class="text-danger mb-0" id="stat-salidas">0</h3>
+                            </div>
+                            <i class="bi bi-box-arrow-right fs-1 text-danger opacity-25"></i>
+                        </div>
+                        <small class="text-muted">Registros de salida</small>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button class="btn btn-primary" onclick="FichajesModule.cargarFichajes()">
-                            <i class="bi bi-filter"></i> Filtrar
-                        </button>
-                        <button class="btn btn-outline-secondary" onclick="FichajesModule.limpiarFiltros()">
-                            <i class="bi bi-x-circle"></i> Limpiar
-                        </button>
-                        <button class="btn btn-outline-primary" onclick="FichajesModule.cargarFichajes()">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Diferencia</h6>
+                                <h3 class="text-warning mb-0" id="stat-diferencia">0</h3>
+                            </div>
+                            <i class="bi bi-graph-up fs-1 text-warning opacity-25"></i>
+                        </div>
+                        <small class="text-muted">Entradas - Salidas</small>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Lista de Fichajes -->
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-list-ul"></i> Registros de Fichajes
-                <span class="badge bg-primary ms-2" id="contador-fichajes">0</span>
-            </h5>
-            <span class="text-muted small" id="ultima-actualizacion"></span>
+        <!-- Barra de búsqueda y acciones -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-calendar text-muted"></i>
+                    </span>
+                    <input type="date" class="form-control" id="filtro-fecha">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="filtro-buscar" placeholder="Buscar por empleado, código o departamento...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="filtro-tipo">
+                    <option value="">Todos los tipos</option>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Salida">Salida</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="d-grid gap-2 d-md-flex">
+                    <button class="btn btn-primary me-2" onclick="FichajesModule.cargarFichajes()">
+                        <i class="bi bi-filter me-1"></i> Filtrar
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="FichajesModule.limpiarFiltros()">
+                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Empleado</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Tipo</th>
-                            <th>IP</th>
-                            <th>Observaciones</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-fichajes">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando fichajes...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+        <!-- Información de actualización -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-list-ul text-muted me-2"></i>
+                        Registros de Fichajes
+                        <span class="badge bg-primary ms-2" id="contador-fichajes">0</span>
+                    </h6>
+                    <span class="text-muted small" id="ultima-actualizacion">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        Actualizando...
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de fichajes -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Tipo</th>
+                                <th>IP</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-fichajes">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    Cargando fichajes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    window.FichajesModule = (function () {
-        'use strict';
-        const state = { fichajes: [], empleados: [] };
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-        async function init() {
-            // Inicializar fecha con la del cliente (solo como sugerencia visual)
-            const hoy = new Date();
-            const offset = hoy.getTimezoneOffset() * 60000;
-            const hoyLocal = new Date(hoy.getTime() - offset);
-            document.getElementById('filtro-fecha').value = hoyLocal.toISOString().split('T')[0];
+    <script>
+        //  MÓDULO AISLADO - Gestión de Fichajes
+        window.FichajesModule = (function () {
+            'use strict';
 
-            await cargarEmpleados();
-            await cargarFichajes();
-            setInterval(() => {
-                if (!document.hidden) cargarFichajes();
-            }, 30000);
-        }
+            // Estado privado del módulo
+            const state = {
+                fichajes: [],
+                empleados: [],
+                fichajesFiltrados: [],
+                actualizacionInterval: null
+            };
 
-        async function cargarEmpleados() {
-            try {
-                const res = await fetchAuth('/api/empleados?incluirInactivos=false');
-                const empleados = await res.json();
-                const select = document.getElementById('filtro-empleado');
-                select.innerHTML = '<option value="">Todos los empleados</option>';
-                empleados.forEach(e => {
-                    select.innerHTML += `<option value="${e.idEmpleado}">${e.nombre} (${e.codigo_empleado})</option>`;
-                });
-                state.empleados = empleados;
-            } catch (err) {
-                console.error('Error al cargar empleados:', err);
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
+                }
             }
-        }
 
-        async function cargarFichajes() {
-            try {
-                mostrarLoading();
-                const params = new URLSearchParams();
-                const fecha = document.getElementById('filtro-fecha').value;
-                const emp = document.getElementById('filtro-empleado').value;
-                const tipo = document.getElementById('filtro-tipo').value;
+            // Inicializar
+            async function init() {
+                console.log(' Iniciando módulo de fichajes...');
 
-                if (fecha) params.append('fecha', fecha);
-                if (emp) params.append('empleadoId', emp);
-                if (tipo) params.append('tipo', tipo);
+                // Verificar que estamos en la vista correcta
+                if (!document.getElementById('fichajes-container')) {
+                    console.log(' No estamos en la vista de fichajes, saliendo...');
+                    return;
+                }
 
-                const url = `/api/fichajes?${params.toString()}`;
-                const res = await fetchAuth(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                state.fichajes = await res.json();
+                // Establecer fecha actual como predeterminada
+                const hoy = new Date();
+                const fechaLocal = formatearFechaParaInput(hoy);
+                document.getElementById('filtro-fecha').value = fechaLocal;
+
+                await Promise.all([
+                    cargarEmpleados(),
+                    cargarFichajes()
+                ]);
+
+                // Configurar búsqueda en tiempo real
+                document.getElementById('filtro-buscar').addEventListener('input', aplicarFiltros);
+
+                // Configurar actualización automática cada 30 segundos
+                state.actualizacionInterval = setInterval(() => {
+                    if (!document.hidden) {
+                        cargarFichajes();
+                    }
+                }, 30000);
+
+                console.log(' Módulo de fichajes iniciado');
+            }
+
+            // Formatear fecha para input date (corrección del problema de zona horaria)
+            function formatearFechaParaInput(fecha) {
+                // Ajustar para evitar el problema de diferencia de un día
+                const fechaAjustada = new Date(fecha.getTime() - (fecha.getTimezoneOffset() * 60000));
+                return fechaAjustada.toISOString().split('T')[0];
+            }
+
+            // Cargar empleados
+            async function cargarEmpleados() {
+                console.log(' Cargando empleados...');
+                try {
+                    state.empleados = await apiCall('/api/empleados?incluirInactivos=false');
+                    console.log(' Empleados cargados:', state.empleados.length);
+                } catch (error) {
+                    console.error('❌ Error al cargar empleados:', error);
+                }
+            }
+
+            // Cargar fichajes
+            async function cargarFichajes() {
+                console.log(' Cargando fichajes...');
+                try {
+                    const params = new URLSearchParams();
+                    const fecha = document.getElementById('filtro-fecha').value;
+                    const tipo = document.getElementById('filtro-tipo').value;
+
+                    if (fecha) params.append('fecha', fecha);
+                    if (tipo) params.append('tipo', tipo);
+
+                    const url = `/api/fichajes?${params.toString()}`;
+                    state.fichajes = await apiCall(url);
+                    console.log(' Fichajes cargados:', state.fichajes.length);
+                    
+                    // Aplicar filtros de búsqueda
+                    aplicarFiltros();
+                    
+                    actualizarEstadisticas();
+                    actualizarTimestamp();
+                } catch (error) {
+                    console.error('❌ Error al cargar fichajes:', error);
+                    document.getElementById('tabla-fichajes').innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-danger py-4">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Error al cargar fichajes: ${error.message}
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Aplicar filtros de búsqueda
+            function aplicarFiltros() {
+                const textoBusqueda = document.getElementById('filtro-buscar').value.toLowerCase().trim();
+                
+                if (textoBusqueda) {
+                    state.fichajesFiltrados = state.fichajes.filter(fichaje => {
+                        const empleado = state.empleados.find(e => e.nombre === fichaje.empleado);
+                        return (
+                            fichaje.empleado?.toLowerCase().includes(textoBusqueda) ||
+                            (empleado?.codigo_empleado || '').toLowerCase().includes(textoBusqueda) ||
+                            (empleado?.departamento || '').toLowerCase().includes(textoBusqueda) ||
+                            (empleado?.email || '').toLowerCase().includes(textoBusqueda)
+                        );
+                    });
+                } else {
+                    state.fichajesFiltrados = [...state.fichajes];
+                }
+                
                 renderizarFichajes();
                 actualizarEstadisticas();
-                actualizarTimestamp();
-            } catch (err) {
-                console.error('Error al cargar fichajes:', err);
-                document.getElementById('tabla-fichajes').innerHTML = `
-                <tr><td colspan="7" class="text-center text-danger py-4">
-                    Error al cargar datos. Intente de nuevo.
-                </td></tr>
-            `;
-            }
-        }
-
-        function renderizarFichajes() {
-            const tbody = document.getElementById('tabla-fichajes');
-            const contador = document.getElementById('contador-fichajes');
-            contador.textContent = state.fichajes.length;
-
-            if (state.fichajes.length === 0) {
-                tbody.innerHTML = `
-                <tr><td colspan="7" class="text-center text-muted py-4">
-                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    No hay fichajes con los filtros aplicados.
-                </td></tr>
-            `;
-                return;
             }
 
-            tbody.innerHTML = state.fichajes.map(f => `
-            <tr>
-                <td><strong>${f.empleado || 'N/A'}</strong></td>
-                <td><span class="badge bg-light text-dark">${formatearFecha(f.fecha)}</span></td>
-                <td><strong class="text-primary">${f.hora || 'N/A'}</strong></td>
-                <td>
-                    <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">
-                        ${f.tipo}
-                    </span>
-                </td>
-                <td><small class="text-muted">${f.ip || 'Local'}</small></td>
-                <td><small class="text-muted">${f.observacion || '—'}</small></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-secondary" disabled>
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-        }
+            // Actualizar estadísticas
+            function actualizarEstadisticas() {
+                const fichajes = state.fichajesFiltrados;
+                const total = fichajes.length;
+                const entradas = fichajes.filter(f => f.tipo === 'Entrada').length;
+                const salidas = fichajes.filter(f => f.tipo === 'Salida').length;
+                const diferencia = entradas - salidas;
 
-        function actualizarEstadisticas() {
-            const fichajes = state.fichajes;
-            const entradas = fichajes.filter(f => f.tipo === 'Entrada').length;
-            const salidas = fichajes.filter(f => f.tipo === 'Salida').length;
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-entradas').textContent = entradas;
+                document.getElementById('stat-salidas').textContent = salidas;
+                document.getElementById('stat-diferencia').textContent = diferencia;
 
-            document.getElementById('total-fichajes').textContent = fichajes.length;
-            document.getElementById('total-entradas').textContent = entradas;
-            document.getElementById('total-salidas').textContent = salidas;
-            document.getElementById('empleados-neto').textContent = entradas - salidas;
+                // Actualizar información de filtros
+                let infoFiltros = "Hoy";
+                const fecha = document.getElementById('filtro-fecha').value;
+                if (fecha) {
+                    const fechaObj = new Date(fecha);
+                    const hoy = new Date();
+                    if (fechaObj.toDateString() === hoy.toDateString()) {
+                        infoFiltros = "Hoy";
+                    } else {
+                        infoFiltros = fechaObj.toLocaleDateString('es-ES', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                    }
+                }
 
-            // Mostrar la fecha usada en el filtro (la que se envió al backend)
-            let info = "Filtros aplicados";
-            const fecha = document.getElementById('filtro-fecha').value;
-            if (fecha) info = formatearFecha(fecha);
-            const empId = document.getElementById('filtro-empleado').value;
-            if (empId) {
-                const emp = state.empleados.find(e => e.idEmpleado == empId);
-                info += emp ? ` • ${emp.nombre}` : '';
+                const tipo = document.getElementById('filtro-tipo').value;
+                if (tipo) {
+                    infoFiltros += ` • ${tipo}`;
+                }
+
+                const textoBusqueda = document.getElementById('filtro-buscar').value;
+                if (textoBusqueda) {
+                    infoFiltros += ` • "${textoBusqueda}"`;
+                }
+
+                document.getElementById('info-filtros').textContent = infoFiltros;
             }
-            if (document.getElementById('filtro-tipo').value) {
-                info += ` • ${document.getElementById('filtro-tipo').value}`;
+
+            // Renderizar fichajes en tabla
+            function renderizarFichajes() {
+                const tbody = document.getElementById('tabla-fichajes');
+                const contador = document.getElementById('contador-fichajes');
+
+                contador.textContent = state.fichajesFiltrados.length;
+
+                if (state.fichajesFiltrados.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No se encontraron fichajes con los filtros aplicados.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = state.fichajesFiltrados.map(fichaje => {
+                    const empleado = state.empleados.find(e => e.nombre === fichaje.empleado);
+                    const fotoUrl = empleado?.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fichaje.empleado)}&size=100&background=0D6EFD&color=fff&bold=true`;
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="${fotoUrl}" 
+                                         class="avatar-table rounded-circle me-2"
+                                         alt="${fichaje.empleado}"
+                                         onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${fichaje.empleado}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
+                                    <div>
+                                        <div class="fw-bold">${fichaje.empleado || 'N/A'}</div>
+                                        <small class="text-muted">${empleado?.codigo_empleado || ''}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">${formatearFechaDesdeBD(fichaje.fecha)}</span>
+                            </td>
+                            <td>
+                                <strong class="time-badge text-primary">${fichaje.hora || 'N/A'}</strong>
+                            </td>
+                            <td>
+                                <span class="badge ${fichaje.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} badge-fichaje">
+                                    <i class="bi ${fichaje.tipo === 'Entrada' ? 'bi-box-arrow-in-right' : 'bi-box-arrow-right'} me-1"></i>
+                                    ${fichaje.tipo}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">${fichaje.ip || 'Local'}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted">${fichaje.observacion || '—'}</small>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary" disabled title="Funcionalidad futura">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
-            document.getElementById('info-fichajes').textContent = info;
-        }
 
-        function formatearFecha(fechaStr) {
-            if (!fechaStr) return 'N/A';
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            return new Date(fechaStr).toLocaleDateString('es-ES', options);
-        }
+            //  CORRECCIÓN: Formatear fecha desde BD (sin problemas de zona horaria)
+            function formatearFechaDesdeBD(fechaStr) {
+                if (!fechaStr) return 'N/A';
+                
+                // La fecha viene de la BD en formato YYYY-MM-DD
+                // No usar new Date() para evitar problemas de zona horaria
+                const partes = fechaStr.split('-');
+                if (partes.length === 3) {
+                    const [año, mes, dia] = partes;
+                    return `${dia}/${mes}/${año}`;
+                }
+                
+                // Fallback si el formato es diferente
+                return fechaStr;
+            }
 
-        function actualizarTimestamp() {
-            document.getElementById('ultima-actualizacion').textContent =
-                'Actualizado: ' + new Date().toLocaleTimeString();
-        }
+            // Actualizar timestamp
+            function actualizarTimestamp() {
+                const ahora = new Date();
+                document.getElementById('ultima-actualizacion').innerHTML = `
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Actualizado: ${ahora.toLocaleTimeString('es-ES', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })}
+                `;
+            }
 
-        function mostrarLoading() {
-            document.getElementById('tabla-fichajes').innerHTML = `
-            <tr><td colspan="7" class="text-center text-muted py-4">
-                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                Cargando fichajes...
-            </td></tr>
-        `;
-        }
+            // Limpiar filtros
+            function limpiarFiltros() {
+                const hoy = new Date();
+                const fechaLocal = formatearFechaParaInput(hoy);
+                document.getElementById('filtro-fecha').value = fechaLocal;
+                document.getElementById('filtro-buscar').value = '';
+                document.getElementById('filtro-tipo').value = '';
+                cargarFichajes();
+            }
 
-        function limpiarFiltros() {
-            const hoy = new Date();
-            const offset = hoy.getTimezoneOffset() * 60000;
-            const hoyLocal = new Date(hoy.getTime() - offset);
-            document.getElementById('filtro-fecha').value = hoyLocal.toISOString().split('T')[0];
-            document.getElementById('filtro-empleado').value = '';
-            document.getElementById('filtro-tipo').value = '';
-            cargarFichajes();
-        }
+            // Mostrar alerta
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                // Eliminar alertas anteriores
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
 
-        // Iniciar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                        <span>${mensaje}</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
 
-        return {
-            cargarFichajes,
-            limpiarFiltros
-        };
-    })();
-</script>
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 4000);
+            }
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // API pública del módulo
+            return {
+                init,
+                cargarFichajes,
+                limpiarFiltros
+            };
+        })();
+    </script>
+</body>
+</html>

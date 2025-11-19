@@ -45,7 +45,7 @@ namespace fiexpress.Models
         public long? telegram_chat_id { get; set; }
 
 
-        // ✅ Colecciones existentes
+    
         public ICollection<Horario> Horarios { get; set; }
         public ICollection<Fichaje> Fichajes { get; set; }
         public ICollection<Estadistica> Estadisticas { get; set; }
@@ -53,11 +53,11 @@ namespace fiexpress.Models
         public ICollection<Rfid> Rfids { get; set; }
         public ICollection<Notificacion> Notificaciones { get; set; }
 
-        // ✅ AGREGADAS - Relaciones que faltaban
+
         public ICollection<Incidencia> Incidencias { get; set; }
         public ICollection<Justificacion> Justificaciones { get; set; }
 
-        // ✅ AGREGADAS - Relaciones 1:1
+    
         public Supervisor Supervisor { get; set; }
         public Usuario Usuario { get; set; }
     }

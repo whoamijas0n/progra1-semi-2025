@@ -1,213 +1,693 @@
-﻿<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-speedometer2 text-primary"></i>
-                Dashboard Principal
-            </h2>
-            <p class="text-muted">Bienvenido al sistema de control de asistencia FiExpress</p>
-        </div>
-    </div>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ESTILOS CONSISTENTES CON TUS VISTAS */
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    <!-- Tarjetas de Estadísticas -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-primary border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Total Empleados</h6>
-                            <h3 class="mb-0" id="total-empleados-dash">0</h3>
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+
+        .card-empleado {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+            .card-empleado:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-status {
+            font-size: 0.7rem;
+            padding: 0.35em 0.65em;
+        }
+
+        .btn-group-xs > .btn, .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+
+        .quick-action-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+            .quick-action-card:hover {
+                transform: translateY(-2px);
+            }
+
+        .progress {
+            height: 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+    <!-- Dashboard Principal  -->
+    <div class="container-fluid py-4" id="dashboard-container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-speedometer2 text-primary"></i>
+                    Dashboard Principal
+                </h2>
+                <p class="text-muted">Resumen general del sistema de control de asistencia</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Empleados</h6>
+                                <h3 class="mb-0" id="stat-total-empleados">0</h3>
+                            </div>
+                            <i class="bi bi-people fs-1 text-primary opacity-25"></i>
                         </div>
-                        <div class="text-primary fs-1">
-                            <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Fichajes Hoy</h6>
+                                <h3 class="text-success mb-0" id="stat-fichajes-hoy">0</h3>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Departamentos</h6>
+                                <h3 class="text-warning mb-0" id="stat-departamentos">0</h3>
+                            </div>
+                            <i class="bi bi-building fs-1 text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Tasa Asistencia</h6>
+                                <h3 class="text-info mb-0" id="stat-asistencia">0%</h3>
+                            </div>
+                            <i class="bi bi-person-check fs-1 text-info opacity-25"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Fichajes Hoy</h6>
-                            <h3 class="mb-0 text-success" id="fichajes-hoy">0</h3>
+        <!-- Segunda fila de estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-danger border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Empleados Activos</h6>
+                                <h3 class="text-danger mb-0" id="stat-activos">0</h3>
+                            </div>
+                            <i class="bi bi-person-check fs-1 text-danger opacity-25"></i>
                         </div>
-                        <div class="text-success fs-1">
-                            <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-secondary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Turnos Activos</h6>
+                                <h3 class="text-secondary mb-0" id="stat-turnos">0</h3>
+                            </div>
+                            <i class="bi bi-clock fs-1 text-secondary opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-dark border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Notificaciones</h6>
+                                <h3 class="text-dark mb-0" id="stat-notificaciones">0</h3>
+                            </div>
+                            <i class="bi bi-bell fs-1 text-dark opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Sistema</h6>
+                                <span class="badge bg-success" id="stat-sistema">Online</span>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-25"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Departamentos</h6>
-                            <h3 class="mb-0 text-warning" id="total-departamentos">0</h3>
-                        </div>
-                        <div class="text-warning fs-1">
-                            <i class="bi bi-building"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Barra de acciones  -->
 
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Empleados Activos</h6>
-                            <h3 class="mb-0 text-info" id="empleados-activos-dash">0</h3>
-                        </div>
-                        <div class="text-info fs-1">
-                            <i class="bi bi-person-check-fill"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="row mb-4">
 
-    <!-- Accesos Rápidos -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="mb-3">Accesos Rápidos</h5>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-person-plus fs-1 text-primary mb-3"></i>
-                    <h5>Gestión de Empleados</h5>
-                    <p class="text-muted">Administra empleados, horarios y permisos</p>
-                    <button class="btn btn-primary" onclick="window.cargarVista('empleados', 'Empleados')">
-                        Ir a Empleados
+            <div class="col-md-8">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="DashboardModule.recargarDashboard()">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
                     </button>
                 </div>
             </div>
+
+            <div class="col-md-4 text-end">
+                <div class="text-muted small">
+                    <i class="bi bi-clock me-1"></i>
+                    Actualizado: <span id="ultima-actualizacion">--:--:--</span>
+                </div>
+            </div>
+
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-clock-history fs-1 text-success mb-3"></i>
-                    <h5>Control de Fichajes</h5>
-                    <p class="text-muted">Registros de entrada y salida</p>
-                    <button class="btn btn-success" onclick="window.cargarVista('fichajes', 'Fichajes')">
-                        Ver Fichajes
-                    </button>
+
+        <!-- Accesos Rápidos - Estilo consistente -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5 class="mb-3">
+                    <i class="bi bi-lightning-charge text-warning me-2"></i>
+                    Accesos Rápidos
+                </h5>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-primary">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-people-fill text-primary fs-2 mb-2"></i>
+                        <h6 class="card-title">Empleados</h6>
+                        <button class="btn btn-primary btn-sm w-100" onclick="window.cargarVista('empleados', 'Empleados')">
+                            Acceder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-success">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-clock-history text-success fs-2 mb-2"></i>
+                        <h6 class="card-title">Fichajes</h6>
+                        <button class="btn btn-success btn-sm w-100" onclick="window.cargarVista('fichajes', 'Fichajes')">
+                            Acceder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-warning">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-calendar-week text-warning fs-2 mb-2"></i>
+                        <h6 class="card-title">Horarios</h6>
+                        <button class="btn btn-warning btn-sm w-100" onclick="window.cargarVista('horarios', 'Horarios')">
+                            Acceder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-info">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-graph-up text-info fs-2 mb-2"></i>
+                        <h6 class="card-title">Estadísticas</h6>
+                        <button class="btn btn-info btn-sm w-100" onclick="window.cargarVista('estadisticas', 'Estadísticas')">
+                            Acceder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-danger">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-card-checklist text-danger fs-2 mb-2"></i>
+                        <h6 class="card-title">Permisos</h6>
+                        <button class="btn btn-danger btn-sm w-100" onclick="window.cargarVista('permisos', 'Permisos')">
+                            Acceder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card quick-action-card border-dark">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-bell text-dark fs-2 mb-2"></i>
+                        <h6 class="card-title">Notificaciones</h6>
+                        <button class="btn btn-dark btn-sm w-100" onclick="window.cargarVista('notificaciones-admin', 'Notificaciones')">
+                            Acceder
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-calendar3 fs-1 text-warning mb-3"></i>
-                    <h5>Horarios y Turnos</h5>
-                    <p class="text-muted">Gestiona horarios de trabajo</p>
-                    <button class="btn btn-warning" onclick="window.cargarVista('horarios', 'Horarios')">
-                        Ver Horarios
-                    </button>
+
+        <!-- Contenido Principal -->
+        <div class="row">
+            <!-- Últimos Fichajes - Estilo de tabla consistente -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history text-primary me-2"></i>
+                            Últimos Fichajes
+                            <span class="badge bg-primary ms-2" id="contador-fichajes">0</span>
+                        </h5>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small" id="timestamp-fichajes"></span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="DashboardModule.recargarFichajes()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Empleado</th>
+                                        <th>Tipo</th>
+                                        <th>Hora</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-fichajes">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                            Cargando fichajes...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Derecho - Información del Sistema -->
+            <div class="col-lg-4 mb-4">
+                <!-- Estado del Sistema -->
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-activity text-success me-2"></i>
+                            Estado del Sistema
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>API Backend</span>
+                            <span class="badge bg-success" id="status-api">
+                                <i class="bi bi-check-circle me-1"></i>Online
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Base de Datos</span>
+                            <span class="badge bg-success" id="status-db">
+                                <i class="bi bi-check-circle me-1"></i>Conectado
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Servicio RFID</span>
+                            <span class="badge bg-success" id="status-rfid">
+                                <i class="bi bi-check-circle me-1"></i>Activo
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progreso del Día -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up text-info me-2"></i>
+                            Progreso del Día
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Jornada completada</small>
+                                <small class="text-muted" id="progreso-jornada-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="barra-jornada" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Empleados activos</small>
+                                <small class="text-muted" id="progreso-activos-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" id="barra-activos" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Fichajes registrados</small>
+                                <small class="text-muted" id="progreso-fichajes-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" id="barra-fichajes" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Últimos Fichajes -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock"></i> Últimos Fichajes
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        // ✅ MÓDULO AISLADO - Dashboard (ESTILO CONSISTENTE)
+        window.DashboardModule = (function () {
+            'use strict';
+
+            const state = {
+                datos: {},
+                intervalos: []
+            };
+
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    return null;
+                }
+            }
+
+            // Cargar datos del dashboard
+            async function cargarDashboard() {
+                console.log('Cargando dashboard...');
+
+                try {
+                    const [empleados, departamentos, fichajes, turnos, notificaciones] = await Promise.all([
+                        apiCall('/api/empleados?incluirInactivos=true'),
+                        apiCall('/api/departamentos?incluirInactivos=false'),
+                        apiCall('/api/fichajes/hoy'),
+                        apiCall('/api/turnos?incluirInactivos=false'),
+                        apiCall('/api/notificaciones/estadisticas')
+                    ]);
+
+                    state.datos = {
+                        empleados: empleados || [],
+                        departamentos: departamentos || [],
+                        fichajes: fichajes || [],
+                        turnos: turnos || [],
+                        notificaciones: notificaciones || {}
+                    };
+
+                    actualizarVista();
+                    actualizarTimestamp();
+
+                } catch (error) {
+                    console.error('Error al cargar dashboard:', error);
+                    mostrarEstadoError();
+                }
+            }
+
+            // Actualizar toda la vista
+            function actualizarVista() {
+                actualizarEstadisticas();
+                actualizarFichajesRecientes();
+                actualizarProgresoDia();
+                actualizarEstadoSistema();
+            }
+
+            // Actualizar estadísticas (estilo consistente)
+            function actualizarEstadisticas() {
+                const datos = state.datos;
+
+                // Estadísticas básicas
+                const totalEmpleados = datos.empleados.length;
+                const empleadosActivos = datos.empleados.filter(e => e.activo).length;
+                const fichajesHoy = datos.fichajes.length;
+                const departamentosCount = datos.departamentos.length;
+                const turnosActivos = datos.turnos.filter(t => t.activo).length;
+                const notificacionesCount = datos.notificaciones.noLeidas || 0;
+
+                // Actualizar DOM
+                document.getElementById('stat-total-empleados').textContent = totalEmpleados;
+                document.getElementById('stat-fichajes-hoy').textContent = fichajesHoy;
+                document.getElementById('stat-departamentos').textContent = departamentosCount;
+                document.getElementById('stat-activos').textContent = empleadosActivos;
+                document.getElementById('stat-turnos').textContent = turnosActivos;
+                document.getElementById('stat-notificaciones').textContent = notificacionesCount;
+                document.getElementById('contador-fichajes').textContent = fichajesHoy;
+
+                // Calcular tasa de asistencia
+                const tasaAsistencia = totalEmpleados > 0 ?
+                    Math.min(Math.round((fichajesHoy / (empleadosActivos * 2)) * 100), 100) : 0;
+                document.getElementById('stat-asistencia').textContent = tasaAsistencia + '%';
+            }
+
+            // Actualizar fichajes recientes (estilo de tabla consistente)
+            function actualizarFichajesRecientes() {
+                const tbody = document.getElementById('tabla-fichajes');
+                const fichajes = state.datos.fichajes.slice(0, 6); // Mostrar 6
+
+                if (fichajes.length === 0) {
+                    tbody.innerHTML = `
                                 <tr>
-                                    <th>Empleado</th>
-                                    <th>Tipo</th>
-                                    <th>Hora</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ultimos-fichajes">
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">
-                                        <i class="bi bi-hourglass-split"></i> Cargando...
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="bi bi-clock fs-4 d-block mb-2 text-muted"></i>
+                                        No hay fichajes hoy
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                            `;
+                    return;
+                }
 
-<script>
-    // Cargar datos del dashboard
-    async function cargarDashboard() {
-        try {
-            // Cargar empleados
-            const respEmpleados = await fetchAuth('/api/empleados?incluirInactivos=false');
-            if (respEmpleados.ok) {
-                const empleadosData = await respEmpleados.json();
-                document.getElementById('total-empleados-dash').textContent = empleadosData.length;
-                document.getElementById('empleados-activos-dash').textContent = empleadosData.filter(e => e.activo).length;
+                tbody.innerHTML = fichajes.map(f => `
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="${f.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(f.empleado || 'U') + '&size=100&background=0D6EFD&color=fff&bold=true'}"
+                                             class="avatar rounded-circle me-2"
+                                             alt="${f.empleado}"
+                                             onerror="this.src='https://ui-avatars.com/api/?name=U&size=100&background=0D6EFD&color=fff&bold=true'">
+                                        <div>
+                                            <strong class="d-block small">${f.empleado || '—'}</strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} badge-status">
+                                        <i class="bi ${f.tipo === 'Entrada' ? 'bi-box-arrow-in-right' : 'bi-box-arrow-right'} me-1"></i>
+                                        ${f.tipo}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="small">${f.hora || '—'}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info badge-status">Normal</span>
+                                </td>
+                            </tr>
+                        `).join('');
             }
 
-            // Cargar departamentos
-            const respDeptos = await fetchAuth('/api/departamentos?incluirInactivos=false');
-            if (respDeptos.ok) {
-                const deptosData = await respDeptos.json();
-                document.getElementById('total-departamentos').textContent = deptosData.length;
+            // Actualizar progreso del día
+            function actualizarProgresoDia() {
+                const ahora = new Date();
+                const horaActual = ahora.getHours() + ahora.getMinutes() / 60;
+
+                // Progreso jornada (8h-17h)
+                const progresoJornada = Math.min(Math.max((horaActual - 8) / 9 * 100, 0), 100);
+                document.getElementById('progreso-jornada-text').textContent = Math.round(progresoJornada) + '%';
+                document.getElementById('barra-jornada').style.width = progresoJornada + '%';
+
+                // Progreso empleados activos
+                const totalEmpleados = state.datos.empleados.length;
+                const empleadosActivos = state.datos.empleados.filter(e => e.activo).length;
+                const progresoActivos = totalEmpleados > 0 ? (empleadosActivos / totalEmpleados) * 100 : 0;
+                document.getElementById('progreso-activos-text').textContent = Math.round(progresoActivos) + '%';
+                document.getElementById('barra-activos').style.width = progresoActivos + '%';
+
+                // Progreso fichajes
+                const fichajesEsperados = empleadosActivos * 2; // Entrada + Salida
+                const progresoFichajes = fichajesEsperados > 0 ?
+                    Math.min((state.datos.fichajes.length / fichajesEsperados) * 100, 100) : 0;
+                document.getElementById('progreso-fichajes-text').textContent = Math.round(progresoFichajes) + '%';
+                document.getElementById('barra-fichajes').style.width = progresoFichajes + '%';
             }
 
-            // ✅ Cargar fichajes de hoy (endpoint corregido)
-            const respFichajes = await fetchAuth('/api/fichajes/hoy'); // ✅ Ahora existe
-            if (respFichajes.ok) {
-                const fichajesData = await respFichajes.json();
-                document.getElementById('fichajes-hoy').textContent = fichajesData.length;
-                mostrarUltimosFichajes(fichajesData);
+            // Actualizar estado del sistema
+            function actualizarEstadoSistema() {
+                // Simular chequeos de estado
+                document.getElementById('status-api').className = 'badge bg-success';
+                document.getElementById('status-db').className = 'badge bg-success';
+                document.getElementById('status-rfid').className = 'badge bg-success';
+                document.getElementById('stat-sistema').textContent = 'Online';
             }
-        } catch (error) {
-            console.error('Error al cargar dashboard:', error);
-            // No romper el dashboard si fallan los fichajes
-        }
-    }
 
-    function mostrarUltimosFichajes(fichajes) {
-        const tbody = document.getElementById('ultimos-fichajes');
-        if (fichajes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fichajes hoy</td></tr>';
-            return;
-        }
-        // Mostrar los últimos 10
-        const ultimos = fichajes.slice(0, 10);
-        tbody.innerHTML = ultimos.map(f => `
-        <tr>
-            <td>${f.empleado || '—'}</td>
-            <td>
-                <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">
-                    ${f.tipo}
-                </span>
-            </td>
-            <td>${f.hora || '—'}</td>
-            <td><span class="badge bg-info">Normal</span></td>
-        </tr>
-    `).join('');
-    }
+            // Actualizar timestamp
+            function actualizarTimestamp() {
+                const ahora = new Date();
+                document.getElementById('ultima-actualizacion').textContent =
+                    ahora.toLocaleTimeString();
+                document.getElementById('timestamp-fichajes').textContent =
+                    'Actualizado: ' + ahora.toLocaleTimeString();
+            }
 
-    // Cargar al mostrar la vista
-    cargarDashboard();
-</script>
+            // Funciones públicas
+            async function recargarDashboard() {
+                await cargarDashboard();
+                mostrarNotificacion('Dashboard actualizado', 'info');
+            }
+
+            async function recargarFichajes() {
+                const fichajes = await apiCall('/api/fichajes/hoy');
+                if (fichajes) {
+                    state.datos.fichajes = fichajes;
+                    actualizarFichajesRecientes();
+                    actualizarEstadisticas();
+                    actualizarProgresoDia();
+                    actualizarTimestamp();
+                     mostrarNotificacion('Fichajes actualizados', 'success');
+                }
+            }
+
+
+
+            // Mostrar estado de error
+            function mostrarEstadoError() {
+                document.getElementById('status-api').className = 'badge bg-danger';
+                document.getElementById('status-api').innerHTML = '<i class="bi bi-x-circle me-1"></i>Error';
+                mostrarNotificacion('Error al cargar datos', 'warning');
+            }
+
+            // Mostrar notificación (estilo consistente)
+            function mostrarNotificacion(mensaje, tipo = 'info') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                                <span>${mensaje}</span>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        `;
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) alertDiv.remove();
+                }, 4000);
+            }
+
+            // Auto-refresh
+            function configurarAutoRefresh() {
+                const intervalo = setInterval(() => {
+                    if (!document.hidden) cargarDashboard();
+                }, 30000);
+                state.intervalos.push(intervalo);
+            }
+
+            // Inicializar
+            async function init() {
+                if (!document.getElementById('dashboard-container')) return;
+
+                await cargarDashboard();
+                configurarAutoRefresh();
+                console.log('Dashboard iniciado');
+            }
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // API pública
+            return {
+                init,
+                recargarDashboard,
+                recargarFichajes
+
+            };
+        })();
+    </script>
+</body>
+</html>

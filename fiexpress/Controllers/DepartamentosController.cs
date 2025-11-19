@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using fiexpress.Data;
+﻿using fiexpress.Data;
 using fiexpress.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace fiexpress.Controllers
 {
@@ -151,6 +152,55 @@ namespace fiexpress.Controllers
                 return StatusCode(500, new { mensaje = "Error al actualizar departamento" });
             }
         }
+
+        // PUT: api/departamentos/{id}/activar
+        [HttpPut("{id}/activar")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Activar(int id)
+        {
+            try
+            {
+                var departamento = await _context.Departamentos.FindAsync(id);
+
+                if (departamento == null)
+                {
+                    return NotFound(new { mensaje = $"Departamento con ID {id} no encontrado" });
+                }
+
+                if (departamento.activo)
+                {
+                    return BadRequest(new { mensaje = "El departamento ya está activo" });
+                }
+
+                departamento.activo = true;
+                await _context.SaveChangesAsync();
+
+                // Registrar auditoría
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userId, out int usuarioId))
+                {
+                    var auditoria = new Auditoria
+                    {
+                        idAuditoriaUsuario = usuarioId,
+                        accion = "ACTIVAR_DEPARTAMENTO",
+                        entidad_afectada = "Departamento",
+                        fecha_accion = DateTime.Now,
+                        ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                        descripcion = $"Departamento activado: {departamento.nombre}"
+                    };
+                    _context.Auditorias.Add(auditoria);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok(new { mensaje = "Departamento activado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al activar departamento {Id}", id);
+                return StatusCode(500, new { mensaje = "Error al activar departamento" });
+            }
+        }
+
 
         // DELETE: api/departamentos/{id}
         [HttpDelete("{id}")]

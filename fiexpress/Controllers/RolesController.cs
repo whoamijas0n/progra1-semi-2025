@@ -2,11 +2,12 @@
 // ARCHIVO: Controllers/RolesController.cs
 // CRUD de Roles
 // ========================================
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using fiexpress.Data;
 using fiexpress.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace fiexpress.Controllers
 {
@@ -140,6 +141,55 @@ namespace fiexpress.Controllers
             {
                 _logger.LogError(ex, "Error al actualizar rol {Id}", id);
                 return StatusCode(500, new { mensaje = "Error al actualizar rol" });
+            }
+        }
+
+
+        // PUT: api/roles/{id}/activar
+        [HttpPut("{id}/activar")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Activar(int id)
+        {
+            try
+            {
+                var rol = await _context.Roles.FindAsync(id);
+
+                if (rol == null)
+                {
+                    return NotFound(new { mensaje = $"Rol con ID {id} no encontrado" });
+                }
+
+                if (rol.activo)
+                {
+                    return BadRequest(new { mensaje = "El rol ya está activo" });
+                }
+
+                rol.activo = true;
+                await _context.SaveChangesAsync();
+
+                // Registrar auditoría
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userId, out int usuarioId))
+                {
+                    var auditoria = new Auditoria
+                    {
+                        idAuditoriaUsuario = usuarioId,
+                        accion = "ACTIVAR_ROL",
+                        entidad_afectada = "Rol",
+                        fecha_accion = DateTime.Now,
+                        ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                        descripcion = $"Rol activado: {rol.nombre}"
+                    };
+                    _context.Auditorias.Add(auditoria);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok(new { mensaje = "Rol activado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al activar rol {Id}", id);
+                return StatusCode(500, new { mensaje = "Error al activar rol" });
             }
         }
 

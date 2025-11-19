@@ -1,605 +1,784 @@
-﻿<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-speedometer2 text-primary"></i>
-                Mi Panel Personal
-            </h2>
-            <p class="text-muted" id="saludo-usuario">Bienvenido al sistema de control de asistencia FiExpress</p>
-        </div>
-    </div>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Dashboard - FiExpress</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    <!-- Tarjetas de Estadísticas Personales -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-primary border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Fichajes Hoy</h6>
-                            <h3 class="mb-0" id="mis-fichajes-hoy">0</h3>
-                            <small class="text-muted" id="estado-hoy">-</small>
-                        </div>
-                        <div class="text-primary fs-1">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                    </div>
-                </div>
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+
+        .jornada-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .info-personal {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .fichaje-btn {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 12px 24px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 0.4em 0.8em;
+        }
+
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4" id="dashboard-container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-2">
+                    <i class="bi bi-speedometer2 text-primary me-2"></i>
+                    Mi Dashboard
+                </h2>
+                <p class="text-muted mb-0">Resumen de tu actividad y estado actual</p>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Horas Trabajadas</h6>
-                            <h3 class="mb-0 text-success" id="horas-trabajadas">0h</h3>
-                            <small class="text-muted">Esta semana</small>
-                        </div>
-                        <div class="text-success fs-1">
-                            <i class="bi bi-graph-up"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Notificaciones</h6>
-                            <h3 class="mb-0 text-warning" id="notificaciones-pendientes">0</h3>
-                            <small class="text-muted">Sin leer</small>
-                        </div>
-                        <div class="text-warning fs-1">
-                            <i class="bi bi-bell"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Mi Asistencia</h6>
-                            <h3 class="mb-0 text-info" id="porcentaje-asistencia">0%</h3>
-                            <small class="text-muted">Este mes</small>
-                        </div>
-                        <div class="text-info fs-1">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mi Estado Actual -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-person-badge"></i> Mi Estado Actual
-                    </h5>
-                    <span class="badge bg-success" id="estado-actual">Conectado</span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="flex-shrink-0">
-                                    <img src="" id="foto-perfil" class="rounded-circle" width="80" height="80"
-                                         style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Usuario&background=007bff&color=fff&size=80'">
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h5 id="nombre-completo">Cargando...</h5>
-                                    <p class="text-muted mb-1" id="info-departamento">-</p>
-                                    <p class="text-muted mb-0" id="info-codigo">-</p>
-                                </div>
+        <!-- Información Personal y Estado de Jornada -->
+        <div class="row mb-4">
+            <!-- Información Personal -->
+            <div class="col-md-4 mb-3">
+                <div class="card info-personal text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img id="avatar-empleado" src="" class="avatar rounded-circle me-3" alt="Avatar"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=U&size=120&background=0D6EFD&color=fff&bold=true'">
+                            <div class="flex-grow-1">
+                                <h4 id="nombre-empleado" class="mb-1">Cargando...</h4>
+                                <p id="info-empleado" class="mb-0 opacity-90">Departamento: Cargando...</p>
+                                <p id="codigo-empleado" class="mb-0 opacity-90">Código: --</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <div class="border rounded p-3">
-                                        <i class="bi bi-clock-history fs-4 text-primary mb-2"></i>
-                                        <h6>Última Entrada</h6>
-                                        <p class="mb-0 fw-bold" id="ultima-entrada">--:--</p>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="border rounded p-3">
-                                        <i class="bi bi-door-closed fs-4 text-danger mb-2"></i>
-                                        <h6>Última Salida</h6>
-                                        <p class="mb-0 fw-bold" id="ultima-salida">--:--</p>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="border rounded p-3">
-                                        <i class="bi bi-calendar-week fs-4 text-success mb-2"></i>
-                                        <h6>Horario Actual</h6>
-                                        <p class="mb-0 fw-bold" id="horario-actual">-</p>
-                                    </div>
-                                </div>
+                        <div class="row text-center mt-3">
+                            <div class="col-4">
+                                <h5 id="dias-trabajados-mes" class="mb-1">0</h5>
+                                <small>Días Este Mes</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 id="horas-mes" class="mb-1">0h</h5>
+                                <small>Horas Mes</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 id="asistencia-percent" class="mb-1">0%</h5>
+                                <small>Asistencia</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Accesos Rápidos -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="mb-3">Accesos Rápidos</h5>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-graph-up fs-1 text-primary mb-3"></i>
-                    <h5>Mis Estadísticas</h5>
-                    <p class="text-muted">Consulta tu rendimiento y asistencia</p>
-                    <button class="btn btn-primary" onclick="window.cargarVista('estadisticas-personales', 'Mis Estadísticas')">
-                        Ver Estadísticas
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-bell fs-1 text-warning mb-3"></i>
-                    <h5>Mis Notificaciones</h5>
-                    <p class="text-muted">Revisa mensajes importantes</p>
-                    <button class="btn btn-warning" onclick="window.cargarVista('notificaciones-empleado', 'Mis Notificaciones')">
-                        Ver Notificaciones
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-file-text fs-1 text-info mb-3"></i>
-                    <h5>Solicitar Permiso</h5>
-                    <p class="text-muted">Gestiona tus ausencias y permisos</p>
-                    <button class="btn btn-info" onclick="window.cargarVista('permisos-empleado', 'Mis Permisos')">
-                        Gestionar Permisos
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mis Últimos Fichajes -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock"></i> Mis Últimos Fichajes
-                    </h5>
-                    <button class="btn btn-sm btn-outline-primary" onclick="window.cargarVista('estadisticas-personales', 'Mis Estadísticas')">
-                        Ver Todos
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Entrada</th>
-                                    <th>Salida</th>
-                                    <th>Horas Trabajadas</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mis-ultimos-fichajes">
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        <i class="bi bi-hourglass-split"></i> Cargando...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <!-- Estado de Jornada -->
+            <div class="col-md-8 mb-3">
+                <div class="card jornada-card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center h-100">
+                            <div class="col-md-8">
+                                <h3 id="estado-jornada" class="mb-2">Estado de Jornada</h3>
+                                <p id="detalle-jornada" class="mb-3 opacity-90">Cargando información...</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button id="btn-fichaje-entrada" class="btn btn-light fichaje-btn" onclick="DashboardEmpleado.registrarFichaje('Entrada')">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>Entrada
+                                    </button>
+                                    <button id="btn-fichaje-salida" class="btn btn-outline-light fichaje-btn" onclick="DashboardEmpleado.registrarFichaje('Salida')">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Salida
+                                    </button>
+                                    <button class="btn btn-outline-light" onclick="DashboardEmpleado.recargarDashboard()">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div id="reloj-jornada" class="display-4 fw-bold mb-2">--:--</div>
+                                <small class="opacity-90">Tiempo en jornada</small>
+                                <div class="mt-2">
+                                    <small id="hora-actual" class="opacity-75">--:--</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-start border-primary border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Horas Esta Semana</h6>
+                                <h3 class="mb-0 text-primary" id="stat-horas-semana">0h</h3>
+                                <small class="text-muted" id="stat-progreso-semana">0/40h</small>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-primary opacity-25"></i>
+                        </div>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-primary" id="barra-semana" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-start border-success border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Días Asistidos</h6>
+                                <h3 class="mb-0 text-success" id="stat-dias-asistidos">0</h3>
+                                <small class="text-muted" id="stat-progreso-dias">0/5 días</small>
+                            </div>
+                            <i class="bi bi-calendar-check fs-1 text-success opacity-25"></i>
+                        </div>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success" id="barra-dias" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-start border-warning border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Minutos Retraso</h6>
+                                <h3 class="mb-0 text-warning" id="stat-minutos-retraso">0m</h3>
+                                <small class="text-muted">Acumulado mensual</small>
+                            </div>
+                            <i class="bi bi-alarm fs-1 text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-start border-info border-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Horas Extra</h6>
+                                <h3 class="mb-0 text-info" id="stat-horas-extra">0h</h3>
+                                <small class="text-muted">Este mes</small>
+                            </div>
+                            <i class="bi bi-plus-circle fs-1 text-info opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div class="row">
+            <!-- Mis Fichajes de Hoy -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history text-primary me-2"></i>
+                            Mis Fichajes de Hoy
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="DashboardEmpleado.recargarFichajes()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Hora</th>
+                                        <th>Tipo</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-mis-fichajes">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                            Cargando fichajes...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mi Horario Actual -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-week text-success me-2"></i>
+                            Mi Horario Actual
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="info-horario">
+                            <div class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando horario...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificaciones Recientes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bell text-warning me-2"></i>
+                            Notificaciones Recientes
+                        </h5>
+                        <a href="#" class="btn btn-sm btn-outline-warning" onclick="window.cargarVista('notificaciones-empleado', 'Mis Notificaciones')">
+                            Ver Todas
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div id="lista-notificaciones">
+                            <div class="text-center text-muted py-3">
+                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                Cargando notificaciones...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timestamp -->
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    Actualizado: <span id="ultima-actualizacion">--:--:--</span>
+                </small>
+            </div>
+        </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    // Estado del dashboard
-    const dashboardState = {
-        empleadoId: null,
-        usuario: null
-    };
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    // Cargar datos del dashboard personal
-    async function cargarDashboardEmpleado() {
-        try {
-            console.log('🔄 Iniciando carga del dashboard...');
+    <script>
+        // Dashboard Empleado - Corregido y Funcional
+        window.DashboardEmpleado = (function () {
+            'use strict';
 
-            // Cargar información del usuario actual
-            await cargarInformacionUsuario();
+            const state = {
+                empleadoId: null,
+                datos: {},
+                intervaloReloj: null,
+                intervaloActualizacion: null,
+                intervaloHora: null
+            };
 
-            if (!dashboardState.empleadoId) {
-                console.error('❌ No se pudo obtener el ID del empleado');
-                return;
-            }
+            // ✅ CORRECCIÓN: Helper para llamadas API con manejo de 404
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
+                    });
 
-            console.log('👤 Empleado ID:', dashboardState.empleadoId);
-
-            // Cargar datos secuencialmente para debugging
-            await cargarFichajesHoy();
-            await cargarNotificacionesPendientes();
-            await cargarUltimosFichajes();
-            await cargarHorarioActual();
-
-            // Las estadísticas las cargamos por separado ya que pueden fallar
-            await cargarEstadisticasPersonales();
-
-            console.log('✅ Dashboard cargado completamente');
-
-        } catch (error) {
-            console.error('❌ Error al cargar dashboard:', error);
-            mostrarErrorDashboard('Error al cargar la información del dashboard');
-        }
-    }
-
-    async function cargarInformacionUsuario() {
-        try {
-            dashboardState.usuario = window.app.usuario;
-
-            if (dashboardState.usuario) {
-                // ✅ CORREGIDO: Usar idEmpleado en lugar de id
-                dashboardState.empleadoId = dashboardState.usuario.idEmpleado || dashboardState.usuario.id;
-
-                console.log('📋 Información usuario:', dashboardState.usuario);
-
-                // Actualizar UI con información del usuario
-                document.getElementById('saludo-usuario').textContent =
-                    `Bienvenido/a ${dashboardState.usuario.nombre} al sistema de control de asistencia FiExpress`;
-                document.getElementById('nombre-completo').textContent = dashboardState.usuario.nombre;
-                document.getElementById('info-departamento').textContent = dashboardState.usuario.departamento || 'Sin departamento';
-                document.getElementById('info-codigo').textContent = `Código: ${dashboardState.usuario.codigo_empleado || 'N/A'}`;
-
-                // Foto de perfil
-                if (dashboardState.usuario.foto_url) {
-                    document.getElementById('foto-perfil').src = dashboardState.usuario.foto_url;
-                }
-            } else {
-                console.error('❌ No hay información de usuario en window.app');
-            }
-        } catch (error) {
-            console.error('❌ Error cargando información del usuario:', error);
-        }
-    }
-
-    async function cargarFichajesHoy() {
-        try {
-            const hoy = new Date().toISOString().split('T')[0];
-            console.log('📅 Cargando fichajes de hoy:', hoy);
-
-            // ✅ CORREGIDO: Usar el endpoint correcto para fichajes de empleado específico
-            const resp = await fetchAuth(`/api/fichajes/empleado/${dashboardState.empleadoId}?fecha=${hoy}`);
-
-            console.log('📡 Response status:', resp.status);
-
-            if (resp.ok) {
-                const fichajes = await resp.json();
-                console.log('📊 Fichajes de hoy:', fichajes);
-
-                const fichajesHoy = Array.isArray(fichajes) ? fichajes : [];
-
-                document.getElementById('mis-fichajes-hoy').textContent = fichajesHoy.length;
-
-                // Determinar estado actual y últimas entradas/salidas
-                let ultimaEntrada = null;
-                let ultimaSalida = null;
-
-                fichajesHoy.forEach(fichaje => {
-                    if (fichaje.tipo === 'Entrada') {
-                        ultimaEntrada = fichaje;
-                    } else if (fichaje.tipo === 'Salida') {
-                        ultimaSalida = fichaje;
+                    if (response.status === 401) {
+                        window.location.href = '/login.html';
+                        throw new Error('No autenticado');
                     }
-                });
 
-                // ✅ CORREGIDO: Mostrar horas correctamente
-                if (ultimaEntrada) {
-                    document.getElementById('ultima-entrada').textContent =
-                        typeof ultimaEntrada.hora === 'string' ? ultimaEntrada.hora :
-                            (ultimaEntrada.hora ? ultimaEntrada.hora.toString() : '--:--');
+                    if (response.status === 404) {
+                        console.warn(`Endpoint no encontrado: ${url}`);
+                        return null; // Retorna null en lugar de error para 404
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error en API call:', error);
+                    return null; // Retorna null en caso de error
+                }
+            }
+
+            // ✅ CORRECCIÓN: Cargar datos principales con manejo de errores
+            async function cargarDashboard() {
+                try {
+                    // Obtener información del usuario
+                    const usuario = await apiCall('/api/auth/usuario-actual');
+                    if (!usuario) {
+                        mostrarError('No se pudo cargar la información del usuario');
+                        return;
+                    }
+
+                    state.empleadoId = usuario.id;
+                    state.datos.usuario = usuario;
+
+                    // ✅ CORRECCIÓN: Cargar datos con manejo individual de errores
+                    const promises = [
+                        apiCall(`/api/fichajes/empleado/${state.empleadoId}?fecha=${new Date().toISOString().split('T')[0]}`),
+                        apiCall(`/api/estadisticas/empleado/${state.empleadoId}?inicio=${getInicioMes()}&fin=${getFinMes()}`),
+                        apiCall(`/api/horarios/activo/empleado/${state.empleadoId}`),
+                        apiCall('/api/notificaciones/mis-notificaciones?soloNoLeidas=true&limit=3'),
+                        apiCall(`/api/rfid/empleado/${state.empleadoId}`)
+                    ];
+
+                    const resultados = await Promise.allSettled(promises);
+
+                    // Procesar resultados individualmente
+                    state.datos.fichajes = resultados[0].status === 'fulfilled' ? (resultados[0].value || []) : [];
+                    state.datos.estadisticas = resultados[1].status === 'fulfilled' ? (resultados[1].value || {}) : {};
+                    state.datos.horario = resultados[2].status === 'fulfilled' ? resultados[2].value : null;
+                    state.datos.notificaciones = resultados[3].status === 'fulfilled' ? (resultados[3].value || []) : [];
+                    state.datos.rfid = resultados[4].status === 'fulfilled' ? (resultados[4].value || []) : [];
+
+                    actualizarVista();
+                    actualizarTimestamp();
+
+                } catch (error) {
+                    console.error('Error cargando dashboard:', error);
+                    mostrarError('Error al cargar los datos del dashboard');
+                }
+            }
+
+            // ✅ CORRECCIÓN: Actualizar vista con verificaciones de elementos
+            function actualizarVista() {
+                if (!document.getElementById('dashboard-container')) return;
+
+                actualizarInformacionPersonal();
+                actualizarEstadoJornada();
+                actualizarEstadisticas();
+                actualizarFichajesHoy();
+                actualizarHorario();
+                actualizarNotificaciones();
+            }
+
+            function actualizarInformacionPersonal() {
+                const usuario = state.datos.usuario;
+                if (!usuario) return;
+
+                safeUpdateElement('nombre-empleado', usuario.nombre);
+                safeUpdateElement('info-empleado', `Departamento: ${usuario.departamento || 'No asignado'}`);
+                safeUpdateElement('codigo-empleado', `Código: ${usuario.codigo_empleado || '--'}`);
+
+                const avatar = document.getElementById('avatar-empleado');
+                if (avatar && usuario.foto_url) {
+                    avatar.src = usuario.foto_url;
                 }
 
-                if (ultimaSalida) {
-                    document.getElementById('ultima-salida').textContent =
-                        typeof ultimaSalida.hora === 'string' ? ultimaSalida.hora :
-                            (ultimaSalida.hora ? ultimaSalida.hora.toString() : '--:--');
+                // Actualizar estadísticas resumidas
+                const stats = state.datos.estadisticas;
+                if (stats && stats.resumen) {
+                    safeUpdateElement('dias-trabajados-mes', stats.resumen.diasTrabajados || 0);
+                    safeUpdateElement('horas-mes', (stats.resumen.totalHorasTrabajadas || 0) + 'h');
+                    safeUpdateElement('asistencia-percent', (stats.resumen.porcentajeAsistencia || 0) + '%');
                 }
+            }
 
-                // Determinar estado
-                const ultimoFichaje = fichajesHoy[fichajesHoy.length - 1];
-                if (ultimoFichaje) {
-                    const estado = ultimoFichaje.tipo === 'Entrada' ? 'Dentro de la empresa' : 'Fuera de la empresa';
-                    document.getElementById('estado-hoy').textContent = estado;
-                    document.getElementById('estado-actual').textContent = estado;
+            function actualizarEstadoJornada() {
+                const fichajes = state.datos.fichajes;
+                const ultimoFichaje = fichajes.length > 0 ? fichajes[fichajes.length - 1] : null;
+                const necesitaEntrada = !ultimoFichaje || ultimoFichaje.tipo === 'Salida';
+
+                safeUpdateElement('estado-jornada', necesitaEntrada ? 'Fuera de Jornada' : 'En Jornada Laboral');
+
+                if (necesitaEntrada) {
+                    safeUpdateElement('detalle-jornada', 'Presiona "Entrada" para comenzar tu jornada');
+                    safeUpdateElement('reloj-jornada', '--:--');
+                    setButtonState('btn-fichaje-entrada', false);
+                    setButtonState('btn-fichaje-salida', true);
+                    detenerRelojJornada();
                 } else {
-                    document.getElementById('estado-hoy').textContent = 'Sin fichajes hoy';
-                    document.getElementById('estado-actual').textContent = 'Sin actividad';
+                    safeUpdateElement('detalle-jornada', `Última acción: ${ultimoFichaje.tipo} a las ${ultimoFichaje.hora}`);
+                    setButtonState('btn-fichaje-entrada', true);
+                    setButtonState('btn-fichaje-salida', false);
+                    iniciarRelojJornada(ultimoFichaje.hora);
+                }
+            }
+
+            function actualizarEstadisticas() {
+                const stats = state.datos.estadisticas;
+                if (!stats || !stats.resumen) return;
+
+                // Horas semanales
+                const horasSemanales = Math.round((stats.resumen.totalMinutosTrabajados || 0) / 60);
+                safeUpdateElement('stat-horas-semana', horasSemanales + 'h');
+                const progresoSemana = Math.min((horasSemanales / 40) * 100, 100);
+                safeUpdateElement('stat-progreso-semana', `${horasSemanales}/40h`);
+                updateProgressBar('barra-semana', progresoSemana);
+
+                // Días asistidos
+                const diasAsistidos = stats.resumen.diasTrabajados || 0;
+                safeUpdateElement('stat-dias-asistidos', diasAsistidos);
+                const progresoDias = Math.min((diasAsistidos / 5) * 100, 100);
+                safeUpdateElement('stat-progreso-dias', `${diasAsistidos}/5 días`);
+                updateProgressBar('barra-dias', progresoDias);
+
+                // Minutos retraso
+                safeUpdateElement('stat-minutos-retraso', (stats.resumen.totalMinutosRetraso || 0) + 'm');
+
+                // Horas extra
+                safeUpdateElement('stat-horas-extra', Math.round((stats.resumen.totalMinutosExtra || 0) / 60) + 'h');
+            }
+
+            function actualizarFichajesHoy() {
+                const tbody = document.getElementById('tabla-mis-fichajes');
+                if (!tbody) return;
+
+                const fichajes = state.datos.fichajes;
+
+                if (fichajes.length === 0) {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <i class="bi bi-clock fs-4 d-block mb-2"></i>
+                                    No hay fichajes hoy
+                                </td>
+                            </tr>
+                        `;
+                    return;
                 }
 
-            } else {
-                console.error('❌ Error en respuesta de fichajes:', resp.status);
+                tbody.innerHTML = fichajes.map(f => `
+                        <tr>
+                            <td>
+                                <strong>${f.hora || '--:--'}</strong>
+                            </td>
+                            <td>
+                                <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} badge-status">
+                                    <i class="bi ${f.tipo === 'Entrada' ? 'bi-box-arrow-in-right' : 'bi-box-arrow-right'} me-1"></i>
+                                    ${f.tipo}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info badge-status">Registrado</span>
+                            </td>
+                        </tr>
+                    `).join('');
             }
-        } catch (error) {
-            console.error('❌ Error cargando fichajes de hoy:', error);
-        }
-    }
 
-    async function cargarNotificacionesPendientes() {
-        try {
-            const resp = await fetchAuth('/api/notificaciones/mis-notificaciones?soloNoLeidas=true');
-            if (resp.ok) {
-                const notificaciones = await resp.json();
-                document.getElementById('notificaciones-pendientes').textContent = notificaciones.length;
-            }
-        } catch (error) {
-            console.error('Error cargando notificaciones:', error);
-        }
-    }
+            function actualizarHorario() {
+                const contenedor = document.getElementById('info-horario');
+                if (!contenedor) return;
 
-    async function cargarEstadisticasPersonales() {
-        try {
-            console.log('📈 Cargando estadísticas personales...');
+                const horario = state.datos.horario;
 
-            // Cargar estadísticas de esta semana
-            const hoy = new Date();
-            const inicioSemana = new Date(hoy);
-            inicioSemana.setDate(hoy.getDate() - 7); // Últimos 7 días para asegurar datos
-
-            const fechaInicio = inicioSemana.toISOString().split('T')[0];
-            const fechaFin = hoy.toISOString().split('T')[0];
-
-            console.log('📅 Rango fechas:', fechaInicio, 'a', fechaFin);
-
-            const resp = await fetchAuth(`/api/estadisticas/empleado/${dashboardState.empleadoId}?inicio=${fechaInicio}&fin=${fechaFin}`);
-
-            console.log('📡 Response estadísticas:', resp.status);
-
-            if (resp.ok) {
-                const data = await resp.json();
-                console.log('📊 Datos estadísticas:', data);
-
-                // ✅ CORREGIDO: Usar la estructura correcta de la respuesta
-                if (data.resumen) {
-                    const totalMinutos = data.resumen.totalHorasTrabajadas * 60 || 0; // Convertir horas a minutos
-                    const horas = Math.floor(totalMinutos / 60);
-                    document.getElementById('horas-trabajadas').textContent = `${horas}h`;
-
-                    const porcentaje = data.resumen.porcentajeAsistencia || 0;
-                    document.getElementById('porcentaje-asistencia').textContent = `${porcentaje}%`;
-                } else {
-                    // Si no hay resumen, calcular manualmente
-                    calcularEstadisticasManuales();
+                if (!horario) {
+                    contenedor.innerHTML = `
+                            <div class="text-center text-muted">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                                No tienes un horario asignado actualmente
+                            </div>
+                        `;
+                    return;
                 }
-            } else {
-                console.warn('⚠️ No se pudieron cargar estadísticas, calculando manualmente...');
-                calcularEstadisticasManuales();
-            }
-        } catch (error) {
-            console.error('❌ Error cargando estadísticas personales:', error);
-            calcularEstadisticasManuales();
-        }
-    }
-
-    async function calcularEstadisticasManuales() {
-        try {
-            // Calcular horas trabajadas manualmente con los últimos fichajes
-            const resp = await fetchAuth(`/api/fichajes/empleado/${dashboardState.empleadoId}?limit=20`);
-            if (resp.ok) {
-                const fichajes = await resp.json();
-
-                // Calcular horas de los últimos 7 días
-                const ultimaSemana = new Date();
-                ultimaSemana.setDate(ultimaSemana.getDate() - 7);
-
-                let totalMinutos = 0;
-                let diasConAsistencia = 0;
-                let totalDias = 7;
-
-                // Agrupar fichajes por fecha
-                const fichajesPorFecha = {};
-                fichajes.forEach(f => {
-                    const fecha = f.fecha;
-                    if (!fichajesPorFecha[fecha]) {
-                        fichajesPorFecha[fecha] = { entrada: null, salida: null };
-                    }
-
-                    if (f.tipo === 'Entrada') {
-                        fichajesPorFecha[fecha].entrada = f.hora;
-                    } else if (f.tipo === 'Salida') {
-                        fichajesPorFecha[fecha].salida = f.hora;
-                    }
-                });
-
-                // Calcular horas trabajadas
-                Object.values(fichajesPorFecha).forEach(dia => {
-                    if (dia.entrada && dia.salida) {
-                        const minutos = calcularMinutosTrabajados(dia.entrada, dia.salida);
-                        totalMinutos += minutos;
-                        diasConAsistencia++;
-                    }
-                });
-
-                const horas = Math.floor(totalMinutos / 60);
-                const porcentaje = Math.round((diasConAsistencia / totalDias) * 100);
-
-                document.getElementById('horas-trabajadas').textContent = `${horas}h`;
-                document.getElementById('porcentaje-asistencia').textContent = `${porcentaje}%`;
-            }
-        } catch (error) {
-            console.error('Error cálculo manual:', error);
-            document.getElementById('horas-trabajadas').textContent = '0h';
-            document.getElementById('porcentaje-asistencia').textContent = '0%';
-        }
-    }
-
-    function calcularMinutosTrabajados(entrada, salida) {
-        try {
-            const [hEnt, mEnt] = entrada.split(':').map(Number);
-            const [hSal, mSal] = salida.split(':').map(Number);
-
-            return (hSal * 60 + mSal) - (hEnt * 60 + mEnt);
-        } catch (error) {
-            return 0;
-        }
-    }
-
-    async function cargarUltimosFichajes() {
-        try {
-            console.log('🕒 Cargando últimos fichajes...');
-            const resp = await fetchAuth(`/api/fichajes/empleado/${dashboardState.empleadoId}`);
-
-            console.log('📡 Response últimos fichajes:', resp.status);
-
-            if (resp.ok) {
-                const todosFichajes = await resp.json();
-                console.log('📊 Todos los fichajes:', todosFichajes);
-                mostrarMisUltimosFichajes(todosFichajes);
-            } else {
-                console.error('❌ Error cargando últimos fichajes:', resp.status);
-            }
-        } catch (error) {
-            console.error('❌ Error cargando últimos fichajes:', error);
-        }
-    }
-
-    async function cargarHorarioActual() {
-        try {
-            const resp = await fetchAuth(`/api/horarios/activo/empleado/${dashboardState.empleadoId}`);
-            if (resp.ok) {
-                const horario = await resp.json();
-                console.log('🕐 Horario actual:', horario);
 
                 const turno = horario.turno;
-                if (turno) {
-                    // ✅ CORREGIDO: Formatear correctamente las horas
-                    const horaEntrada = typeof turno.hora_entrada === 'string' ?
-                        turno.hora_entrada :
-                        (turno.hora_entrada ? turno.hora_entrada.toString() : '--:--');
+                contenedor.innerHTML = `
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <h6 class="text-muted mb-1">Entrada</h6>
+                                <h4 class="text-success">${turno.hora_entrada}</h4>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <h6 class="text-muted mb-1">Salida</h6>
+                                <h4 class="text-danger">${turno.hora_salida}</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-2">Días Laborales:</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    ${getDiasLaborales(turno)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
 
-                    const horaSalida = typeof turno.hora_salida === 'string' ?
-                        turno.hora_salida :
-                        (turno.hora_salida ? turno.hora_salida.toString() : '--:--');
+            function actualizarNotificaciones() {
+                const contenedor = document.getElementById('lista-notificaciones');
+                if (!contenedor) return;
 
-                    document.getElementById('horario-actual').textContent =
-                        `${horaEntrada} - ${horaSalida}`;
-                } else {
-                    document.getElementById('horario-actual').textContent = 'No asignado';
+                const notificaciones = state.datos.notificaciones;
+
+                if (!notificaciones || notificaciones.length === 0) {
+                    contenedor.innerHTML = `
+                            <div class="text-center text-muted">
+                                <i class="bi bi-bell-slash fs-4 d-block mb-2"></i>
+                                No hay notificaciones nuevas
+                            </div>
+                        `;
+                    return;
                 }
+
+                contenedor.innerHTML = notificaciones.map(n => `
+                        <div class="alert alert-light border d-flex align-items-center mb-2">
+                            <i class="bi bi-bell text-warning me-3 fs-5"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">${n.titulo}</h6>
+                                <p class="mb-1 small text-muted">${n.mensaje}</p>
+                                <small class="text-muted">${new Date(n.fecha_envio).toLocaleDateString()}</small>
+                            </div>
+                            ${!n.leido ? '<span class="badge bg-warning">Nuevo</span>' : ''}
+                        </div>
+                    `).join('');
+            }
+
+            // ✅ CORRECCIÓN: Funciones del reloj con verificaciones
+            function iniciarRelojJornada(horaInicio) {
+                detenerRelojJornada();
+                const [horas, minutos] = horaInicio.split(':');
+                const inicio = new Date();
+                inicio.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+
+                state.intervaloReloj = setInterval(() => {
+                    const ahora = new Date();
+                    const diferencia = ahora - inicio;
+                    const horas = Math.floor(diferencia / (1000 * 60 * 60));
+                    const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+                    safeUpdateElement('reloj-jornada',
+                        `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`);
+                }, 1000);
+            }
+
+            function detenerRelojJornada() {
+                if (state.intervaloReloj) {
+                    clearInterval(state.intervaloReloj);
+                    state.intervaloReloj = null;
+                }
+            }
+
+            // ✅ CORRECCIÓN: Registrar fichaje mejorado
+            async function registrarFichaje(tipo) {
+                try {
+                    // Verificar si hay tarjetas RFID activas
+                    const tarjetasRFID = state.datos.rfid;
+                    const tarjetaActiva = tarjetasRFID.find(r => r.activo);
+
+                    if (!tarjetaActiva) {
+                        mostrarError('No tienes una tarjeta RFID activa asignada. Contacta con administración.');
+                        return;
+                    }
+
+                    const response = await fetch('/api/fichajes/rfid', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            CodigoRFID: tarjetaActiva.codigo_rfid,
+                            IP: 'dashboard-web'
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        mostrarExito(`Fichaje de ${tipo.toLowerCase()} registrado correctamente`);
+                        await cargarDashboard(); // Recargar datos
+                    } else {
+                        const error = await response.json();
+                        mostrarError(error.mensaje || 'Error al registrar el fichaje');
+                    }
+                } catch (error) {
+                    console.error('Error registrando fichaje:', error);
+                    mostrarError('Error de conexión al registrar el fichaje');
+                }
+            }
+
+            // ✅ CORRECCIÓN: Funciones de utilidad seguras
+            function safeUpdateElement(id, content) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = content;
+                }
+            }
+
+            function setButtonState(id, disabled) {
+                const button = document.getElementById(id);
+                if (button) {
+                    button.disabled = disabled;
+                }
+            }
+
+            function updateProgressBar(id, percentage) {
+                const progressBar = document.getElementById(id);
+                if (progressBar) {
+                    progressBar.style.width = percentage + '%';
+                }
+            }
+
+            function getDiasLaborales(turno) {
+                const dias = [
+                    { key: 'lunes', label: 'Lun' },
+                    { key: 'martes', label: 'Mar' },
+                    { key: 'miercoles', label: 'Mié' },
+                    { key: 'jueves', label: 'Jue' },
+                    { key: 'viernes', label: 'Vie' },
+                    { key: 'sabado', label: 'Sáb' },
+                    { key: 'domingo', label: 'Dom' }
+                ];
+
+                return dias.map(dia =>
+                    turno[dia.key] ?
+                        `<span class="badge bg-primary">${dia.label}</span>` :
+                        `<span class="badge bg-light text-muted">${dia.label}</span>`
+                ).join('');
+            }
+
+            function getInicioMes() {
+                const ahora = new Date();
+                return new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString().split('T')[0];
+            }
+
+            function getFinMes() {
+                const ahora = new Date();
+                return new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).toISOString().split('T')[0];
+            }
+
+            function actualizarTimestamp() {
+                safeUpdateElement('ultima-actualizacion', new Date().toLocaleTimeString('es-ES'));
+            }
+
+            function actualizarHoraActual() {
+                safeUpdateElement('hora-actual',
+                    new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+            }
+
+            function mostrarExito(mensaje) {
+                mostrarNotificacion(mensaje, 'success');
+            }
+
+            function mostrarError(mensaje) {
+                mostrarNotificacion(mensaje, 'danger');
+            }
+
+            function mostrarNotificacion(mensaje, tipo) {
+                // Sistema de notificaciones simple
+                const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+                const notification = document.createElement('div');
+                notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+                notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+                notification.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+
+            // ✅ CORRECCIÓN: Funciones públicas
+            async function recargarDashboard() {
+                await cargarDashboard();
+                mostrarExito('Dashboard actualizado');
+            }
+
+            async function recargarFichajes() {
+                if (!state.empleadoId) return;
+
+                const fichajes = await apiCall(`/api/fichajes/empleado/${state.empleadoId}?fecha=${new Date().toISOString().split('T')[0]}`);
+                if (fichajes) {
+                    state.datos.fichajes = fichajes;
+                    actualizarFichajesHoy();
+                    actualizarEstadoJornada();
+                    mostrarExito('Fichajes actualizados');
+                }
+            }
+
+            // ✅ CORRECCIÓN: Inicialización segura
+            async function init() {
+                // Iniciar actualización de hora actual
+                state.intervaloHora = setInterval(actualizarHoraActual, 1000);
+                actualizarHoraActual();
+
+                // Cargar dashboard
+                await cargarDashboard();
+
+                // Auto-actualización cada 30 segundos
+                state.intervaloActualizacion = setInterval(() => {
+                    cargarDashboard();
+                }, 30000);
+            }
+
+            // ✅ CORRECCIÓN: Limpieza de intervalos
+            function cleanup() {
+                if (state.intervaloReloj) clearInterval(state.intervaloReloj);
+                if (state.intervaloActualizacion) clearInterval(state.intervaloActualizacion);
+                if (state.intervaloHora) clearInterval(state.intervaloHora);
+            }
+
+            // Iniciar cuando esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
             } else {
-                document.getElementById('horario-actual').textContent = 'No asignado';
-            }
-        } catch (error) {
-            console.error('Error cargando horario actual:', error);
-            document.getElementById('horario-actual').textContent = 'No asignado';
-        }
-    }
-
-    function mostrarMisUltimosFichajes(fichajes) {
-        const tbody = document.getElementById('mis-ultimos-fichajes');
-
-        if (!fichajes || fichajes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay fichajes registrados</td></tr>';
-            return;
-        }
-
-        console.log('🎨 Renderizando fichajes:', fichajes);
-
-        // Agrupar fichajes por fecha
-        const fichajesPorFecha = {};
-        fichajes.forEach(f => {
-            const fecha = f.fecha;
-            if (!fichajesPorFecha[fecha]) {
-                fichajesPorFecha[fecha] = { entrada: null, salida: null };
+                init();
             }
 
-            if (f.tipo === 'Entrada') {
-                fichajesPorFecha[fecha].entrada = f.hora;
-            } else if (f.tipo === 'Salida') {
-                fichajesPorFecha[fecha].salida = f.hora;
-            }
-        });
+            // Limpiar al salir
+            window.addEventListener('beforeunload', cleanup);
 
-        // Convertir a array y ordenar por fecha (más reciente primero)
-        const dias = Object.entries(fichajesPorFecha)
-            .map(([fecha, datos]) => ({ fecha, ...datos }))
-            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-            .slice(0, 5); // Últimos 5 días
-
-        console.log('📅 Días agrupados:', dias);
-
-        tbody.innerHTML = dias.map(dia => {
-            const horasTrabajadas = calcularHorasTrabajadas(dia.entrada, dia.salida);
-            const estado = determinarEstadoDia(dia.entrada, dia.salida);
-
-            return `
-                <tr>
-                    <td>${new Date(dia.fecha).toLocaleDateString('es-ES')}</td>
-                    <td><span class="badge bg-success">${dia.entrada || '--:--'}</span></td>
-                    <td><span class="badge bg-danger">${dia.salida || '--:--'}</span></td>
-                    <td>${horasTrabajadas}</td>
-                    <td><span class="badge ${estado.clase}">${estado.texto}</span></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    function calcularHorasTrabajadas(entrada, salida) {
-        if (!entrada || !salida) return '--:--';
-
-        try {
-            const minutos = calcularMinutosTrabajados(entrada, salida);
-            const horas = Math.floor(minutos / 60);
-            const minutosRestantes = minutos % 60;
-
-            return `${horas}h ${minutosRestantes}m`;
-        } catch (error) {
-            return '--:--';
-        }
-    }
-
-    function determinarEstadoDia(entrada, salida) {
-        if (!entrada) return { clase: 'bg-danger', texto: 'Ausente' };
-        if (!salida) return { clase: 'bg-warning', texto: 'Activo' };
-        return { clase: 'bg-success', texto: 'Completo' };
-    }
-
-    function mostrarErrorDashboard(mensaje) {
-        const tbody = document.getElementById('mis-ultimos-fichajes');
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${mensaje}</td></tr>`;
-    }
-
-    // Cargar dashboard cuando se muestre la vista
-    document.addEventListener('DOMContentLoaded', cargarDashboardEmpleado);
-
-    // También recargar cuando se vuelva a esta vista
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', cargarDashboardEmpleado);
-    } else {
-        cargarDashboardEmpleado();
-    }
-</script>
+            return {
+                init,
+                recargarDashboard,
+                recargarFichajes,
+                registrarFichaje,
+                cleanup
+            };
+        })();
+    </script>
+</body>
+</html>

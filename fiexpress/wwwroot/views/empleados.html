@@ -1,744 +1,965 @@
-﻿<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-person-badge text-primary"></i>
-                Gestión de Empleados
-            </h2>
-            <p class="text-muted">Administra los empleados del sistema</p>
-        </div>
-    </div>
-
-    <!-- Estadísticas -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-primary border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Total Empleados</h6>
-                    <h3 id="total-empleados">0</h3>
-                    <small class="text-muted">Registrados en el sistema</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Empleados Activos</h6>
-                    <h3 class="text-success" id="empleados-activos">0</h3>
-                    <small class="text-muted">Actualmente trabajando</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Con Usuario</h6>
-                    <h3 class="text-warning" id="empleados-con-usuario">0</h3>
-                    <small class="text-muted">Acceso al sistema</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Supervisores</h6>
-                    <h3 class="text-info" id="empleados-supervisores">0</h3>
-                    <small class="text-muted">Con rol supervisor</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Controles -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label">Buscar</label>
-                    <input type="text" class="form-control" id="buscar-empleado"
-                           placeholder="Nombre, código, email...">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Departamento</label>
-                    <select class="form-select" id="filtro-departamento">
-                        <option value="">Todos los departamentos</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Estado</label>
-                    <select class="form-select" id="filtro-estado">
-                        <option value="">Todos</option>
-                        <option value="activo">Activos</option>
-                        <option value="inactivo">Inactivos</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="incluir-inactivos">
-                        <label class="form-check-label" for="incluir-inactivos">
-                            Incluir inactivos
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" onclick="EmpleadosModule.cargarEmpleados()">
-                            <i class="bi bi-filter"></i> Aplicar Filtros
-                        </button>
-                        <button class="btn btn-outline-secondary" onclick="EmpleadosModule.limpiarFiltros()">
-                            <i class="bi bi-x-circle"></i> Limpiar
-                        </button>
-                        <button class="btn btn-success" onclick="EmpleadosModule.mostrarModalCrear()">
-                            <i class="bi bi-person-plus"></i> Nuevo Empleado
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tabla de Empleados -->
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-people"></i> Lista de Empleados
-                <span class="badge bg-primary ms-2" id="contador-empleados">0</span>
-            </h5>
-            <span class="text-muted small" id="ultima-actualizacion"></span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Empleado</th>
-                            <th>Contacto</th>
-                            <th>Departamento</th>
-                            <th>Rol</th>
-                            <th>Fechas</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-empleados">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando empleados...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Crear/Editar Empleado -->
-<div class="modal fade" id="modalEmpleado" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEmpleadoTitle">
-                    <i class="bi bi-person-plus"></i> Nuevo Empleado
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formEmpleado">
-                    <input type="hidden" id="empleadoId">
-
-                    <div class="row">
-                        <!-- Columna Izquierda -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Código de Empleado *</label>
-                                <input type="text" class="form-control" id="codigoEmpleado"
-                                       required maxlength="35" placeholder="Ej: EMP001">
-                                <div class="form-text">Código único para identificar al empleado</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Nombre Completo *</label>
-                                <input type="text" class="form-control" id="nombreEmpleado"
-                                       required maxlength="65" placeholder="Ej: Juan Pérez García">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="emailEmpleado"
-                                       required maxlength="50" placeholder="ejemplo@empresa.com">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Teléfono *</label>
-                                <input type="text" class="form-control" id="telefonoEmpleado"
-                                       required maxlength="9" placeholder="Ej: 123456789">
-                            </div>
-                        </div>
-
-                        <!-- Columna Derecha -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Fecha de Nacimiento *</label>
-                                <input type="date" class="form-control" id="fechaNacimiento" required>
-                                <div class="form-text">El empleado debe tener al menos 14 años</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Fecha de Ingreso *</label>
-                                <input type="date" class="form-control" id="fechaIngreso" required>
-                                <div class="form-text">Fecha en que comenzó a trabajar</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Departamento *</label>
-                                <select class="form-select" id="selectDepartamento" required>
-                                    <option value="">Seleccionar departamento...</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Rol *</label>
-                                <select class="form-select" id="selectRol" required>
-                                    <option value="">Seleccionar rol...</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">URL de Foto</label>
-                                <input type="url" class="form-control" id="fotoUrl"
-                                       placeholder="https://ejemplo.com/foto.jpg">
-                                <div class="form-text">Opcional. Se usará una imagen por defecto si está vacío</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ✅ CAMPO OCULTO PARA GARANTIZAR QUE SEA ACTIVO -->
-                    <input type="hidden" id="empleadoActivo" value="true">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarEmpleado" onclick="EmpleadosModule.guardarEmpleado()">
-                    <span id="btnGuardarText">Guardar Empleado</span>
-                    <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Confirmación de acciones -->
-<div class="modal fade" id="modalConfirmacion" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalConfirmacionTitle">Confirmar acción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="modalConfirmacionBody">
-                <!-- Contenido dinámico -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmarAccion">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // Módulo Completo de Gestión de Empleados
-    window.EmpleadosModule = (function () {
-        'use strict';
-
-        const state = {
-            empleados: [],
-            departamentos: [],
-            roles: [],
-            modalEmpleado: null,
-            modalConfirmacion: null
-        };
-
-        // Cargar empleados
-        async function cargarEmpleados() {
-            try {
-                mostrarLoading();
-
-                const incluirInactivos = document.getElementById('incluir-inactivos').checked;
-                const params = new URLSearchParams();
-                if (incluirInactivos) params.append('incluirInactivos', 'true');
-
-                const url = `/api/empleados?${params.toString()}`;
-                const response = await fetchAuth(url);
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                state.empleados = await response.json();
-                renderizarEmpleados();
-                actualizarEstadisticas();
-                actualizarTimestamp();
-
-            } catch (error) {
-                console.error('❌ Error al cargar empleados:', error);
-                mostrarError('Error al cargar empleados: ' + error.message);
-            }
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        .card-empleado {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-        // Cargar departamentos y roles para los selects
-        async function cargarSelects() {
-            try {
-                // Cargar departamentos
-                const resDeptos = await fetchAuth('/api/departamentos?incluirInactivos=false');
-                if (resDeptos.ok) {
-                    state.departamentos = await resDeptos.json();
-                    const select = document.getElementById('selectDepartamento');
-                    select.innerHTML = '<option value="">Seleccionar departamento...</option>';
-                    state.departamentos.forEach(depto => {
-                        select.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
-                    });
-                }
-
-                // Cargar roles
-                const resRoles = await fetchAuth('/api/roles?incluirInactivos=false');
-                if (resRoles.ok) {
-                    state.roles = await resRoles.json();
-                    const select = document.getElementById('selectRol');
-                    select.innerHTML = '<option value="">Seleccionar rol...</option>';
-                    state.roles.forEach(rol => {
-                        select.innerHTML += `<option value="${rol.idRol}">${rol.nombre}</option>`;
-                    });
-                }
-
-                // También cargar para filtros
-                const filtroDepto = document.getElementById('filtro-departamento');
-                filtroDepto.innerHTML = '<option value="">Todos los departamentos</option>';
-                state.departamentos.forEach(depto => {
-                    filtroDepto.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
-                });
-
-            } catch (error) {
-                console.error('Error al cargar selects:', error);
+            .card-empleado:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border: 3px solid #e9ecef;
         }
 
-        // Mostrar empleados en tabla
-        function renderizarEmpleados() {
-            const tbody = document.getElementById('tabla-empleados');
-            const contador = document.getElementById('contador-empleados');
+        .avatar-lg {
+            width: 80px;
+            height: 80px;
+        }
 
-            // Aplicar filtros
-            let empleadosFiltrados = state.empleados;
+        .stat-card {
+            transition: transform 0.2s ease;
+        }
 
-            // Filtro de búsqueda
-            const buscar = document.getElementById('buscar-empleado').value.toLowerCase();
-            if (buscar) {
-                empleadosFiltrados = empleadosFiltrados.filter(emp =>
-                    emp.nombre.toLowerCase().includes(buscar) ||
-                    emp.codigo_empleado.toLowerCase().includes(buscar) ||
-                    emp.email.toLowerCase().includes(buscar)
-                );
+            .stat-card:hover {
+                transform: translateY(-3px);
             }
 
-            // Filtro de departamento
-            const deptoId = document.getElementById('filtro-departamento').value;
-            if (deptoId) {
-                empleadosFiltrados = empleadosFiltrados.filter(emp =>
-                    emp.departamento && emp.departamento.idDepartamento == deptoId
-                );
-            }
+        .badge-turno {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
 
-            // Filtro de estado
-            const estado = document.getElementById('filtro-estado').value;
-            if (estado) {
-                empleadosFiltrados = empleadosFiltrados.filter(emp =>
-                    estado === 'activo' ? emp.activo : !emp.activo
-                );
-            }
+        .table-actions {
+            white-space: nowrap;
+        }
 
-            contador.textContent = empleadosFiltrados.length;
+        .search-highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+        }
 
-            if (empleadosFiltrados.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4">
-                            <i class="bi bi-people fs-1 d-block mb-2"></i>
-                            <h5>No se encontraron empleados</h5>
-                            <p class="mb-0">No hay resultados con los filtros aplicados</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+        .btn-group-xs > .btn, .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
 
-            tbody.innerHTML = empleadosFiltrados.map(emp => `
-                <tr class="${!emp.activo ? 'table-secondary' : ''}">
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="${emp.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.nombre) + '&size=100'}"
-                                 class="rounded-circle me-3"
-                                 style="width: 40px; height: 40px; object-fit: cover;"
-                                 alt="${emp.nombre}">
+        /* Mejoras para la tabla */
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem;
+        }
+
+        .empleado-info {
+            min-width: 200px;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.35em 0.65em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Gestión de Empleados - MEJORADA -->
+    <div class="container-fluid py-4" id="empleados-container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-people-fill text-primary"></i>
+                    Gestión de Empleados
+                </h2>
+                <p class="text-muted">Administra y gestiona los empleados del sistema de fichajes.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas MEJORADAS -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>${emp.nombre}</strong>
-                                <br>
-                                <small class="text-muted">${emp.codigo_empleado}</small>
+                                <h6 class="text-muted mb-1">Total Empleados</h6>
+                                <h3 id="stat-total" class="mb-0">0</h3>
+                            </div>
+                            <i class="bi bi-people fs-1 text-primary opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Activos</h6>
+                                <h3 class="text-success mb-0" id="stat-activos">0</h3>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Con Usuario</h6>
+                                <h3 class="text-warning mb-0" id="stat-con-usuario">0</h3>
+                            </div>
+                            <i class="bi bi-person-check fs-1 text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Supervisores</h6>
+                                <h3 class="text-info mb-0" id="stat-supervisores">0</h3>
+                            </div>
+                            <i class="bi bi-star fs-1 text-info opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de búsqueda y acciones MEJORADA -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="input-buscar"
+                           placeholder="Buscar por nombre, código, email o departamento...">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="select-departamento">
+                    <option value="">Todos los deptos.</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="select-estado">
+                    <option value="">Todos</option>
+                    <option value="activo">Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="check-inactivos">
+                    <label class="form-check-label small" for="check-inactivos">Incluir inactivos</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex gap-2 justify-content-between">
+                    <div>
+                        <button class="btn btn-primary" onclick="EmpleadosModule.abrirModalNuevo()">
+                            <i class="bi bi-person-plus me-1"></i> Nuevo Empleado
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="EmpleadosModule.recargarEmpleados()">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                        </button>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-clock me-1"></i>
+                        Actualizado: <span id="ultima-actualizacion">--:--:--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Empleados MEJORADA -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>Lista de Empleados
+                    <span class="badge bg-primary ms-2" id="contador-empleados">0</span>
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small" id="contador-filtrados"></span>
+                    <div class="spinner-border spinner-border-sm text-primary d-none" id="spinner-tabla" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="empleado-info">Empleado</th>
+                                <th>Contacto</th>
+                                <th>Departamento</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-empleados">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p class="mt-2 mb-0">Cargando empleados...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Crear/Editar Empleado MEJORADO -->
+    <div class="modal fade" id="modalEmpleado" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="modalEmpleadoTitle">
+                        <i class="bi bi-person-plus me-2"></i>Nuevo Empleado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEmpleado">
+                        <input type="hidden" id="empleadoId">
+                        <input type="hidden" id="empleadoActivo" value="true">
+
+                        <div class="row">
+                            <!-- Columna Izquierda -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Código de Empleado *</label>
+                                    <input type="text" class="form-control" id="codigoEmpleado"
+                                           required maxlength="35" placeholder="Ej: EMP001">
+                                    <div class="form-text">Código único para identificar al empleado</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nombre Completo *</label>
+                                    <input type="text" class="form-control" id="nombreEmpleado"
+                                           required maxlength="65" placeholder="Ej: Juan Pérez García">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Email *</label>
+                                    <input type="email" class="form-control" id="emailEmpleado"
+                                           required maxlength="50" placeholder="ejemplo@empresa.com">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Teléfono *</label>
+                                    <input type="text" class="form-control" id="telefonoEmpleado"
+                                           required maxlength="9" placeholder="Ej: 123456789">
+                                    <div class="form-text">9 dígitos sin espacios</div>
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Fecha de Nacimiento *</label>
+                                    <input type="date" class="form-control" id="fechaNacimiento" required>
+                                    <div class="form-text">El empleado debe tener al menos 14 años</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Fecha de Ingreso *</label>
+                                    <input type="date" class="form-control" id="fechaIngreso" required>
+                                    <div class="form-text">Fecha en que comenzó a trabajar</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Departamento *</label>
+                                    <select class="form-select" id="selectDepartamento" required>
+                                        <option value="">Seleccionar departamento...</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Rol *</label>
+                                    <select class="form-select" id="selectRol" required>
+                                        <option value="">Seleccionar rol...</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">URL de Foto</label>
+                                    <input type="url" class="form-control" id="fotoUrl"
+                                           placeholder="https://ejemplo.com/foto.jpg">
+                                    <div class="form-text">Opcional. Se generará automáticamente si está vacío</div>
+                                </div>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        <div>${emp.email}</div>
-                        <small class="text-muted">${emp.telefono}</small>
-                    </td>
-                    <td>${emp.departamento}</td>
-                    <td>
-                        <span class="badge bg-light text-dark">${emp.rol}</span>
-                        ${emp.esSupervisor ? '<i class="bi bi-star-fill text-warning ms-1" title="Supervisor"></i>' : ''}
-                    </td>
-                    <td>
-                        <small>
-                            <div>Ingreso: ${emp.fecha_ingreso}</div>
-                            ${emp.fecha_baja ? `<div class="text-danger">Baja: ${emp.fecha_baja}</div>` : ''}
-                        </small>
-                    </td>
-                    <td>
-                        <span class="badge ${emp.activo ? 'bg-success' : 'bg-secondary'}">
-                            ${emp.activo ? 'Activo' : 'Inactivo'}
-                        </span>
-                        ${emp.tieneUsuario ? '<i class="bi bi-person-check text-primary ms-1" title="Tiene usuario"></i>' : ''}
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="EmpleadosModule.editarEmpleado(${emp.idEmpleado})"
-                                    title="Editar" ${!emp.activo ? 'disabled' : ''}>
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            ${emp.activo ?
-                    `<button class="btn btn-outline-danger" onclick="EmpleadosModule.desactivarEmpleado(${emp.idEmpleado}, '${emp.nombre}')" title="Desactivar">
-                                    <i class="bi bi-person-dash"></i>
-                                </button>` :
-                    `<button class="btn btn-outline-success" onclick="EmpleadosModule.activarEmpleado(${emp.idEmpleado})" title="Activar">
-                                    <i class="bi bi-person-check"></i>
-                                </button>`
-                }
+
+                        <!-- Vista previa del avatar -->
+                        <div class="row mt-3" id="avatar-preview" style="display: none;">
+                            <div class="col-12">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title text-primary mb-3">
+                                            <i class="bi bi-image me-2"></i>Vista Previa del Avatar
+                                        </h6>
+                                        <img id="preview-avatar-img" src="" class="avatar-lg rounded-circle mb-2" alt="Vista previa">
+                                        <p class="small text-muted mb-0">Así se verá el empleado en el sistema</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarEmpleado" onclick="EmpleadosModule.guardarEmpleado()">
+                        <span id="btnGuardarText">
+                            <i class="bi bi-check-circle me-1"></i>Guardar Empleado
+                        </span>
+                        <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Mostrar modal para crear empleado
-        function mostrarModalCrear() {
-            // Limpiar formulario
-            document.getElementById('formEmpleado').reset();
-            document.getElementById('empleadoId').value = '';
-            document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-person-plus"></i> Nuevo Empleado';
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-            // Establecer fechas por defecto
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('fechaIngreso').value = hoy;
+    <script>
+       
+        window.EmpleadosModule = (function () {
+            'use strict';
 
-            document.getElementById('codigoEmpleado').disabled = false;
-
-
-            // ✅ ASEGURAR que el campo oculto esté en true
-            document.getElementById('empleadoActivo').value = 'true';
-
-            if (!state.modalEmpleado) {
-                state.modalEmpleado = new bootstrap.Modal(document.getElementById('modalEmpleado'));
-            }
-            state.modalEmpleado.show();
-        }
-
-        // Editar empleado
-        async function editarEmpleado(id) {
-            try {
-                const response = await fetchAuth(`/api/empleados/${id}`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const empleado = await response.json();
-
-                // Llenar formulario
-                document.getElementById('empleadoId').value = empleado.idEmpleado;
-                document.getElementById('codigoEmpleado').value = empleado.codigo_empleado;
-                document.getElementById('nombreEmpleado').value = empleado.nombre;
-                document.getElementById('emailEmpleado').value = empleado.email;
-                document.getElementById('telefonoEmpleado').value = empleado.telefono;
-                document.getElementById('fechaNacimiento').value = empleado.fecha_nacimiento;
-                document.getElementById('fechaIngreso').value = empleado.fecha_ingreso;
-                document.getElementById('selectDepartamento').value = empleado.departamento.idDepartamento;
-                document.getElementById('selectRol').value = empleado.rol.idRol;
-                document.getElementById('fotoUrl').value = empleado.foto_url || '';
-
-                document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-pencil"></i> Editar Empleado';
-                document.getElementById('codigoEmpleado').disabled = true; // No se puede editar el código
-
-                if (!state.modalEmpleado) {
-                    state.modalEmpleado = new bootstrap.Modal(document.getElementById('modalEmpleado'));
+            // Estado privado del módulo
+            const state = {
+                empleados: [],
+                departamentos: [],
+                roles: [],
+                modalInstance: null,
+                filtros: {
+                    buscar: '',
+                    departamento: '',
+                    estado: '',
+                    incluirInactivos: false
                 }
-                state.modalEmpleado.show();
-
-            } catch (error) {
-                console.error('Error al cargar empleado:', error);
-                mostrarAlerta('Error al cargar datos del empleado', 'danger');
-            }
-        }
-
-        // Guardar empleado (crear o editar)
-        async function guardarEmpleado() {
-            const form = document.getElementById('formEmpleado');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            const fechaNacimiento = new Date(document.getElementById('fechaNacimiento').value);
-            const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
-            if (edad < 14) {
-                mostrarAlerta('El empleado debe tener al menos 14 años', 'warning');
-                return;
-            }
-
-            const empleadoId = document.getElementById('empleadoId').value;
-            const esEdicion = !!empleadoId;
-
-            const datos = {
-                CodigoEmpleado: document.getElementById('codigoEmpleado').value.trim(),
-                Nombre: document.getElementById('nombreEmpleado').value.trim(),
-                Email: document.getElementById('emailEmpleado').value.trim().toLowerCase(),
-                Telefono: document.getElementById('telefonoEmpleado').value.trim(),
-                FechaNacimiento: document.getElementById('fechaNacimiento').value,
-                FechaIngreso: document.getElementById('fechaIngreso').value,
-                FotoUrl: document.getElementById('fotoUrl').value.trim() || null,
-                IdDepartamento: parseInt(document.getElementById('selectDepartamento').value),
-                IdRol: parseInt(document.getElementById('selectRol').value)
             };
 
-            toggleBotonGuardar(true);
-            try {
-                let response;
-                if (esEdicion) {
-                    response = await fetchAuth(`/api/empleados/${empleadoId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify({
-                            Nombre: datos.Nombre,
-                            Email: datos.Email,
-                            Telefono: datos.Telefono,
-                            IdDepartamento: datos.IdDepartamento,
-                            IdRol: datos.IdRol
-                        })
+            // API Helper (igual que en otros módulos)
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
                     });
-                } else {
-                    response = await fetchAuth('/api/empleados', {
-                        method: 'POST',
-                        body: JSON.stringify(datos)
-                    });
-                }
 
-                // ✅ MANEJO SEGURO DE LA RESPUESTA
-                let mensajeExito = esEdicion
-                    ? "Empleado actualizado exitosamente"
-                    : "Empleado creado exitosamente";
-                let tieneError = false;
-                let mensajeError = "Error al guardar empleado";
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
 
-                if (response.ok) {
-                    // Intentar parsear JSON, pero si falla, asumir éxito
-                    try {
-                        const resultado = await response.json();
-                        if (resultado.mensaje) {
-                            mensajeExito = resultado.mensaje;
-                        }
-                    } catch (e) {
-                        // Respuesta no es JSON -> asumir éxito genérico
-                    }
-                    mostrarAlerta(mensajeExito, 'success');
-                    if (state.modalEmpleado) state.modalEmpleado.hide();
-                    await cargarEmpleados();
-                } else {
-                    // Intentar obtener mensaje de error
-                    try {
-                        const errorData = await response.json();
-                        mensajeError = errorData.mensaje || mensajeError;
-                    } catch (e) {
-                        // No se pudo parsear JSON del error
-                        mensajeError = `Error ${response.status}: ${response.statusText}`;
-                    }
-                    mostrarAlerta(mensajeError, 'danger');
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
                 }
-            } catch (error) {
-                console.error('❌ Error al guardar empleado:', error);
-                mostrarAlerta('Error de conexión al guardar empleado', 'danger');
-            } finally {
-                toggleBotonGuardar(false);
             }
-        }
 
-        // Desactivar empleado
-        async function desactivarEmpleado(id, nombre) {
-            if (!confirm(`¿Estás seguro de desactivar al empleado "${nombre}"?`)) return;
+            // Cargar empleados
+            async function cargarEmpleados() {
+                console.log('Cargando empleados...');
+                try {
+                    mostrarLoadingTabla();
 
-            try {
-                const response = await fetchAuth(`/api/empleados/${id}`, { method: 'DELETE' });
+                    const params = new URLSearchParams();
+                    if (state.filtros.incluirInactivos) {
+                        params.append('incluirInactivos', 'true');
+                    }
 
-                if (response.ok) {
+                    const url = `/api/empleados?${params.toString()}`;
+                    state.empleados = await apiCall(url);
+
+                    console.log('Empleados cargados:', state.empleados.length);
+                    aplicarFiltrosYRenderizar();
+                    actualizarEstadisticas();
+                    actualizarTimestamp();
+
+                } catch (error) {
+                    console.error('Error al cargar empleados:', error);
+                    mostrarErrorTabla('Error al cargar empleados: ' + error.message);
+                }
+            }
+
+            // Cargar departamentos y roles
+            async function cargarSelects() {
+                try {
+                    // Cargar departamentos
+                    state.departamentos = await apiCall('/api/departamentos?incluirInactivos=false');
+                    const selectDepto = document.getElementById('selectDepartamento');
+                    const filtroDepto = document.getElementById('select-departamento');
+
+                    selectDepto.innerHTML = '<option value="">Seleccionar departamento...</option>';
+                    filtroDepto.innerHTML = '<option value="">Todos los deptos.</option>';
+
+                    state.departamentos.forEach(depto => {
+                        selectDepto.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
+                        filtroDepto.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
+                    });
+
+                    // Cargar roles
+                    state.roles = await apiCall('/api/roles?incluirInactivos=false');
+                    const selectRol = document.getElementById('selectRol');
+                    selectRol.innerHTML = '<option value="">Seleccionar rol...</option>';
+                    state.roles.forEach(rol => {
+                        selectRol.innerHTML += `<option value="${rol.idRol}">${rol.nombre}</option>`;
+                    });
+
+                } catch (error) {
+                    console.error('Error al cargar selects:', error);
+                }
+            }
+
+            // Aplicar filtros y renderizar
+            function aplicarFiltrosYRenderizar() {
+                let empleadosFiltrados = [...state.empleados];
+
+                // Filtro de búsqueda
+                if (state.filtros.buscar) {
+                    const buscar = state.filtros.buscar.toLowerCase();
+                    empleadosFiltrados = empleadosFiltrados.filter(emp =>
+                        emp.nombre.toLowerCase().includes(buscar) ||
+                        emp.codigo_empleado.toLowerCase().includes(buscar) ||
+                        emp.email.toLowerCase().includes(buscar) ||
+                        (emp.departamento && emp.departamento.toLowerCase().includes(buscar))
+                    );
+                }
+
+                // Filtro de departamento
+                if (state.filtros.departamento) {
+                    empleadosFiltrados = empleadosFiltrados.filter(emp =>
+                        emp.departamento && emp.departamento.idDepartamento == state.filtros.departamento
+                    );
+                }
+
+                // Filtro de estado
+                if (state.filtros.estado) {
+                    empleadosFiltrados = empleadosFiltrados.filter(emp =>
+                        state.filtros.estado === 'activo' ? emp.activo : !emp.activo
+                    );
+                }
+
+                renderizarEmpleados(empleadosFiltrados);
+            }
+
+            // Renderizar empleados en tabla
+            function renderizarEmpleados(empleados) {
+                const tbody = document.getElementById('tabla-empleados');
+                const contador = document.getElementById('contador-empleados');
+                const contadorFiltrados = document.getElementById('contador-filtrados');
+
+                contador.textContent = state.empleados.length;
+                contadorFiltrados.textContent = `${empleados.length} de ${state.empleados.length}`;
+
+                if (empleados.length === 0) {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-people fs-1 d-block mb-3 text-muted"></i>
+                                    <h5>No se encontraron empleados</h5>
+                                    <p class="mb-3">No hay resultados con los filtros aplicados</p>
+                                    <button class="btn btn-primary" onclick="EmpleadosModule.limpiarFiltros()">
+                                        <i class="bi bi-x-circle me-1"></i>Limpiar filtros
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    return;
+                }
+
+                tbody.innerHTML = empleados.map(emp => `
+                        <tr class="${!emp.activo ? 'table-secondary opacity-75' : ''}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="${emp.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(emp.nombre) + '&size=100&background=0D6EFD&color=fff&bold=true'}"
+                                         class="avatar rounded-circle me-3"
+                                         alt="${emp.nombre}"
+                                         onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${emp.nombre}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
+                                    <div>
+                                        <strong class="d-block">${emp.nombre}</strong>
+                                        <small class="text-muted">${emp.codigo_empleado}</small>
+                                        <div class="mt-1">
+                                            ${emp.esSupervisor ? '<span class="badge bg-warning status-badge"><i class="bi bi-star-fill me-1"></i>Supervisor</span>' : ''}
+                                            ${emp.tieneUsuario ? '<span class="badge bg-info status-badge"><i class="bi bi-person-check me-1"></i>Con usuario</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <div><i class="bi bi-envelope me-1 text-muted"></i>${emp.email}</div>
+                                    <div><i class="bi bi-telephone me-1 text-muted"></i>${emp.telefono}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">${emp.departamento || 'N/A'}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">${emp.rol || 'N/A'}</span>
+                            </td>
+                            <td>
+                                <span class="badge ${emp.activo ? 'bg-success' : 'bg-danger'}">
+                                    <i class="bi ${emp.activo ? 'bi-check-circle' : 'bi-x-circle'} me-1"></i>
+                                    ${emp.activo ? 'Activo' : 'Inactivo'}
+                                </span>
+                                ${emp.fecha_baja ? `
+                                    <div class="small text-muted mt-1">
+                                        Baja: ${emp.fecha_baja}
+                                    </div>
+                                ` : ''}
+                            </td>
+                            <td class="table-actions">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="EmpleadosModule.editarEmpleado(${emp.idEmpleado})"
+                                            title="Editar empleado" ${!emp.activo ? 'disabled' : ''}>
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="EmpleadosModule.verDetalles(${emp.idEmpleado})"
+                                            title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    ${emp.activo ?
+                        `<button class="btn btn-outline-danger" onclick="EmpleadosModule.desactivarEmpleado(${emp.idEmpleado}, '${emp.nombre}')" title="Desactivar">
+                                            <i class="bi bi-person-dash"></i>
+                                        </button>` :
+                        `<button class="btn btn-outline-success" onclick="EmpleadosModule.activarEmpleado(${emp.idEmpleado}, '${emp.nombre}')" title="Activar">
+                                            <i class="bi bi-person-check"></i>
+                                        </button>`
+                    }
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+            }
+
+            // Abrir modal para nuevo empleado
+            async function abrirModalNuevo() {
+                console.log('Abriendo modal para nuevo empleado');
+
+                // Cargar selects si no están cargados
+                if (state.departamentos.length === 0) {
+                    await cargarSelects();
+                }
+
+                document.getElementById('formEmpleado').reset();
+                document.getElementById('empleadoId').value = '';
+                document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-person-plus me-2"></i>Nuevo Empleado';
+                document.getElementById('empleadoActivo').value = 'true';
+                document.getElementById('avatar-preview').style.display = 'none';
+
+                // Establecer fechas por defecto
+                const hoy = new Date().toISOString().split('T')[0];
+                document.getElementById('fechaIngreso').value = hoy;
+
+                // Habilitar campo de código
+                document.getElementById('codigoEmpleado').disabled = false;
+
+                // Configurar evento para vista previa del avatar
+                document.getElementById('nombreEmpleado').addEventListener('input', actualizarVistaPreviaAvatar);
+
+                if (!state.modalInstance) {
+                    state.modalInstance = new bootstrap.Modal(document.getElementById('modalEmpleado'));
+                }
+                state.modalInstance.show();
+
+                // Enfocar el primer campo
+                setTimeout(() => {
+                    document.getElementById('codigoEmpleado').focus();
+                }, 500);
+            }
+
+            // Actualizar vista previa del avatar
+            function actualizarVistaPreviaAvatar() {
+                const nombre = document.getElementById('nombreEmpleado').value.trim();
+                if (nombre) {
+                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&size=200&background=0D6EFD&color=fff&bold=true`;
+                    document.getElementById('preview-avatar-img').src = avatarUrl;
+                    document.getElementById('avatar-preview').style.display = 'block';
+                } else {
+                    document.getElementById('avatar-preview').style.display = 'none';
+                }
+            }
+
+            // Editar empleado
+            async function editarEmpleado(id) {
+                console.log('Editando empleado ID:', id);
+                try {
+                    const empleado = await apiCall(`/api/empleados/${id}`);
+                    console.log('Datos del empleado cargados:', empleado);
+
+                    // Llenar formulario
+                    document.getElementById('empleadoId').value = empleado.idEmpleado;
+                    document.getElementById('codigoEmpleado').value = empleado.codigo_empleado;
+                    document.getElementById('nombreEmpleado').value = empleado.nombre;
+                    document.getElementById('emailEmpleado').value = empleado.email;
+                    document.getElementById('telefonoEmpleado').value = empleado.telefono;
+                    document.getElementById('fechaNacimiento').value = empleado.fecha_nacimiento;
+                    document.getElementById('fechaIngreso').value = empleado.fecha_ingreso;
+                    document.getElementById('selectDepartamento').value = empleado.departamento.idDepartamento;
+                    document.getElementById('selectRol').value = empleado.rol.idRol;
+                    document.getElementById('fotoUrl').value = empleado.foto_url || '';
+
+                    // Mostrar vista previa del avatar
+                    if (empleado.nombre) {
+                        const avatarUrl = empleado.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(empleado.nombre)}&size=200&background=0D6EFD&color=fff&bold=true`;
+                        document.getElementById('preview-avatar-img').src = avatarUrl;
+                        document.getElementById('avatar-preview').style.display = 'block';
+                    }
+
+                    document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Empleado';
+                    document.getElementById('codigoEmpleado').disabled = true; // No editable
+
+                    if (!state.modalInstance) {
+                        state.modalInstance = new bootstrap.Modal(document.getElementById('modalEmpleado'));
+                    }
+                    state.modalInstance.show();
+
+                } catch (error) {
+                    console.error('Error al cargar empleado:', error);
+                    mostrarAlerta('Error al cargar datos del empleado: ' + error.message, 'danger');
+                }
+            }
+
+            // Guardar empleado
+            async function guardarEmpleado() {
+                const form = document.getElementById('formEmpleado');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Validar edad mínima
+                const fechaNacimiento = new Date(document.getElementById('fechaNacimiento').value);
+                const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
+                if (edad < 14) {
+                    mostrarAlerta('El empleado debe tener al menos 14 años', 'warning');
+                    return;
+                }
+
+                const empleadoId = document.getElementById('empleadoId').value;
+                const esEdicion = !!empleadoId;
+
+                const datos = {
+                    CodigoEmpleado: document.getElementById('codigoEmpleado').value.trim(),
+                    Nombre: document.getElementById('nombreEmpleado').value.trim(),
+                    Email: document.getElementById('emailEmpleado').value.trim().toLowerCase(),
+                    Telefono: document.getElementById('telefonoEmpleado').value.trim(),
+                    FechaNacimiento: document.getElementById('fechaNacimiento').value,
+                    FechaIngreso: document.getElementById('fechaIngreso').value,
+                    FotoUrl: document.getElementById('fotoUrl').value.trim() || null,
+                    IdDepartamento: parseInt(document.getElementById('selectDepartamento').value),
+                    IdRol: parseInt(document.getElementById('selectRol').value)
+                };
+
+                toggleBotonGuardar(true);
+
+                try {
+                    let resultado;
+                    if (esEdicion) {
+                        resultado = await apiCall(`/api/empleados/${empleadoId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                Nombre: datos.Nombre,
+                                Email: datos.Email,
+                                Telefono: datos.Telefono,
+                                IdDepartamento: datos.IdDepartamento,
+                                IdRol: datos.IdRol
+                            })
+                        });
+                    } else {
+                        resultado = await apiCall('/api/empleados', {
+                            method: 'POST',
+                            body: JSON.stringify(datos)
+                        });
+                    }
+
+                    const mensaje = esEdicion ?
+                        'Empleado actualizado exitosamente' :
+                        'Empleado creado exitosamente';
+
+                    mostrarAlerta(mensaje, 'success');
+
+                    if (state.modalInstance) {
+                        state.modalInstance.hide();
+                    }
+
+                    await cargarEmpleados();
+
+                } catch (error) {
+                    console.error('Error al guardar empleado:', error);
+                    // El mensaje de error ya se muestra en apiCall
+                } finally {
+                    toggleBotonGuardar(false);
+                }
+            }
+
+            // Desactivar empleado - ACTUALIZADO
+            async function desactivarEmpleado(id, nombre) {
+                if (!confirm(`¿Estás seguro de desactivar al empleado "${nombre}"?\n\nEl empleado no podrá fichar pero se conservarán sus datos históricos.`)) return;
+
+                try {
+                    // ✅ CAMBIADO: Usar PUT en lugar de DELETE
+                    await apiCall(`/api/empleados/${id}/desactivar`, {
+                        method: 'PUT'
+                    });
                     mostrarAlerta('Empleado desactivado exitosamente', 'success');
                     await cargarEmpleados();
-                } else {
-                    const errorData = await response.json();
-                    mostrarAlerta(errorData.mensaje || 'Error al desactivar empleado', 'danger');
+                } catch (error) {
+                    console.error('Error al desactivar empleado:', error);
+                    mostrarAlerta('Error al desactivar empleado: ' + error.message, 'danger');
                 }
-            } catch (error) {
-                console.error('Error al desactivar empleado:', error);
-                mostrarAlerta('Error al desactivar empleado', 'danger');
             }
-        }
 
-        // Activar empleado
-        async function activarEmpleado(id) {
-            try {
-                const response = await fetchAuth(`/api/empleados/${id}/activar`, { method: 'PUT' });
+            // Activar empleado - ACTUALIZADO (ya está correcto, pero para consistencia)
+            async function activarEmpleado(id, nombre) {
+                if (!confirm(`¿Estás seguro de activar al empleado "${nombre}"?`)) return;
 
-                if (response.ok) {
+                try {
+                    await apiCall(`/api/empleados/${id}/activar`, {
+                        method: 'PUT'
+                    });
                     mostrarAlerta('Empleado activado exitosamente', 'success');
                     await cargarEmpleados();
-                } else {
-                    const errorData = await response.json();
-                    mostrarAlerta(errorData.mensaje || 'Error al activar empleado', 'danger');
+                } catch (error) {
+                    console.error('Error al activar empleado:', error);
+                    mostrarAlerta('Error al activar empleado: ' + error.message, 'danger');
                 }
-            } catch (error) {
-                console.error('Error al activar empleado:', error);
-                mostrarAlerta('Error al activar empleado', 'danger');
             }
-        }
 
-        // Actualizar estadísticas
-        function actualizarEstadisticas() {
-            const total = state.empleados.length;
-            const activos = state.empleados.filter(emp => emp.activo).length;
-            const conUsuario = state.empleados.filter(emp => emp.tieneUsuario).length;
-            const supervisores = state.empleados.filter(emp => emp.esSupervisor).length;
+            // Ver detalles (placeholder para futura implementación)
+            function verDetalles(id) {
+                mostrarAlerta('Función de detalles en desarrollo', 'info');
+                // Aquí podrías redirigir a una vista de detalles o abrir otro modal
+            }
 
-            document.getElementById('total-empleados').textContent = total;
-            document.getElementById('empleados-activos').textContent = activos;
-            document.getElementById('empleados-con-usuario').textContent = conUsuario;
-            document.getElementById('empleados-supervisores').textContent = supervisores;
-        }
+            // Actualizar estadísticas
+            function actualizarEstadisticas() {
+                const total = state.empleados.length;
+                const activos = state.empleados.filter(emp => emp.activo).length;
+                const conUsuario = state.empleados.filter(emp => emp.tieneUsuario).length;
+                const supervisores = state.empleados.filter(emp => emp.esSupervisor).length;
 
-        // Limpiar filtros
-        function limpiarFiltros() {
-            document.getElementById('buscar-empleado').value = '';
-            document.getElementById('filtro-departamento').value = '';
-            document.getElementById('filtro-estado').value = '';
-            document.getElementById('incluir-inactivos').checked = false;
-            cargarEmpleados();
-        }
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-activos').textContent = activos;
+                document.getElementById('stat-con-usuario').textContent = conUsuario;
+                document.getElementById('stat-supervisores').textContent = supervisores;
+            }
 
-        // Funciones auxiliares
-        function toggleBotonGuardar(loading) {
-            const btn = document.getElementById('btnGuardarEmpleado');
-            const text = document.getElementById('btnGuardarText');
-            const spinner = document.getElementById('btnGuardarSpinner');
+            // Limpiar filtros
+            function limpiarFiltros() {
+                state.filtros = {
+                    buscar: '',
+                    departamento: '',
+                    estado: '',
+                    incluirInactivos: false
+                };
 
-            if (loading) {
-                btn.disabled = true;
-                text.classList.add('d-none');
-                spinner.classList.remove('d-none');
+                document.getElementById('input-buscar').value = '';
+                document.getElementById('select-departamento').value = '';
+                document.getElementById('select-estado').value = '';
+                document.getElementById('check-inactivos').checked = false;
+
+                aplicarFiltrosYRenderizar();
+            }
+
+            // Recargar empleados
+            function recargarEmpleados() {
+                cargarEmpleados();
+                mostrarAlerta('Lista de empleados actualizada', 'info');
+            }
+
+            // Funciones auxiliares de UI
+            function toggleBotonGuardar(loading) {
+                const btn = document.getElementById('btnGuardarEmpleado');
+                const text = document.getElementById('btnGuardarText');
+                const spinner = document.getElementById('btnGuardarSpinner');
+
+                if (loading) {
+                    btn.disabled = true;
+                    text.classList.add('d-none');
+                    spinner.classList.remove('d-none');
+                } else {
+                    btn.disabled = false;
+                    text.classList.remove('d-none');
+                    spinner.classList.add('d-none');
+                }
+            }
+
+            function mostrarLoadingTabla() {
+                document.getElementById('spinner-tabla').classList.remove('d-none');
+            }
+
+            function ocultarLoadingTabla() {
+                document.getElementById('spinner-tabla').classList.add('d-none');
+            }
+
+            function mostrarErrorTabla(mensaje) {
+                const tbody = document.getElementById('tabla-empleados');
+                tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-danger py-5">
+                                <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                                <h5>Error al cargar empleados</h5>
+                                <p class="mb-3">${mensaje}</p>
+                                <button class="btn btn-primary" onclick="EmpleadosModule.cargarEmpleados()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Reintentar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                ocultarLoadingTabla();
+            }
+
+            function actualizarTimestamp() {
+                const ahora = new Date();
+                document.getElementById('ultima-actualizacion').textContent =
+                    ahora.toLocaleTimeString();
+                ocultarLoadingTabla();
+            }
+
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                // Eliminar alertas anteriores
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            // Configurar eventos
+            function configurarEventos() {
+                // Búsqueda en tiempo real
+                document.getElementById('input-buscar').addEventListener('input', (e) => {
+                    state.filtros.buscar = e.target.value;
+                    aplicarFiltrosYRenderizar();
+                });
+
+                // Filtros
+                document.getElementById('select-departamento').addEventListener('change', (e) => {
+                    state.filtros.departamento = e.target.value;
+                    aplicarFiltrosYRenderizar();
+                });
+
+                document.getElementById('select-estado').addEventListener('change', (e) => {
+                    state.filtros.estado = e.target.value;
+                    aplicarFiltrosYRenderizar();
+                });
+
+                document.getElementById('check-inactivos').addEventListener('change', (e) => {
+                    state.filtros.incluirInactivos = e.target.checked;
+                    cargarEmpleados();
+                });
+
+                // Auto-refresh cada 30 segundos si la página está visible
+                setInterval(() => {
+                    if (!document.hidden) cargarEmpleados();
+                }, 30000);
+            }
+
+            // Inicializar módulo
+            async function init() {
+                console.log('Iniciando módulo de empleados...');
+
+                // Verificar que estamos en la vista correcta
+                if (!document.getElementById('empleados-container')) {
+                    console.log('No estamos en la vista de empleados, saliendo...');
+                    return;
+                }
+
+                await cargarSelects();
+                await cargarEmpleados();
+                configurarEventos();
+
+                console.log('Módulo de empleados iniciado');
+            }
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
             } else {
-                btn.disabled = false;
-                text.classList.remove('d-none');
-                spinner.classList.add('d-none');
+                init();
             }
-        }
 
-        function mostrarLoading() {
-            document.getElementById('tabla-empleados').innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-muted py-4">
-                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        Cargando empleados...
-                    </td>
-                </tr>
-            `;
-        }
-
-        function mostrarError(mensaje) {
-            document.getElementById('tabla-empleados').innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-danger py-4">
-                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
-                        <h5>Error al cargar empleados</h5>
-                        <p class="mb-0">${mensaje}</p>
-                        <button class="btn btn-primary mt-2" onclick="EmpleadosModule.cargarEmpleados()">
-                            <i class="bi bi-arrow-clockwise"></i> Reintentar
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function actualizarTimestamp() {
-            const ahora = new Date();
-            document.getElementById('ultima-actualizacion').textContent =
-                `Actualizado: ${ahora.toLocaleTimeString()}`;
-        }
-
-        function mostrarAlerta(mensaje, tipo = 'info') {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-            alertDiv.style.zIndex = '9999';
-            alertDiv.innerHTML = `
-                <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.body.appendChild(alertDiv);
-
-            setTimeout(() => alertDiv.remove(), 5000);
-        }
-
-        // Configurar eventos
-        function configurarEventos() {
-            // Búsqueda en tiempo real
-            document.getElementById('buscar-empleado').addEventListener('input', renderizarEmpleados);
-            document.getElementById('filtro-departamento').addEventListener('change', renderizarEmpleados);
-            document.getElementById('filtro-estado').addEventListener('change', renderizarEmpleados);
-            document.getElementById('incluir-inactivos').addEventListener('change', cargarEmpleados);
-
-            // Auto-refresh cada 60 segundos
-            setInterval(() => {
-                if (!document.hidden) cargarEmpleados();
-            }, 60000);
-        }
-
-        // Inicializar módulo
-        async function init() {
-            console.log('🚀 Iniciando módulo de empleados...');
-
-            await cargarSelects();
-            await cargarEmpleados();
-            configurarEventos();
-
-            console.log('✅ Módulo de empleados iniciado');
-        }
-
-        // Iniciar cuando esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
-        return {
-            cargarEmpleados,
-            mostrarModalCrear,
-            editarEmpleado,
-            guardarEmpleado,
-            desactivarEmpleado,
-            activarEmpleado,
-            limpiarFiltros
-        };
-    })();
-</script>
+            // API pública del módulo
+            return {
+                init,
+                abrirModalNuevo,
+                editarEmpleado,
+                guardarEmpleado,
+                desactivarEmpleado,
+                activarEmpleado,
+                verDetalles,
+                limpiarFiltros,
+                recargarEmpleados,
+                cargarEmpleados
+            };
+        })();
+    </script>
+</body>
+</html>

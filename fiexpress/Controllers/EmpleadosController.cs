@@ -120,7 +120,7 @@ namespace fiexpress.Controllers
             SqlConnection connection = null;
             try
             {
-                _logger.LogInformation("📥 DTO recibido: {@Dto}", dto);
+                _logger.LogInformation(" DTO recibido: {@Dto}", dto);
 
                 // Validaciones básicas
                 if (string.IsNullOrWhiteSpace(dto.CodigoEmpleado))
@@ -350,8 +350,8 @@ namespace fiexpress.Controllers
             }
         }
 
-        // DELETE: api/empleados/{id} - Desactivar
-        [HttpDelete("{id:int}")]
+        // PUT: api/empleados/{id}/desactivar (MEJORADO)
+        [HttpPut("{id:int}/desactivar")]
         [Authorize(Roles = "Admin,Supervisor")]
         public async Task<IActionResult> DesactivarEmpleado(int id)
         {
@@ -365,7 +365,7 @@ namespace fiexpress.Controllers
 
                 if (!empleado.activo)
                 {
-                    return BadRequest(new { mensaje = "El empleado ya está inactivo" });
+                    return Ok(new { mensaje = "El empleado ya está inactivo" }); // ✅ Cambiado a 200 OK
                 }
 
                 empleado.activo = false;
@@ -373,21 +373,29 @@ namespace fiexpress.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // Registrar auditoría
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (int.TryParse(userId, out int usuarioId))
+                // ✅ AUDITORÍA MEJORADA - Manejo más robusto
+                try
                 {
-                    var auditoria = new Auditoria
+                    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(userId, out int usuarioId))
                     {
-                        idAuditoriaUsuario = usuarioId,
-                        accion = "DESACTIVAR_EMPLEADO",
-                        entidad_afectada = "Empleado",
-                        fecha_accion = DateTime.Now,
-                        ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
-                        descripcion = $"Empleado desactivado: {empleado.nombre} ({empleado.codigo_empleado})"
-                    };
-                    _context.Auditorias.Add(auditoria);
-                    await _context.SaveChangesAsync();
+                        var auditoria = new Auditoria
+                        {
+                            idAuditoriaUsuario = usuarioId,
+                            accion = "DESACTIVAR_EMPLEADO",
+                            entidad_afectada = "Empleado",
+                            fecha_accion = DateTime.Now,
+                            ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                            descripcion = $"Empleado desactivado: {empleado.nombre} ({empleado.codigo_empleado})"
+                        };
+                        _context.Auditorias.Add(auditoria);
+                        await _context.SaveChangesAsync(); // ✅ Segundo SaveChanges solo para auditoría
+                    }
+                }
+                catch (Exception auditEx)
+                {
+                    _logger.LogWarning(auditEx, "Advertencia: No se pudo registrar auditoría, pero el empleado fue desactivado");
+                    // ✅ NO relanzamos la excepción - la operación principal fue exitosa
                 }
 
                 return Ok(new { mensaje = "Empleado desactivado exitosamente" });
@@ -399,7 +407,7 @@ namespace fiexpress.Controllers
             }
         }
 
-        // PUT: api/empleados/{id}/activar
+        // PUT: api/empleados/{id}/activar (MEJORADO)
         [HttpPut("{id:int}/activar")]
         [Authorize(Roles = "Admin,Supervisor")]
         public async Task<IActionResult> ActivarEmpleado(int id)
@@ -414,7 +422,7 @@ namespace fiexpress.Controllers
 
                 if (empleado.activo)
                 {
-                    return BadRequest(new { mensaje = "El empleado ya está activo" });
+                    return Ok(new { mensaje = "El empleado ya está activo" }); // ✅ Cambiado a 200 OK
                 }
 
                 empleado.activo = true;
@@ -422,21 +430,29 @@ namespace fiexpress.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // Registrar auditoría
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (int.TryParse(userId, out int usuarioId))
+                // ✅ AUDITORÍA MEJORADA - Manejo más robusto
+                try
                 {
-                    var auditoria = new Auditoria
+                    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(userId, out int usuarioId))
                     {
-                        idAuditoriaUsuario = usuarioId,
-                        accion = "ACTIVAR_EMPLEADO",
-                        entidad_afectada = "Empleado",
-                        fecha_accion = DateTime.Now,
-                        ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
-                        descripcion = $"Empleado activado: {empleado.nombre} ({empleado.codigo_empleado})"
-                    };
-                    _context.Auditorias.Add(auditoria);
-                    await _context.SaveChangesAsync();
+                        var auditoria = new Auditoria
+                        {
+                            idAuditoriaUsuario = usuarioId,
+                            accion = "ACTIVAR_EMPLEADO",
+                            entidad_afectada = "Empleado",
+                            fecha_accion = DateTime.Now,
+                            ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                            descripcion = $"Empleado activado: {empleado.nombre} ({empleado.codigo_empleado})"
+                        };
+                        _context.Auditorias.Add(auditoria);
+                        await _context.SaveChangesAsync(); // ✅ Segundo SaveChanges solo para auditoría
+                    }
+                }
+                catch (Exception auditEx)
+                {
+                    _logger.LogWarning(auditEx, "Advertencia: No se pudo registrar auditoría, pero el empleado fue activado");
+                    // ✅ NO relanzamos la excepción - la operación principal fue exitosa
                 }
 
                 return Ok(new { mensaje = "Empleado activado exitosamente" });

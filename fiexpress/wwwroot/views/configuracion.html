@@ -333,7 +333,7 @@
 
                     try {
                         const errorData = await response.json();
-                        console.error('📋 Detalles del error:', errorData);
+                        console.error('Detalles del error:', errorData);
 
                         if (errorData.errores && Array.isArray(errorData.errores)) {
                             errorMessage += ` - ${errorData.errores.join(', ')}`;
@@ -345,7 +345,7 @@
                     } catch (parseError) {
                         // Si no se puede parsear como JSON, usar el texto plano
                         const textError = await response.text();
-                        console.error('📋 Error texto:', textError);
+                        console.error('Error texto:', textError);
                         errorMessage += ` - ${textError}`;
                     }
 
@@ -354,7 +354,7 @@
 
                 return await response.json();
             } catch (error) {
-                console.error('🔴 API Call Error:', error);
+                console.error('API Call Error:', error);
                 mostrarAlerta(`Error: ${error.message}`, 'danger');
                 throw error;
             }
@@ -507,39 +507,37 @@
         }
 
         async function desactivarRol(id, nombre) {
-            if (!confirm(`¿Estás seguro de desactivar el rol "${nombre}"?`)) return;
+            if (!confirm(`¿Estás seguro de desactivar el rol "${nombre}"?\n\nNo se podrá asignar este rol a nuevos empleados.`)) return;
 
             try {
-                await apiCall(`/api/roles/${id}`, { method: 'DELETE' });
+                await apiCall(`/api/roles/${id}`, {
+                    method: 'DELETE'
+                });
                 mostrarAlerta('Rol desactivado exitosamente', 'success');
                 await cargarRoles();
             } catch (error) {
                 console.error('Error al desactivar rol:', error);
+                mostrarAlerta(`Error al desactivar rol: ${error.message}`, 'danger');
             }
         }
 
+
         async function activarRol(id) {
             try {
-                // Nota: Necesitarías crear un endpoint PUT /api/roles/{id}/activar
-                // Por ahora, usaremos editar para activar
-                const rol = await apiCall(`/api/roles/${id}`);
-                rol.activo = true;
-
-                await apiCall(`/api/roles/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        Nombre: rol.nombre,
-                        Descripcion: rol.descripcion
-                    })
+                //  USAR EL NUEVO ENDPOINT ESPECÍFICO PARA ACTIVAR
+                await apiCall(`/api/roles/${id}/activar`, {
+                    method: 'PUT'
                 });
 
                 mostrarAlerta('Rol activado exitosamente', 'success');
                 await cargarRoles();
             } catch (error) {
                 console.error('Error al activar rol:', error);
+                mostrarAlerta(`Error al activar rol: ${error.message}`, 'danger');
             }
         }
+
+
 
         // ========== GESTIÓN DE TURNOS ==========
         async function cargarTurnos() {
@@ -687,7 +685,7 @@
                 return;
             }
 
-            // ✅ VALIDAR QUE LA HORA DE SALIDA SEA POSTERIOR A LA DE ENTRADA
+            // VALIDAR QUE LA HORA DE SALIDA SEA POSTERIOR A LA DE ENTRADA
             const horaEntradaInput = document.getElementById('turnoEntrada').value;
             const horaSalidaInput = document.getElementById('turnoSalida').value;
 
@@ -696,7 +694,7 @@
                 return;
             }
 
-            // ✅ VALIDAR QUE AL MENOS UN DÍA ESTÉ SELECCIONADO
+            // VALIDAR QUE AL MENOS UN DÍA ESTÉ SELECCIONADO
             const diasSeleccionados = [
                 document.getElementById('turnoLunes').checked,
                 document.getElementById('turnoMartes').checked,
@@ -712,11 +710,11 @@
                 return;
             }
 
-            // ✅ CORREGIDO: USAR DIRECTAMENTE EL VALOR DEL INPUT SIN AGREGAR SEGUNDOS
+            // CORREGIDO: USAR DIRECTAMENTE EL VALOR DEL INPUT SIN AGREGAR SEGUNDOS
             const data = {
                 nombre: document.getElementById('turnoNombre').value.trim(),
-                hora_entrada: horaEntradaInput, // ✅ "08:00" (formato correcto)
-                hora_salida: horaSalidaInput,   // ✅ "16:00" (formato correcto)
+                hora_entrada: horaEntradaInput, // "08:00" (formato correcto)
+                hora_salida: horaSalidaInput,   // "16:00" (formato correcto)
                 tolerancia_minutos: parseInt(document.getElementById('turnoTolerancia').value),
                 lunes: document.getElementById('turnoLunes').checked,
                 martes: document.getElementById('turnoMartes').checked,
@@ -728,7 +726,7 @@
                 activo: document.getElementById('turnoActivo').checked
             };
 
-            console.log('📤 Enviando datos del turno:', data);
+            console.log('Enviando datos del turno:', data);
 
             try {
                 const turnoId = document.getElementById('turnoId').value;
@@ -753,7 +751,7 @@
                 await cargarTurnos();
 
             } catch (error) {
-                console.error('❌ Error al guardar turno:', error);
+                console.error('Error al guardar turno:', error);
                 mostrarAlerta(`Error al guardar turno: ${error.message}`, 'danger');
             }
         }
@@ -772,7 +770,7 @@
 
         async function activarTurno(id) {
             try {
-                // ✅ USAR EL NUEVO ENDPOINT ESPECÍFICO
+                // USAR EL NUEVO ENDPOINT ESPECÍFICO
                 await apiCall(`/api/turnos/${id}/activar`, {
                     method: 'PUT'
                 });
@@ -939,29 +937,26 @@
 
         async function activarDepartamento(id) {
             try {
-                // Similar a los anteriores
-                const departamento = await apiCall(`/api/departamentos/${id}`);
-                departamento.activo = true;
-
-                await apiCall(`/api/departamentos/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        Nombre: departamento.nombre,
-                        Codigo: departamento.codigo
-                    })
+                // USAR EL NUEVO ENDPOINT ESPECÍFICO PARA ACTIVAR
+                await apiCall(`/api/departamentos/${id}/activar`, {
+                    method: 'PUT'
                 });
 
                 mostrarAlerta('Departamento activado exitosamente', 'success');
                 await cargarDepartamentos();
             } catch (error) {
                 console.error('Error al activar departamento:', error);
+                mostrarAlerta(`Error al activar departamento: ${error.message}`, 'danger');
             }
         }
 
+
+
+        
+
         // ========== INICIALIZACIÓN ==========
         async function init() {
-            console.log('🚀 Iniciando módulo de configuración...');
+            console.log('Iniciando módulo de configuración...');
 
             // Cargar todos los datos
             await Promise.all([
@@ -970,7 +965,7 @@
                 cargarDepartamentos()
             ]);
 
-            console.log('✅ Módulo de configuración iniciado');
+            console.log('Módulo de configuración iniciado');
         }
 
         // Iniciar cuando esté listo

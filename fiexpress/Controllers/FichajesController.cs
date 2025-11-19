@@ -32,7 +32,7 @@ namespace fiexpress.Controllers
         {
             try
             {
-                _logger.LogInformation($"📥 RFID recibido: {request.CodigoRFID} desde IP: {request.IP}");
+                _logger.LogInformation($" RFID recibido: {request.CodigoRFID} desde IP: {request.IP}");
 
                 // DEBUG: Verificar si el servicio Telegram está disponible
                 if (_telegramService == null)

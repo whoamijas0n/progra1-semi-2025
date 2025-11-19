@@ -1,594 +1,1207 @@
-﻿<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-credit-card text-warning"></i> Gestión de Tarjetas RFID
-            </h2>
-            <p class="text-muted">Administra las tarjetas RFID asignadas a los empleados</p>
-        </div>
-    </div>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tarjetas RFID - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        .card-rfid {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
 
-    <!-- ✅ BOTÓN DE LECTURA DE TARJETAS NO REGISTRADAS -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <button class="btn btn-outline-info" onclick="RFIDModule.iniciarModoCaptura()">
-                <i class="bi bi-qr-code-scan"></i> Leer Tarjeta Nueva (No Registrada)
-            </button>
-        </div>
-    </div>
+            .card-rfid:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
 
-    <!-- Estadísticas -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-start border-warning border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Tarjetas Activas</h6>
-                    <h3 id="total-tarjetas-activas">0</h3>
-                    <small class="text-muted">En uso</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-success border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Empleados con Tarjeta</h6>
-                    <h3 class="text-success" id="empleados-con-tarjeta">0</h3>
-                    <small class="text-muted">Asignaciones activas</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-info border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Sin Tarjeta</h6>
-                    <h3 class="text-info" id="empleados-sin-tarjeta">0</h3>
-                    <small class="text-muted">Pendientes</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-start border-secondary border-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Tarjetas Inactivas</h6>
-                    <h3 class="text-secondary" id="tarjetas-inactivas">0</h3>
-                    <small class="text-muted">Desactivadas</small>
-                </div>
-            </div>
-        </div>
-    </div>
+        .avatar {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 3px solid #e9ecef;
+        }
 
-    <!-- Controles -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label">Buscar</label>
-                    <input type="text" class="form-control" id="buscar-rfid" placeholder="Código, empleado, código empleado...">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Estado</label>
-                    <select class="form-select" id="filtro-estado-rfid">
-                        <option value="">Todos</option>
-                        <option value="activo">Activas</option>
-                        <option value="inactivo">Inactivas</option>
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button class="btn btn-warning" onclick="RFIDModule.mostrarModalAsignar()">
-                            <i class="bi bi-plus-circle"></i> Asignar Nueva Tarjeta
-                        </button>
-                        <button class="btn btn-outline-primary" onclick="RFIDModule.cargarTarjetas()">
-                            <i class="bi bi-arrow-clockwise"></i> Actualizar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        .stat-card {
+            transition: transform 0.2s ease;
+        }
 
-    <!-- Tabla de Tarjetas -->
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-credit-card-2-front"></i> Tarjetas RFID
-                <span class="badge bg-warning ms-2" id="contador-tarjetas">0</span>
-            </h5>
-            <span class="text-muted small" id="ultima-actualizacion"></span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Código RFID</th>
-                            <th>Empleado</th>
-                            <th>Departamento</th>
-                            <th>Fecha Asignación</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-tarjetas">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
 
-<!-- ✅ MODAL: Lectura de tarjeta no registrada -->
-<div class="modal fade" id="modalCapturaRFID" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-qr-code-scan text-info"></i> Lectura de Tarjeta Nueva</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div id="estado-captura">
-                    <i class="bi bi-credit-card fs-1 text-muted mb-3 d-block"></i>
-                    <p>Acerca una tarjeta <strong>no registrada</strong> al lector RFID</p>
-                    <p class="text-muted small">Tienes 30 segundos</p>
-                    <div class="spinner-border text-info" role="status"></div>
-                </div>
-                <div id="resultado-captura" style="display:none;">
-                    <div class="alert alert-success">
-                        <h5><i class="bi bi-check-circle-fill"></i> ¡Tarjeta detectada!</h5>
-                        <p class="fs-5"><code id="codigo-capturado"></code></p>
-                        <button class="btn btn-outline-secondary" onclick="RFIDModule.copiarCodigo()">
-                            <i class="bi bi-clipboard"></i> Copiar código
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        #selEmpleado {
+            font-size: 0.9rem;
+        }
+
+            #selEmpleado option {
+                padding: 8px 12px;
+                border-bottom: 1px solid #f0f0f0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+                #selEmpleado option:hover {
+                    background-color: #e9ecef;
+                }
+
+        .btn-group-xs > .btn, .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+
+        .badge-rfid {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+
+        .capture-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Gestión de Tarjetas RFID -->
+    <div class="container-fluid py-4" id="rfid-container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-credit-card text-warning"></i>
+                    Gestión de Tarjetas RFID
+                </h2>
+                <p class="text-muted">Administra las tarjetas RFID asignadas a los empleados.</p>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal: Asignar -->
-<div class="modal fade" id="modalAsignarRFID" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-credit-card text-warning"></i> Asignar Tarjeta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Empleado *</label>
-                        <select class="form-select" id="selectEmpleadoRFID" required>
-                            <option value="">Seleccionar...</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Código RFID *</label>
-                        <input type="text" class="form-control" id="inputCodigoRFID" maxlength="50" placeholder="Ej: A1B2C3D4">
-                        <div class="form-text">Copia el código desde una tarjeta no registrada</div>
-                    </div>
-                </div>
-                <div class="card bg-light mt-3" id="infoEmpleadoCard" style="display:none;">
+        <!-- Estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
                     <div class="card-body">
-                        <h6>Información del empleado</h6>
-                        <small><strong>Nombre:</strong> <span id="infoNombre">-</span></small><br>
-                        <small><strong>Departamento:</strong> <span id="infoDepartamento">-</span></small>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Tarjetas Activas</h6>
+                                <h3 id="stat-activas" class="mb-0">0</h3>
+                            </div>
+                            <i class="bi bi-credit-card fs-1 text-warning opacity-25"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-warning" id="btnAsignar" onclick="RFIDModule.asignarTarjeta()">
-                    <span id="btnAsignarText">Asignar</span>
-                    <span id="btnAsignarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
-                </button>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Empleados con Tarjeta</h6>
+                                <h3 class="text-success mb-0" id="stat-con-tarjeta">0</h3>
+                            </div>
+                            <i class="bi bi-people fs-1 text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Sin Tarjeta</h6>
+                                <h3 class="text-info mb-0" id="stat-sin-tarjeta">0</h3>
+                            </div>
+                            <i class="bi bi-person-plus fs-1 text-info opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-secondary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Tarjetas Inactivas</h6>
+                                <h3 class="text-secondary mb-0" id="stat-inactivas">0</h3>
+                            </div>
+                            <i class="bi bi-credit-card-2-front fs-1 text-secondary opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de búsqueda y acciones -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="input-buscar" placeholder="Buscar por código RFID, empleado o departamento...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="select-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activas</option>
+                    <option value="inactivo">Inactivas</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="d-grid gap-2 d-md-flex">
+                    <button class="btn btn-warning me-2" onclick="RFIDModule.abrirModalNuevo()">
+                        <i class="bi bi-plus-lg me-1"></i> Asignar Tarjeta
+                    </button>
+                    <button class="btn btn-outline-info" onclick="RFIDModule.iniciarModoCaptura()">
+                        <i class="bi bi-qr-code-scan me-1"></i> Leer Tarjeta
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de tarjetas RFID -->
+        <div class="row g-3" id="lista-tarjetas">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted mt-2">Cargando tarjetas RFID...</p>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal: Editar -->
-<div class="modal fade" id="modalEditarRFID" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-pencil-square text-primary"></i> Editar Tarjeta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="editTarjetaId">
-                <div class="mb-3">
-                    <label class="form-label">Código RFID</label>
-                    <input type="text" class="form-control" id="editCodigoRFID" maxlength="50">
+    <!-- Modal Lectura de Tarjeta Nueva -->
+    <div class="modal fade" id="modalCapturaRFID" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-qr-code-scan text-info me-2"></i>Lectura de Tarjeta Nueva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Empleado</label>
-                    <input type="text" class="form-control" id="editEmpleadoNombre" readonly>
+                <div class="modal-body text-center">
+                    <div id="estado-captura">
+                        <div class="capture-animation">
+                            <i class="bi bi-credit-card fs-1 text-info mb-3 d-block"></i>
+                        </div>
+                        <h5>Modo de Captura Activado</h5>
+                        <p>Acerca una tarjeta <strong>no registrada</strong> al lector RFID</p>
+                        <p class="text-muted small">Tienes 30 segundos para capturar la tarjeta</p>
+                        <div class="spinner-border text-info" role="status"></div>
+                        <div class="mt-3">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar bg-info" id="progress-captura" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="resultado-captura" style="display:none;">
+                        <div class="alert alert-success">
+                            <h5><i class="bi bi-check-circle-fill me-2"></i> ¡Tarjeta Detectada!</h5>
+                            <p class="fs-5 mt-3"><code id="codigo-capturado" class="fs-4 bg-light p-2 rounded">-</code></p>
+                            <div class="mt-3">
+                                <button class="btn btn-outline-primary me-2" onclick="RFIDModule.copiarCodigo()">
+                                    <i class="bi bi-clipboard me-1"></i> Copiar Código
+                                </button>
+                                <button class="btn btn-success" onclick="RFIDModule.usarCodigoParaAsignar()">
+                                    <i class="bi bi-credit-card me-1"></i> Asignar Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="editActivo">
-                    <label class="form-check-label" for="editActivo">Activa</label>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardar" onclick="RFIDModule.guardarEdicion()">
-                    <span id="btnGuardarText">Guardar</span>
-                    <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
-                </button>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    window.RFIDModule = (function () {
-        'use strict';
-        const state = {
-            tarjetas: [],
-            modalAsignar: null,
-            modalEditar: null,
-            modalCaptura: null
-        };
+    <!-- Modal Asignar Tarjeta RFID -->
+    <div class="modal fade" id="modalAsignarRFID" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-credit-card text-warning me-2"></i>Asignar Tarjeta RFID
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAsignarRFID">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Seleccionar Empleado *</label>
 
-        async function cargarTarjetas() {
-            try {
-                mostrarLoading();
-                const res = await fetchAuth('/api/rfid?incluirInactivos=true');
-                state.tarjetas = await res.json();
-                renderizarTarjetas();
-                actualizarEstadisticas();
-                actualizarTimestamp();
-            } catch (err) {
-                mostrarError('Error al cargar tarjetas');
-            }
-        }
+                                <!-- 🔍 BARRA DE BÚSQUEDA MEJORADA -->
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="buscarEmpleado"
+                                           placeholder="Buscar por nombre, código, email o departamento..."
+                                           aria-label="Buscar empleado">
+                                </div>
+                                <small class="text-muted d-block mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>Escribe para filtrar la lista. Se muestran solo empleados activos sin tarjeta.
+                                </small>
 
-        async function cargarEmpleadosSinTarjeta() {
-            try {
-                const res = await fetchAuth('/api/rfid/empleados-sin-tarjeta');
-                const empleados = await res.json();
-                const select = document.getElementById('selectEmpleadoRFID');
-                select.innerHTML = '<option value="">Seleccionar...</option>';
-                empleados.forEach(e => {
-                    select.innerHTML += `<option value="${e.idEmpleado}" data-nombre="${e.nombre}" data-departamento="${e.departamento}">${e.codigo_empleado} - ${e.nombre}</option>`;
-                });
-            } catch (err) {
-                console.error('Error al cargar empleados sin tarjeta:', err);
-            }
-        }
+                                <!-- 📋 COMBOBOX CON BÚSQUEDA -->
+                                <select class="form-select" id="selEmpleado" required size="6" style="min-height: 150px;">
+                                    <option value="">Seleccione un empleado de la lista...</option>
+                                </select>
 
-        function llenarSelectEmpleados() {
-            const select = document.getElementById('selectEmpleadoRFID');
-            select.onchange = function () {
-                const opt = this.options[this.selectedIndex];
-                if (opt.value) {
-                    document.getElementById('infoNombre').textContent = opt.dataset.nombre;
-                    document.getElementById('infoDepartamento').textContent = opt.dataset.departamento;
-                    document.getElementById('infoEmpleadoCard').style.display = 'block';
-                } else {
-                    document.getElementById('infoEmpleadoCard').style.display = 'none';
-                }
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-people me-1"></i>
+                                        <span id="contadorEmpleados">0</span> empleados disponibles
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del empleado seleccionado -->
+                        <div class="row mb-4" id="info-empleado" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-warning">
+                                            <i class="bi bi-check-circle me-2"></i>Empleado Seleccionado
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <small><strong>Nombre:</strong> <span id="info-nombre">-</span></small>
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <small><strong>Email:</strong> <span id="info-email">-</span></small>
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <small><strong>Departamento:</strong> <span id="info-departamento">-</span></small>
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <small><strong>Rol:</strong> <span id="info-rol">-</span></small>
+                                            </div>
+                                            <div class="col-md-12 mt-1">
+                                                <small><strong>Código:</strong> <span id="info-codigo">-</span></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Código RFID *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="inputCodigoRFID"
+                                           maxlength="50" placeholder="Ej: A1B2C3D4" required>
+                                    <button class="btn btn-outline-info" type="button" onclick="RFIDModule.iniciarModoCaptura()">
+                                        <i class="bi bi-qr-code-scan me-1"></i> Leer Tarjeta
+                                    </button>
+                                </div>
+                                <small class="text-muted">Ingresa manualmente o usa el lector de tarjetas</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-warning" id="btnAsignar" onclick="RFIDModule.asignarTarjeta()">
+                        <span id="btnAsignarText">
+                            <i class="bi bi-check-circle me-1"></i> Asignar Tarjeta
+                        </span>
+                        <span id="btnAsignarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Tarjeta RFID -->
+    <div class="modal fade" id="modalEditarRFID" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square text-primary me-2"></i>Editar Tarjeta RFID
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarRFID">
+                        <input type="hidden" id="editTarjetaId">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Código RFID *</label>
+                            <input type="text" class="form-control" id="editCodigoRFID" maxlength="50" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Empleado Asignado</label>
+                            <input type="text" class="form-control" id="editEmpleadoNombre" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estado</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="editActivo">
+                                <label class="form-check-label fw-bold" for="editActivo">Tarjeta activa</label>
+                            </div>
+                            <small class="text-muted">Las tarjetas inactivas no pueden usarse para fichar</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnGuardar" onclick="RFIDModule.guardarEdicion()">
+                        <span id="btnGuardarText">
+                            <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+                        </span>
+                        <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        //  MÓDULO AISLADO - Gestión de Tarjetas RFID
+        window.RFIDModule = (function () {
+            'use strict';
+
+            // Estado privado del módulo
+            const state = {
+                tarjetas: [],
+                empleadosSinTarjeta: [],
+                modalAsignar: null,
+                modalEditar: null,
+                modalCaptura: null,
+                capturaInterval: null,
+                capturaProgress: 0
             };
-        }
 
-        // ✅ INICIAR MODO CAPTURA
-        async function iniciarModoCaptura() {
-            try {
-                await fetchAuth('/api/rfid/capture/start', { method: 'POST' });
-                if (!state.modalCaptura) {
-                    state.modalCaptura = new bootstrap.Modal(document.getElementById('modalCapturaRFID'));
-                }
-                state.modalCaptura.show();
-                document.getElementById('estado-captura').style.display = 'block';
-                document.getElementById('resultado-captura').style.display = 'none';
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
+                    });
 
-                // Polling cada 2 segundos
-                const interval = setInterval(async () => {
-                    try {
-                        const res = await fetchAuth('/api/rfid/capture/result');
-                        const data = await res.json();
-                        if (data.rfid) {
-                            document.getElementById('codigo-capturado').textContent = data.rfid;
-                            document.getElementById('estado-captura').style.display = 'none';
-                            document.getElementById('resultado-captura').style.display = 'block';
-                            clearInterval(interval);
-                        }
-                    } catch (err) {
-                        console.error('Error en polling:', err);
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
                     }
-                }, 2000);
 
-                setTimeout(() => {
-                    clearInterval(interval);
-                    if (document.getElementById('estado-captura').style.display !== 'none') {
-                        document.getElementById('estado-captura').innerHTML = '<p class="text-danger">Tiempo agotado</p>';
-                    }
-                }, 30000);
-            } catch (err) {
-                mostrarAlerta('Error al iniciar modo de captura', 'danger');
-            }
-        }
-
-        // ✅ COPIAR CÓDIGO CAPTURADO
-        function copiarCodigo() {
-            const codigo = document.getElementById('codigo-capturado').textContent;
-            navigator.clipboard.writeText(codigo).then(() => {
-                document.getElementById('inputCodigoRFID').value = codigo;
-                document.getElementById('resultado-captura').style.display = 'none';
-                if (!state.modalAsignar) {
-                    state.modalAsignar = new bootstrap.Modal(document.getElementById('modalAsignarRFID'));
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
                 }
-                state.modalAsignar.show();
-                state.modalCaptura.hide();
-            });
-        }
+            }
 
-        async function mostrarModalAsignar() {
-            await cargarEmpleadosSinTarjeta();
-            document.getElementById('formAsignarRFID')?.reset();
-            document.getElementById('infoEmpleadoCard').style.display = 'none';
-            llenarSelectEmpleados();
-            if (!state.modalAsignar) {
-                state.modalAsignar = new bootstrap.Modal(document.getElementById('modalAsignarRFID'));
+            // Cargar tarjetas RFID
+            async function cargarTarjetas() {
+                console.log(' Cargando tarjetas RFID...');
+                try {
+                    state.tarjetas = await apiCall('/api/rfid?incluirInactivos=true');
+                    console.log(' Tarjetas cargadas:', state.tarjetas.length);
+                    actualizarEstadisticas();
+                    renderizarTarjetas();
+                } catch (error) {
+                    console.error(' Error al cargar tarjetas:', error);
+                    document.getElementById('lista-tarjetas').innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Error al cargar tarjetas RFID: ${error.message}
+                                </div>
+                            </div>
+                        `;
+                }
             }
-            state.modalAsignar.show();
-        }
 
-        async function asignarTarjeta() {
-            const empleadoId = document.getElementById('selectEmpleadoRFID').value;
-            const codigo = document.getElementById('inputCodigoRFID').value.trim();
-            if (!empleadoId || !codigo) {
-                mostrarAlerta('Completa todos los campos', 'warning');
-                return;
+            // Cargar empleados sin tarjeta
+            async function cargarEmpleadosSinTarjeta() {
+                console.log(' Cargando empleados sin tarjeta...');
+                try {
+                    state.empleadosSinTarjeta = await apiCall('/api/rfid/empleados-sin-tarjeta');
+                    console.log(' Empleados sin tarjeta cargados:', state.empleadosSinTarjeta.length);
+
+                    //  DEBUG: Verificar datos
+                    if (state.empleadosSinTarjeta.length === 0) {
+                        console.warn(' No se encontraron empleados sin tarjeta');
+                    } else {
+                        console.log('📋 Primer empleado sin tarjeta:', state.empleadosSinTarjeta[0]);
+                    }
+                } catch (error) {
+                    console.error(' Error al cargar empleados sin tarjeta:', error);
+                    //  CORRECCIÓN: Inicializar array vacío en caso de error
+                    state.empleadosSinTarjeta = [];
+                }
             }
-            if (state.tarjetas.some(t => t.codigo_rfid === codigo)) {
-                mostrarAlerta('El código RFID ya está en uso', 'warning');
-                return;
-            }
-            toggleBotonAsignar(true);
-            try {
-                const res = await fetchAuth('/api/rfid', {
-                    method: 'POST',
-                    body: JSON.stringify({ codigoRfid: codigo, idEmpleado: parseInt(empleadoId) })
+
+            // Función para llenar el select de empleados
+            function llenarSelectEmpleados() {
+                const selectEmpleado = document.getElementById('selEmpleado');
+                const contador = document.getElementById('contadorEmpleados');
+
+                if (!selectEmpleado) return;
+
+                // Guardar la opción seleccionada actualmente
+                const valorSeleccionado = selectEmpleado.value;
+
+                // Limpiar y reconstruir el select
+                selectEmpleado.innerHTML = '<option value="">Seleccione un empleado de la lista...</option>';
+
+                let contadorEmpleados = 0;
+
+                state.empleadosSinTarjeta.forEach(emp => {
+                    const textoCompleto = `${emp.codigo_empleado} - ${emp.nombre} - ${emp.departamento} - ${emp.email}`;
+                    const opcion = document.createElement('option');
+                    opcion.value = emp.idEmpleado;
+                    opcion.textContent = textoCompleto;
+                    opcion.dataset.nombre = emp.nombre;
+                    opcion.dataset.email = emp.email;
+                    opcion.dataset.departamento = emp.departamento;
+                    opcion.dataset.rol = emp.rol;
+                    opcion.dataset.codigo = emp.codigo_empleado;
+
+                    selectEmpleado.appendChild(opcion);
+                    contadorEmpleados++;
                 });
-                if (res.ok) {
-                    mostrarAlerta('✅ Tarjeta asignada', 'success');
-                    state.modalAsignar.hide();
-                    await cargarTarjetas();
-                } else {
-                    const err = await res.json();
-                    mostrarAlerta(err.mensaje || 'Error al asignar', 'danger');
+
+                // Restaurar selección anterior si existe
+                if (valorSeleccionado && selectEmpleado.querySelector(`option[value="${valorSeleccionado}"]`)) {
+                    selectEmpleado.value = valorSeleccionado;
                 }
-            } catch (err) {
-                mostrarAlerta('Error de red', 'danger');
-            } finally {
-                toggleBotonAsignar(false);
-            }
-        }
 
-        async function editarTarjeta(id) {
-            const t = state.tarjetas.find(x => x.idRfid === id);
-            if (!t) return;
-            document.getElementById('editTarjetaId').value = id;
-            document.getElementById('editCodigoRFID').value = t.codigo_rfid;
-            document.getElementById('editEmpleadoNombre').value = t.empleado?.nombre || '—';
-            document.getElementById('editActivo').checked = t.activo;
-            if (!state.modalEditar) {
-                state.modalEditar = new bootstrap.Modal(document.getElementById('modalEditarRFID'));
-            }
-            state.modalEditar.show();
-        }
-        async function guardarEdicion() {
-            const id = document.getElementById('editTarjetaId').value;
-            const codigo = document.getElementById('editCodigoRFID').value.trim();
-            const activo = document.getElementById('editActivo').checked;
-
-            if (!codigo) {
-                mostrarAlerta('El código RFID es obligatorio', 'warning');
-                return;
+                // Actualizar contador
+                if (contador) {
+                    contador.textContent = contadorEmpleados;
+                    contador.className = contadorEmpleados > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+                }
             }
 
-            toggleBotonGuardar(true);
+            // Función para filtrar empleados en tiempo real
+            function configurarBusquedaEmpleados() {
+                const inputBuscar = document.getElementById('buscarEmpleado');
+                const selectEmpleado = document.getElementById('selEmpleado');
+                const contador = document.getElementById('contadorEmpleados');
 
-            try {
-                const t = state.tarjetas.find(x => x.idRfid == id);
-                if (!t || !t.empleado) {
-                    mostrarAlerta('No se puede editar: la tarjeta no está asignada a un empleado', 'danger');
+                if (!inputBuscar || !selectEmpleado) return;
+
+                inputBuscar.addEventListener('input', function (e) {
+                    const textoBusqueda = e.target.value.toLowerCase().trim();
+                    const opciones = selectEmpleado.querySelectorAll('option');
+                    let contadorVisible = 0;
+
+                    opciones.forEach(opcion => {
+                        if (opcion.value === '') return; // Saltar la opción por defecto
+
+                        const textoOpcion = opcion.textContent.toLowerCase();
+                        const coincide = textoBusqueda === '' || textoOpcion.includes(textoBusqueda);
+
+                        opcion.style.display = coincide ? 'block' : 'none';
+                        if (coincide) contadorVisible++;
+                    });
+
+                    if (contador) {
+                        contador.textContent = contadorVisible;
+                        contador.className = contadorVisible > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+                    }
+
+                    // Si hay solo un resultado y coincide exactamente, seleccionarlo automáticamente
+                    if (contadorVisible === 1 && textoBusqueda.length > 2) {
+                        const opcionUnica = Array.from(opciones).find(op =>
+                            op.style.display !== 'none' && op.value !== ''
+                        );
+                        if (opcionUnica) {
+                            selectEmpleado.value = opcionUnica.value;
+                            // Disparar el evento change para mostrar la info
+                            const event = new Event('change');
+                            selectEmpleado.dispatchEvent(event);
+                        }
+                    }
+                });
+
+                // Limpiar búsqueda al abrir el modal
+                inputBuscar.value = '';
+            }
+
+            // Actualizar estadísticas
+            function actualizarEstadisticas() {
+                console.log(' Actualizando estadísticas RFID...');
+                console.log(' Tarjetas cargadas:', state.tarjetas.length);
+                console.log(' Empleados sin tarjeta:', state.empleadosSinTarjeta.length);
+
+                const activas = state.tarjetas.filter(t => t.activo).length;
+                const inactivas = state.tarjetas.length - activas;
+                const empleadosConTarjeta = [...new Set(state.tarjetas.filter(t => t.activo).map(t => t.empleado?.idEmpleado))].length;
+                const empleadosSinTarjeta = state.empleadosSinTarjeta.length;
+
+                console.log(' Estadísticas RFID calculadas:', {
+                    activas,
+                    inactivas,
+                    empleadosConTarjeta,
+                    empleadosSinTarjeta
+                });
+
+                //  CORRECCIÓN: Actualizar DOM de forma segura
+                const statActivas = document.getElementById('stat-activas');
+                const statConTarjeta = document.getElementById('stat-con-tarjeta');
+                const statSinTarjeta = document.getElementById('stat-sin-tarjeta');
+                const statInactivas = document.getElementById('stat-inactivas');
+
+                if (statActivas) statActivas.textContent = activas;
+                if (statConTarjeta) statConTarjeta.textContent = empleadosConTarjeta;
+                if (statSinTarjeta) statSinTarjeta.textContent = empleadosSinTarjeta;
+                if (statInactivas) statInactivas.textContent = inactivas;
+
+                console.log(' Estadísticas RFID actualizadas en el DOM');
+            }
+
+            // Renderizar tarjetas RFID
+            function renderizarTarjetas() {
+                const container = document.getElementById('lista-tarjetas');
+
+                if (state.tarjetas.length === 0) {
+                    container.innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-info text-center py-4">
+                                    <i class="bi bi-credit-card fs-1 d-block mb-3 text-info"></i>
+                                    <h5>No hay tarjetas RFID registradas</h5>
+                                    <p class="mb-3">Comienza asignando la primera tarjeta del sistema</p>
+                                    <button class="btn btn-warning" onclick="RFIDModule.abrirModalNuevo()">
+                                        <i class="bi bi-plus-lg me-1"></i>Asignar Primera Tarjeta
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     return;
                 }
 
-                // ✅ CORREGIDO: Usar t.empleado.idEmpleado (no t.idEmpleadoAsignado)
-                const res = await fetchAuth(`/api/rfid/${id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        codigoRfid: codigo,
-                        idEmpleado: t.empleado.idEmpleado
-                    })
-                });
+                container.innerHTML = state.tarjetas.map(tarjeta => `
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="card card-rfid h-100 ${!tarjeta.activo ? 'opacity-75' : ''}">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="${tarjeta.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(tarjeta.empleado?.nombre || 'Empleado') + '&size=100&background=FD7E14&color=fff&bold=true'}"
+                                             class="avatar rounded-circle me-3"
+                                             alt="${tarjeta.empleado?.nombre}"
+                                             onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${tarjeta.empleado?.nombre}')+'&size=100&background=FD7E14&color=fff&bold=true'">
+                                        <div>
+                                            <h6 class="card-title mb-0 fw-bold">${tarjeta.empleado?.nombre || 'Sin asignar'}</h6>
+                                            <small class="text-muted">${tarjeta.empleado?.codigo_empleado || ''}</small>
+                                        </div>
+                                    </div>
 
-                if (res.ok) {
-                    // Si el estado de activo cambió, gestionar por separado
-                    if (activo !== t.activo) {
-                        const url = activo ? `/api/rfid/${id}/activar` : `/api/rfid/${id}`;
-                        const method = activo ? 'PUT' : 'DELETE';
-                        await fetchAuth(url, { method });
+                                    <div class="mb-3">
+                                        <code class="bg-light p-2 rounded d-block text-center fs-6">${tarjeta.codigo_rfid}</code>
+                                    </div>
+
+                                    <div class="small text-muted mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span><strong>Asignación:</strong></span>
+                                            <span>${formatearFecha(tarjeta.fecha_asignacion)}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span><strong>Departamento:</strong></span>
+                                            <span>${tarjeta.empleado?.departamento || 'N/A'}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge ${tarjeta.activo ? 'bg-success' : 'bg-secondary'}">
+                                            <i class="bi ${tarjeta.activo ? 'bi-check-circle' : 'bi-pause-circle'} me-1"></i>
+                                            ${tarjeta.activo ? 'Activa' : 'Inactiva'}
+                                        </span>
+                                    </div>
+
+                                    <div class="btn-group w-100">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="RFIDModule.editarTarjeta(${tarjeta.idRfid})">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+                                        ${tarjeta.activo ?
+                        `<button class="btn btn-sm btn-outline-danger" onclick="RFIDModule.cambiarEstado(${tarjeta.idRfid}, false, '${tarjeta.empleado?.nombre}')">
+                                                <i class="bi bi-power"></i> Desactivar
+                                            </button>` :
+                        `<button class="btn btn-sm btn-outline-success" onclick="RFIDModule.cambiarEstado(${tarjeta.idRfid}, true, '${tarjeta.empleado?.nombre}')">
+                                                <i class="bi bi-power"></i> Activar
+                                            </button>`
+                    }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            // Formatear fecha
+            function formatearFecha(fecha) {
+                if (!fecha) return '—';
+                return new Date(fecha).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            }
+
+
+            // Abrir modal para nueva tarjeta - VERSIÓN MEJORADA
+            async function abrirModalNuevo() {
+                console.log(' Abriendo modal para nueva tarjeta');
+
+                try {
+                    //  CORRECCIÓN: Cargar empleados sin tarjeta
+                    await cargarEmpleadosSinTarjeta();
+
+                    document.getElementById('formAsignarRFID').reset();
+                    document.getElementById('inputCodigoRFID').value = '';
+                    document.getElementById('info-empleado').style.display = 'none';
+
+                    // Llenar y configurar el select
+                    llenarSelectEmpleados();
+                    configurarBusquedaEmpleados();
+
+                    // Configurar evento para mostrar información del empleado
+                    const selEmpleado = document.getElementById('selEmpleado');
+                    const infoHandler = function () {
+                        const selectedOption = this.options[this.selectedIndex];
+                        if (selectedOption.value) {
+                            document.getElementById('info-nombre').textContent = selectedOption.dataset.nombre;
+                            document.getElementById('info-email').textContent = selectedOption.dataset.email;
+                            document.getElementById('info-departamento').textContent = selectedOption.dataset.departamento;
+                            document.getElementById('info-rol').textContent = selectedOption.dataset.rol;
+                            document.getElementById('info-codigo').textContent = selectedOption.dataset.codigo;
+                            document.getElementById('info-empleado').style.display = 'block';
+
+                            // Auto-completar búsqueda con el nombre seleccionado
+                            document.getElementById('buscarEmpleado').value = selectedOption.dataset.nombre;
+                        } else {
+                            document.getElementById('info-empleado').style.display = 'none';
+                            document.getElementById('buscarEmpleado').value = '';
+                        }
+                    };
+
+                    // Remover evento anterior si existe y agregar nuevo
+                    selEmpleado.removeEventListener('change', infoHandler);
+                    selEmpleado.addEventListener('change', infoHandler);
+
+                    if (!state.modalAsignar) {
+                        state.modalAsignar = new bootstrap.Modal(document.getElementById('modalAsignarRFID'));
+                    }
+                    state.modalAsignar.show();
+
+                    // Enfocar el campo de búsqueda automáticamente
+                    setTimeout(() => {
+                        const buscarInput = document.getElementById('buscarEmpleado');
+                        if (buscarInput) {
+                            buscarInput.focus();
+                            console.log(' Campo de búsqueda enfocado');
+                        }
+                    }, 500);
+
+                    console.log(' Modal de asignación abierto con búsqueda');
+
+                } catch (error) {
+                    console.error(' Error al abrir modal de asignación:', error);
+                    mostrarAlerta('Error al cargar empleados para asignación', 'danger');
+                }
+            }
+
+
+            // INICIAR MODO CAPTURA
+            async function iniciarModoCaptura() {
+                try {
+                    await apiCall('/api/rfid/capture/start', {
+                        method: 'POST',
+                        body: JSON.stringify({ duration: 30 })
+                    });
+
+                    if (!state.modalCaptura) {
+                        state.modalCaptura = new bootstrap.Modal(document.getElementById('modalCapturaRFID'));
                     }
 
-                    mostrarAlerta('✅ Tarjeta actualizada correctamente', 'success');
-                    state.modalEditar.hide();
+                    state.modalCaptura.show();
+                    document.getElementById('estado-captura').style.display = 'block';
+                    document.getElementById('resultado-captura').style.display = 'none';
+
+                    // Reiniciar progreso
+                    state.capturaProgress = 0;
+                    document.getElementById('progress-captura').style.width = '0%';
+
+                    // Polling cada 2 segundos
+                    clearInterval(state.capturaInterval);
+                    state.capturaInterval = setInterval(async () => {
+                        try {
+                            const data = await apiCall('/api/rfid/capture/result');
+                            if (data.rfid) {
+                                document.getElementById('codigo-capturado').textContent = data.rfid;
+                                document.getElementById('estado-captura').style.display = 'none';
+                                document.getElementById('resultado-captura').style.display = 'block';
+                                clearInterval(state.capturaInterval);
+                            }
+                        } catch (err) {
+                            console.error('Error en polling:', err);
+                        }
+
+                        // Actualizar barra de progreso
+                        state.capturaProgress += 6.67; // 30 segundos / 100%
+                        if (state.capturaProgress > 100) state.capturaProgress = 100;
+                        document.getElementById('progress-captura').style.width = state.capturaProgress + '%';
+                    }, 2000);
+
+                    // Timeout después de 30 segundos
+                    setTimeout(() => {
+                        clearInterval(state.capturaInterval);
+                        if (document.getElementById('estado-captura').style.display !== 'none') {
+                            document.getElementById('estado-captura').innerHTML =
+                                '<p class="text-danger"><i class="bi bi-exclamation-triangle"></i> Tiempo agotado</p>';
+                        }
+                    }, 30000);
+                } catch (err) {
+                    mostrarAlerta('Error al iniciar modo de captura', 'danger');
+                }
+            }
+
+            // COPIAR CÓDIGO CAPTURADO
+            function copiarCodigo() {
+                const codigo = document.getElementById('codigo-capturado').textContent;
+                navigator.clipboard.writeText(codigo).then(() => {
+                    mostrarAlerta(' Código copiado al portapapeles', 'success');
+                }).catch(err => {
+                    console.error('Error al copiar:', err);
+                    mostrarAlerta(' Error al copiar el código', 'danger');
+                });
+            }
+
+            // USAR CÓDIGO PARA ASIGNAR - VERSIÓN CORREGIDA
+            async function usarCodigoParaAsignar() {
+                const codigo = document.getElementById('codigo-capturado').textContent;
+                console.log(' Usando código capturado para asignar:', codigo);
+
+                // Cerrar modal de captura
+                if (state.modalCaptura) {
+                    state.modalCaptura.hide();
+                }
+
+                try {
+                    //  CORRECCIÓN: Cargar empleados antes de abrir el modal
+                    console.log(' Cargando empleados sin tarjeta para asignación...');
+                    await cargarEmpleadosSinTarjeta();
+
+                    //  CORRECCIÓN: Resetear y preparar el formulario
+                    document.getElementById('formAsignarRFID').reset();
+                    document.getElementById('inputCodigoRFID').value = codigo;
+                    document.getElementById('info-empleado').style.display = 'none';
+
+                    //  CORRECCIÓN: Llenar y configurar el select
+                    llenarSelectEmpleados();
+                    configurarBusquedaEmpleados();
+
+                    //  CORRECCIÓN: Configurar evento para mostrar información del empleado
+                    const selEmpleado = document.getElementById('selEmpleado');
+                    const infoHandler = function () {
+                        const selectedOption = this.options[this.selectedIndex];
+                        if (selectedOption.value) {
+                            document.getElementById('info-nombre').textContent = selectedOption.dataset.nombre;
+                            document.getElementById('info-email').textContent = selectedOption.dataset.email;
+                            document.getElementById('info-departamento').textContent = selectedOption.dataset.departamento;
+                            document.getElementById('info-rol').textContent = selectedOption.dataset.rol;
+                            document.getElementById('info-codigo').textContent = selectedOption.dataset.codigo;
+                            document.getElementById('info-empleado').style.display = 'block';
+
+                            // Auto-completar búsqueda con el nombre seleccionado
+                            document.getElementById('buscarEmpleado').value = selectedOption.dataset.nombre;
+                        } else {
+                            document.getElementById('info-empleado').style.display = 'none';
+                            document.getElementById('buscarEmpleado').value = '';
+                        }
+                    };
+
+                    // Remover evento anterior si existe y agregar nuevo
+                    selEmpleado.removeEventListener('change', infoHandler);
+                    selEmpleado.addEventListener('change', infoHandler);
+
+                    //  CORRECCIÓN: Asegurar que el modal esté inicializado
+                    if (!state.modalAsignar) {
+                        state.modalAsignar = new bootstrap.Modal(document.getElementById('modalAsignarRFID'));
+                    }
+
+                    // Mostrar el modal
+                    state.modalAsignar.show();
+
+                    // Enfocar el campo de búsqueda automáticamente
+                    setTimeout(() => {
+                        const buscarInput = document.getElementById('buscarEmpleado');
+                        if (buscarInput) {
+                            buscarInput.focus();
+                            console.log(' Campo de búsqueda enfocado');
+                        }
+                    }, 500);
+
+                    console.log(' Modal de asignación abierto con código capturado y empleados cargados');
+
+                } catch (error) {
+                    console.error(' Error al preparar asignación:', error);
+                    mostrarAlerta('Error al cargar empleados para asignación', 'danger');
+                }
+            }
+
+
+
+            // Asignar tarjeta - Versión corregida
+            async function asignarTarjeta() {
+                const form = document.getElementById('formAsignarRFID');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const empleadoId = document.getElementById('selEmpleado').value;
+                const codigoRFID = document.getElementById('inputCodigoRFID').value.trim();
+
+                if (!empleadoId || !codigoRFID) {
+                    mostrarAlerta(' Completa todos los campos obligatorios', 'warning');
+                    return;
+                }
+
+                // Verificar si el código RFID ya existe
+                if (state.tarjetas.some(t => t.codigo_rfid === codigoRFID && t.activo)) {
+                    mostrarAlerta(' El código RFID ya está en uso', 'warning');
+                    return;
+                }
+
+                toggleBotonAsignar(true);
+
+                try {
+                    await apiCall('/api/rfid', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            CodigoRfid: codigoRFID,
+                            IdEmpleado: parseInt(empleadoId)
+                        })
+                    });
+
+                    mostrarAlerta(' Tarjeta asignada exitosamente', 'success');
+
+                    if (state.modalAsignar) {
+                        state.modalAsignar.hide();
+                    }
+
+                    //  CORRECCIÓN: Recargar ambos datasets y actualizar estadísticas
+                    await Promise.all([
+                        cargarTarjetas(),
+                        cargarEmpleadosSinTarjeta()
+                    ]);
+                    actualizarEstadisticas();
+                    renderizarTarjetas();
+
+                } catch (error) {
+                    console.error('Error al asignar tarjeta:', error);
+                    mostrarAlerta(' Error al asignar tarjeta: ' + error.message, 'danger');
+                } finally {
+                    toggleBotonAsignar(false);
+                }
+            }
+           
+
+            // Editar tarjeta
+            async function editarTarjeta(id) {
+                console.log('✏️ Editando tarjeta ID:', id);
+                try {
+                    const tarjeta = state.tarjetas.find(t => t.idRfid === id);
+                    if (!tarjeta) {
+                        mostrarAlerta(' Tarjeta no encontrada', 'danger');
+                        return;
+                    }
+
+                    document.getElementById('editTarjetaId').value = tarjeta.idRfid;
+                    document.getElementById('editCodigoRFID').value = tarjeta.codigo_rfid;
+                    document.getElementById('editEmpleadoNombre').value = tarjeta.empleado?.nombre || 'Sin asignar';
+                    document.getElementById('editActivo').checked = tarjeta.activo;
+
+                    if (!state.modalEditar) {
+                        state.modalEditar = new bootstrap.Modal(document.getElementById('modalEditarRFID'));
+                    }
+                    state.modalEditar.show();
+                } catch (error) {
+                    console.error(' Error al cargar tarjeta:', error);
+                    mostrarAlerta('Error al cargar tarjeta: ' + error.message, 'danger');
+                }
+            }
+
+            // Guardar edición
+            async function guardarEdicion() {
+                const tarjetaId = document.getElementById('editTarjetaId').value;
+                const codigoRFID = document.getElementById('editCodigoRFID').value.trim();
+                const activo = document.getElementById('editActivo').checked;
+
+                if (!codigoRFID) {
+                    mostrarAlerta(' El código RFID es obligatorio', 'warning');
+                    return;
+                }
+
+                toggleBotonGuardar(true);
+
+                try {
+                    const tarjeta = state.tarjetas.find(t => t.idRfid == tarjetaId);
+                    if (!tarjeta || !tarjeta.empleado) {
+                        mostrarAlerta(' No se puede editar: la tarjeta no está asignada a un empleado', 'danger');
+                        return;
+                    }
+
+                    // Actualizar código RFID
+                    await apiCall(`/api/rfid/${tarjetaId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            CodigoRfid: codigoRFID,
+                            IdEmpleado: tarjeta.empleado.idEmpleado
+                        })
+                    });
+
+                    // Cambiar estado si es necesario
+                    if (activo !== tarjeta.activo) {
+                        const url = activo ? `/api/rfid/${tarjetaId}/activar` : `/api/rfid/${tarjetaId}`;
+                        const method = activo ? 'PUT' : 'DELETE';
+                        await apiCall(url, { method });
+                    }
+
+                    mostrarAlerta(' Tarjeta actualizada exitosamente', 'success');
+
+                    if (state.modalEditar) {
+                        state.modalEditar.hide();
+                    }
+
                     await cargarTarjetas();
+                } catch (error) {
+                    console.error('Error al guardar edición:', error);
+                    mostrarAlerta(' Error al guardar cambios: ' + error.message, 'danger');
+                } finally {
+                    toggleBotonGuardar(false);
+                }
+            }
+
+            // Cambiar estado - Versión corregida
+            async function cambiarEstado(id, activar, nombreEmpleado) {
+                const accion = activar ? 'activar' : 'desactivar';
+                const mensaje = `¿Estás seguro de ${accion} la tarjeta de "${nombreEmpleado}"?`;
+
+                if (!confirm(mensaje)) return;
+
+                try {
+                    const url = activar ? `/api/rfid/${id}/activar` : `/api/rfid/${id}`;
+                    const method = activar ? 'PUT' : 'DELETE';
+
+                    await apiCall(url, { method });
+                    mostrarAlerta(` Tarjeta ${activar ? 'activada' : 'desactivada'} exitosamente`, 'success');
+
+                    //  CORRECCIÓN: Recargar ambos datasets y actualizar estadísticas
+                    await Promise.all([
+                        cargarTarjetas(),
+                        cargarEmpleadosSinTarjeta()
+                    ]);
+                    actualizarEstadisticas();
+                    renderizarTarjetas();
+
+                } catch (error) {
+                    console.error(`Error al ${accion} tarjeta:`, error);
+                    mostrarAlerta(` Error al ${accion} tarjeta: ` + error.message, 'danger');
+                }
+            }
+
+            // Toggle botones
+            function toggleBotonAsignar(loading) {
+                const btn = document.getElementById('btnAsignar');
+                const text = document.getElementById('btnAsignarText');
+                const spinner = document.getElementById('btnAsignarSpinner');
+
+                if (loading) {
+                    btn.disabled = true;
+                    text.classList.add('d-none');
+                    spinner.classList.remove('d-none');
                 } else {
-                    const err = await res.json();
-                    mostrarAlerta(err.mensaje || 'Error al actualizar la tarjeta', 'danger');
+                    btn.disabled = false;
+                    text.classList.remove('d-none');
+                    spinner.classList.add('d-none');
                 }
-            } catch (err) {
-                console.error('Error en guardarEdicion:', err);
-                mostrarAlerta('Error al guardar los cambios', 'danger');
-            } finally {
-                toggleBotonGuardar(false);
             }
-        }
-       
 
-        async function cambiarEstado(id, activar) {
-            try {
-                const url = activar ? `/api/rfid/${id}/activar` : `/api/rfid/${id}`;
-                const method = activar ? 'PUT' : 'DELETE';
-                const res = await fetchAuth(url, { method });
-                if (res.ok) {
-                    await cargarTarjetas();
-                    mostrarAlerta(`✅ Tarjeta ${activar ? 'activada' : 'desactivada'}`, 'success');
+            function toggleBotonGuardar(loading) {
+                const btn = document.getElementById('btnGuardar');
+                const text = document.getElementById('btnGuardarText');
+                const spinner = document.getElementById('btnGuardarSpinner');
+
+                if (loading) {
+                    btn.disabled = true;
+                    text.classList.add('d-none');
+                    spinner.classList.remove('d-none');
                 } else {
-                    mostrarAlerta('Error al cambiar estado', 'danger');
+                    btn.disabled = false;
+                    text.classList.remove('d-none');
+                    spinner.classList.add('d-none');
                 }
-            } catch (err) {
-                mostrarAlerta('Error de red', 'danger');
             }
-        }
 
-        function toggleBotonAsignar(loading) {
-            const btn = document.getElementById('btnAsignar');
-            const text = document.getElementById('btnAsignarText');
-            const spinner = document.getElementById('btnAsignarSpinner');
-            if (loading) {
-                btn.disabled = true;
-                text.classList.add('d-none');
-                spinner.classList.remove('d-none');
-            } else {
-                btn.disabled = false;
-                text.classList.remove('d-none');
-                spinner.classList.add('d-none');
-            }
-        }
+            // Mostrar alerta
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                // Eliminar alertas anteriores
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
 
-        function toggleBotonGuardar(loading) {
-            const btn = document.getElementById('btnGuardar');
-            const text = document.getElementById('btnGuardarText');
-            const spinner = document.getElementById('btnGuardarSpinner');
-            if (loading) {
-                btn.disabled = true;
-                text.classList.add('d-none');
-                spinner.classList.remove('d-none');
-            } else {
-                btn.disabled = false;
-                text.classList.remove('d-none');
-                spinner.classList.add('d-none');
-            }
-        }
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(alertDiv);
 
-        function renderizarTarjetas() {
-            const tbody = document.getElementById('tabla-tarjetas');
-            const buscar = document.getElementById('buscar-rfid').value.toLowerCase();
-            const estado = document.getElementById('filtro-estado-rfid').value;
-            let filtradas = state.tarjetas;
-            if (buscar) {
-                filtradas = filtradas.filter(t =>
-                    t.codigo_rfid.toLowerCase().includes(buscar) ||
-                    (t.empleado?.nombre || '').toLowerCase().includes(buscar) ||
-                    (t.empleado?.codigo_empleado || '').toLowerCase().includes(buscar) ||
-                    (t.empleado?.departamento || '').toLowerCase().includes(buscar)
-                );
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 4000);
             }
-            if (estado) {
-                filtradas = filtradas.filter(t => estado === 'activo' ? t.activo : !t.activo);
-            }
-            document.getElementById('contador-tarjetas').textContent = filtradas.length;
-            if (filtradas.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No se encontraron tarjetas</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = filtradas.map(t => `
-            <tr class="${!t.activo ? 'table-light' : ''}">
-                <td><code>${t.codigo_rfid}</code></td>
-                <td><strong>${t.empleado?.nombre || '—'}</strong></td>
-                <td>${t.empleado?.departamento || '—'}</td>
-                <td>${formatearFecha(t.fecha_asignacion)}</td>
-                <td>${t.activo ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>'}</td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="RFIDModule.editarTarjeta(${t.idRfid})"><i class="bi bi-pencil"></i></button>
-                        ${t.activo ?
-                    `<button class="btn btn-outline-danger" onclick="RFIDModule.cambiarEstado(${t.idRfid}, false)"><i class="bi bi-power"></i></button>` :
-                    `<button class="btn btn-outline-success" onclick="RFIDModule.cambiarEstado(${t.idRfid}, true)"><i class="bi bi-power"></i></button>`
+
+
+            // Inicializar
+            async function init() {
+                console.log(' Iniciando módulo de tarjetas RFID...');
+
+                // Verificar que estamos en la vista correcta
+                if (!document.getElementById('rfid-container')) {
+                    console.log(' No estamos en la vista de tarjetas RFID, saliendo...');
+                    return;
                 }
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-        }
 
-        function actualizarEstadisticas() {
-            const activas = state.tarjetas.filter(t => t.activo).length;
-            const inactivas = state.tarjetas.length - activas;
-            const empleadosCon = new Set(state.tarjetas.filter(t => t.activo).map(t => t.idEmpleadoAsignado)).size;
-            document.getElementById('total-tarjetas-activas').textContent = activas;
-            document.getElementById('empleados-con-tarjeta').textContent = empleadosCon;
-            document.getElementById('tarjetas-inactivas').textContent = inactivas;
-            fetchAuth('/api/rfid/empleados-sin-tarjeta')
-                .then(r => r.json())
-                .then(e => document.getElementById('empleados-sin-tarjeta').textContent = e.length)
-                .catch(() => { });
-        }
+                try {
+                    //  CORRECCIÓN: Cargar ambas fuentes de datos y ESPERAR a que terminen
+                    console.log(' Cargando datos iniciales de RFID...');
 
-        function formatearFecha(f) {
-            if (!f) return '—';
-            return new Date(f).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        }
+                    // Ejecutar ambas cargas en paralelo y esperar a que terminen
+                    await Promise.all([
+                        cargarTarjetas(),
+                        cargarEmpleadosSinTarjeta()
+                    ]);
 
-        function actualizarTimestamp() {
-            document.getElementById('ultima-actualizacion').textContent = new Date().toLocaleTimeString();
-        }
+                    console.log(' Ambos datasets de RFID cargados correctamente');
 
-        function mostrarLoading() {
-            document.getElementById('tabla-tarjetas').innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Cargando...</td></tr>`;
-        }
+                    //  CORRECCIÓN: Actualizar estadísticas con todos los datos disponibles
+                    actualizarEstadisticas();
 
-        function mostrarError(mensaje) {
-            document.getElementById('tabla-tarjetas').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>${mensaje}</td></tr>`;
-        }
+                    //  CORRECCIÓN: Renderizar tarjetas con datos completos
+                    renderizarTarjetas();
 
-        function mostrarAlerta(mensaje, tipo = 'info') {
-            const div = document.createElement('div');
-            div.className = `alert alert-${tipo} position-fixed bottom-0 end-0 m-3`;
-            div.style.zIndex = '9999';
-            div.innerHTML = `${mensaje} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 5000);
-        }
+                } catch (error) {
+                    console.error(' Error en inicialización RFID:', error);
+                    mostrarAlerta('Error al cargar los datos iniciales de tarjetas RFID', 'danger');
+                }
 
-        function init() {
-            cargarTarjetas();
-            document.getElementById('buscar-rfid').addEventListener('input', renderizarTarjetas);
-            document.getElementById('filtro-estado-rfid').addEventListener('change', renderizarTarjetas);
-            setInterval(cargarTarjetas, 30000);
-        }
+                // Configurar búsqueda global
+                const inputBuscar = document.getElementById('input-buscar');
+                if (inputBuscar) {
+                    inputBuscar.addEventListener('input', (e) => {
+                        const texto = e.target.value.toLowerCase();
+                        const filtrados = state.tarjetas.filter(tarjeta =>
+                            tarjeta.codigo_rfid.toLowerCase().includes(texto) ||
+                            (tarjeta.empleado?.nombre || '').toLowerCase().includes(texto) ||
+                            (tarjeta.empleado?.departamento || '').toLowerCase().includes(texto) ||
+                            (tarjeta.empleado?.codigo_empleado || '').toLowerCase().includes(texto)
+                        );
+                        const temp = state.tarjetas;
+                        state.tarjetas = filtrados;
+                        renderizarTarjetas();
+                        state.tarjetas = temp;
+                    });
+                }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+                // Configurar filtro de estado
+                const selectEstado = document.getElementById('select-estado');
+                if (selectEstado) {
+                    selectEstado.addEventListener('change', (e) => {
+                        const estado = e.target.value;
+                        let filtrados = state.tarjetas;
 
-        return {
-            cargarTarjetas,
-            mostrarModalAsignar,
-            asignarTarjeta,
-            editarTarjeta,
-            guardarEdicion,
-            cambiarEstado,
-            iniciarModoCaptura,
-            copiarCodigo
-        };
-    })();
-</script>
+                        if (estado === 'activo') {
+                            filtrados = state.tarjetas.filter(t => t.activo);
+                        } else if (estado === 'inactivo') {
+                            filtrados = state.tarjetas.filter(t => !t.activo);
+                        }
+
+                        const temp = state.tarjetas;
+                        state.tarjetas = filtrados;
+                        renderizarTarjetas();
+                        state.tarjetas = temp;
+                    });
+                }
+
+                console.log(' Módulo de tarjetas RFID iniciado correctamente');
+            }
+
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // API pública del módulo
+            return {
+                init,
+                abrirModalNuevo,
+                asignarTarjeta,
+                editarTarjeta,
+                guardarEdicion,
+                cambiarEstado,
+                iniciarModoCaptura,
+                copiarCodigo,
+                usarCodigoParaAsignar,
+                cargarTarjetas
+            };
+        })();
+    </script>
+</body>
+</html>

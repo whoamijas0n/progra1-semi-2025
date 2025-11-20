@@ -1,171 +1,521 @@
-﻿<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-bell text-primary"></i> Mis Notificaciones
-            </h2>
-            <p class="text-muted">Mensajes importantes del sistema o tu supervisor</p>
-        </div>
-    </div>
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Notificaciones - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mantener consistencia */
+        .card-notificacion {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="btn-group" role="group">
-                <button class="btn btn-outline-primary active" onclick="NotificacionesEmpleadoModule.cargarNotificaciones(false)">
-                    <i class="bi bi-inbox"></i> Todas
-                </button>
-                <button class="btn btn-outline-warning" onclick="NotificacionesEmpleadoModule.cargarNotificaciones(true)">
-                    <i class="bi bi-exclamation-triangle"></i> No leídas
+            .card-notificacion:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .stat-card {
+            transition: transform 0.2s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+
+        .badge-notificacion {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            border-bottom: 3px solid #0d6efd;
+        }
+
+        .btn-group-xs > .btn, .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            color: white;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Notificaciones del Empleado -->
+    <div class="container-fluid py-4" id="notificaciones-empleado-container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-bell-fill text-primary"></i>
+                    Mis Notificaciones
+                </h2>
+                <p class="text-muted">Mensajes importantes del sistema o tu supervisor</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas Mejoradas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Notificaciones</h6>
+                                <h3 id="stat-total-empleado" class="mb-0">0</h3>
+                            </div>
+                            <i class="bi bi-bell fs-1 text-primary opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">No Leídas</h6>
+                                <h3 class="text-warning mb-0" id="stat-no-leidas-empleado">0</h3>
+                            </div>
+                            <i class="bi bi-envelope fs-1 text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Leídas</h6>
+                                <h3 class="text-success mb-0" id="stat-leidas-empleado">0</h3>
+                            </div>
+                            <i class="bi bi-envelope-open fs-1 text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Este Mes</h6>
+                                <h3 class="text-info mb-0" id="stat-este-mes-empleado">0</h3>
+                            </div>
+                            <i class="bi bi-calendar-month fs-1 text-info opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de acciones -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary active" id="btn-todas" onclick="NotificacionesEmpleadoModule.filtrarNotificaciones('todas')">
+                        <i class="bi bi-inbox me-1"></i> Todas
+                    </button>
+                    <button class="btn btn-outline-warning" id="btn-no-leidas" onclick="NotificacionesEmpleadoModule.filtrarNotificaciones('no-leidas')">
+                        <i class="bi bi-envelope me-1"></i> No Leídas
+                    </button>
+                    <button class="btn btn-outline-success" id="btn-leidas" onclick="NotificacionesEmpleadoModule.filtrarNotificaciones('leidas')">
+                        <i class="bi bi-envelope-open me-1"></i> Leídas
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <button class="btn btn-primary" onclick="NotificacionesEmpleadoModule.marcarTodasLeidas()">
+                    <i class="bi bi-check-all me-1"></i> Marcar Todas como Leídas
                 </button>
             </div>
         </div>
-        <div class="col-md-6 text-md-end">
-            <button class="btn btn-secondary" onclick="NotificacionesEmpleadoModule.marcarTodasLeidas()">
-                <i class="bi bi-check-all"></i> Marcar todas como leídas
-            </button>
-        </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-list"></i> Lista de Notificaciones
-                <span class="badge bg-primary ms-2" id="contador-notif-empleado">0</span>
-            </h5>
+        <!-- Búsqueda -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="input-buscar-empleado" placeholder="Buscar en mis notificaciones...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="select-orden-empleado">
+                    <option value="recientes">Más recientes primero</option>
+                    <option value="antiguas">Más antiguas primero</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="select-mes-empleado">
+                    <option value="todos">Todos los meses</option>
+                    <option value="este-mes">Este mes</option>
+                    <option value="mes-pasado">Mes pasado</option>
+                </select>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Título</th>
-                            <th>Mensaje</th>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-notif-empleado">
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando tus notificaciones...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+        <!-- Lista de notificaciones en cards -->
+        <div class="row g-3" id="lista-notificaciones-empleado">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted mt-2">Cargando tus notificaciones...</p>
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    window.NotificacionesEmpleadoModule = (function () {
-        'use strict';
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-        async function cargarNotificaciones(soloNoLeidas = false) {
-            try {
-                const url = `/api/notificaciones/mis-notificaciones${soloNoLeidas ? '?soloNoLeidas=true' : ''}`;
-                const res = await window.fetchAuth(url);
-                const notificaciones = await res.json();
-                renderizar(notificaciones);
-            } catch (err) {
-                console.error('❌ Error al cargar notificaciones:', err);
-                mostrarError('No se pudieron cargar tus notificaciones');
-            }
-        }
+    <script>
+        //  MÓDULO AISLADO - Notificaciones del Empleado
+        window.NotificacionesEmpleadoModule = (function () {
+            'use strict';
 
-        function renderizar(notificaciones) {
-            const tbody = document.getElementById('tabla-notif-empleado');
-            const contador = document.getElementById('contador-notif-empleado');
-            contador.textContent = notificaciones.length;
+            // Estado privado del módulo
+            const state = {
+                notificaciones: [],
+                notificacionesFiltradas: [],
+                filtroActual: 'todas'
+            };
 
-            if (notificaciones.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">📭 No tienes notificaciones</td></tr>`;
-                return;
-            }
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        ...options
+                    });
 
-            tbody.innerHTML = notificaciones.map(n => `
-                <tr class="${!n.leido ? 'table-info' : ''}">
-                    <td><strong>${n.titulo}</strong></td>
-                    <td>${n.mensaje}</td>
-                    <td>${new Date(n.fecha_envio).toLocaleString('es-ES')}</td>
-                    <td>
-                        <span class="badge ${n.leido ? 'bg-secondary' : 'bg-warning'}">
-                            ${n.leido ? '📭 Leída' : '📬 Nueva'}
-                        </span>
-                    </td>
-                    <td>
-                        ${!n.leido ? `
-                            <button class="btn btn-sm btn-outline-primary"
-                                    onclick="NotificacionesEmpleadoModule.marcarLeida(${n.idNotificacion})">
-                                <i class="bi bi-check"></i> Marcar como leída
-                            </button>
-                        ` : '—'}
-                    </td>
-                </tr>
-            `).join('');
-        }
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
 
-        async function marcarLeida(id) {
-            try {
-                await window.fetchAuth(`/api/notificaciones/${id}/leer`, { method: 'PUT' });
-                mostrarMensaje('✅ Notificación marcada como leída', 'success');
-                cargarNotificaciones(); // Recargar
-            } catch (error) {
-                console.error('❌ Error al marcar como leída:', error);
-                mostrarMensaje('❌ No se pudo actualizar el estado', 'danger');
-            }
-        }
-
-        async function marcarTodasLeidas() {
-            if (!confirm('¿Marcar todas tus notificaciones como leídas?')) return;
-            try {
-                await window.fetchAuth('/api/notificaciones/leer-todas', { method: 'PUT' });
-                mostrarMensaje('✅ Todas las notificaciones marcadas como leídas', 'success');
-                cargarNotificaciones();
-            } catch (error) {
-                console.error('❌ Error al marcar todas:', error);
-                mostrarMensaje('❌ No se pudieron marcar todas como leídas', 'danger');
-            }
-        }
-
-        function mostrarError(mensaje) {
-            document.getElementById('tabla-notif-empleado').innerHTML = `
-                <tr><td colspan="5" class="text-center text-danger py-4">❌ ${mensaje}</td></tr>
-            `;
-        }
-
-        function mostrarMensaje(mensaje, tipo) {
-            const alerta = document.createElement('div');
-            alerta.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
-            alerta.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            alerta.innerHTML = `
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-
-            document.body.appendChild(alerta);
-
-            setTimeout(() => {
-                if (alerta.parentNode) {
-                    alerta.remove();
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
                 }
-            }, 4000);
-        }
+            }
 
-        // Inicializar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => cargarNotificaciones());
-        } else {
-            cargarNotificaciones();
-        }
+            // Cargar notificaciones del empleado
+            async function cargarNotificaciones() {
+                console.log('👤 Cargando notificaciones del empleado...');
+                try {
+                    state.notificaciones = await apiCall('/api/notificaciones/mis-notificaciones');
+                    console.log('✅ Notificaciones cargadas:', state.notificaciones.length);
 
-        return {
-            cargarNotificaciones,
-            marcarLeida,
-            marcarTodasLeidas
-        };
-    })();
-</script>
+                    state.notificacionesFiltradas = [...state.notificaciones];
+                    actualizarEstadisticas();
+                    renderizarNotificaciones();
+                    aplicarFiltroActual();
+                } catch (error) {
+                    console.error('❌ Error al cargar notificaciones:', error);
+                    document.getElementById('lista-notificaciones-empleado').innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Error al cargar notificaciones: ${error.message}
+                                </div>
+                            </div>
+                        `;
+                }
+            }
+
+            // Actualizar estadísticas
+            function actualizarEstadisticas() {
+                const total = state.notificaciones.length;
+                const noLeidas = state.notificaciones.filter(n => !n.leido).length;
+                const leidas = total - noLeidas;
+
+                // Calcular notificaciones de este mes
+                const esteMes = new Date().getMonth();
+                const esteAnio = new Date().getFullYear();
+                const notificacionesEsteMes = state.notificaciones.filter(n => {
+                    const fechaNotif = new Date(n.fecha_envio);
+                    return fechaNotif.getMonth() === esteMes && fechaNotif.getFullYear() === esteAnio;
+                }).length;
+
+                document.getElementById('stat-total-empleado').textContent = total;
+                document.getElementById('stat-no-leidas-empleado').textContent = noLeidas;
+                document.getElementById('stat-leidas-empleado').textContent = leidas;
+                document.getElementById('stat-este-mes-empleado').textContent = notificacionesEsteMes;
+            }
+
+            // Renderizar notificaciones en cards
+            function renderizarNotificaciones() {
+                const container = document.getElementById('lista-notificaciones-empleado');
+
+                if (state.notificacionesFiltradas.length === 0) {
+                    container.innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-info text-center py-4">
+                                    <i class="bi bi-bell-slash fs-1 d-block mb-3 text-info"></i>
+                                    <h5>No hay notificaciones</h5>
+                                    <p class="mb-0">No tienes notificaciones en este momento</p>
+                                </div>
+                            </div>
+                        `;
+                    return;
+                }
+
+                container.innerHTML = state.notificacionesFiltradas.map(notif => `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card card-notificacion h-100 ${!notif.leido ? 'border-warning' : ''}">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="notification-icon me-3">
+                                            <i class="bi ${obtenerIconoPorTipo(notif.titulo)}"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1 fw-bold">${notif.titulo}</h6>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge ${notif.leido ? 'bg-secondary' : 'bg-warning'} badge-notificacion me-2">
+                                                    ${notif.leido ? '<i class="bi bi-envelope-open me-1"></i>Leída' : '<i class="bi bi-envelope me-1"></i>Nueva'}
+                                                </span>
+                                                <small class="text-muted">
+                                                    ${new Date(notif.fecha_envio).toLocaleDateString('es-ES')}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="card-text text-muted mb-3">${notif.mensaje}</p>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>
+                                            ${new Date(notif.fecha_envio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                        </small>
+
+                                        <div class="btn-group">
+                                            ${!notif.leido ? `
+                                                <button class="btn btn-sm btn-outline-primary" onclick="NotificacionesEmpleadoModule.marcarLeida(${notif.idNotificacion})">
+                                                    <i class="bi bi-check me-1"></i>Marcar Leída
+                                                </button>
+                                            ` : `
+                                                <button class="btn btn-sm btn-outline-secondary" disabled>
+                                                    <i class="bi bi-check-all me-1"></i>Leída
+                                                </button>
+                                            `}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            // Obtener icono según el tipo de notificación
+            function obtenerIconoPorTipo(titulo) {
+                const tituloLower = titulo.toLowerCase();
+                if (tituloLower.includes('fichaje') || tituloLower.includes('entrada') || tituloLower.includes('salida')) {
+                    return 'bi-clock';
+                } else if (tituloLower.includes('permiso') || tituloLower.includes('ausencia')) {
+                    return 'bi-calendar-check';
+                } else if (tituloLower.includes('alerta') || tituloLower.includes('importante')) {
+                    return 'bi-exclamation-triangle';
+                } else if (tituloLower.includes('bienvenida')) {
+                    return 'bi-emoji-smile';
+                } else {
+                    return 'bi-bell';
+                }
+            }
+
+            // Filtrar notificaciones
+            function filtrarNotificaciones(tipo) {
+                state.filtroActual = tipo;
+
+                // Actualizar botones activos
+                document.getElementById('btn-todas').classList.remove('active');
+                document.getElementById('btn-no-leidas').classList.remove('active');
+                document.getElementById('btn-leidas').classList.remove('active');
+                document.getElementById(`btn-${tipo}`).classList.add('active');
+
+                aplicarFiltroActual();
+            }
+
+            // Aplicar filtro actual
+            function aplicarFiltroActual() {
+                let filtradas = state.notificaciones;
+
+                switch (state.filtroActual) {
+                    case 'no-leidas':
+                        filtradas = filtradas.filter(n => !n.leido);
+                        break;
+                    case 'leidas':
+                        filtradas = filtradas.filter(n => n.leido);
+                        break;
+                    case 'todas':
+                    default:
+                        break;
+                }
+
+                // Aplicar búsqueda si existe
+                const busqueda = document.getElementById('input-buscar-empleado').value.toLowerCase();
+                if (busqueda) {
+                    filtradas = filtradas.filter(n =>
+                        n.titulo.toLowerCase().includes(busqueda) ||
+                        n.mensaje.toLowerCase().includes(busqueda)
+                    );
+                }
+
+                // Aplicar orden
+                const orden = document.getElementById('select-orden-empleado').value;
+                if (orden === 'antiguas') {
+                    filtradas.sort((a, b) => new Date(a.fecha_envio) - new Date(b.fecha_envio));
+                } else {
+                    filtradas.sort((a, b) => new Date(b.fecha_envio) - new Date(a.fecha_envio));
+                }
+
+                // Aplicar filtro de mes
+                const mes = document.getElementById('select-mes-empleado').value;
+                if (mes !== 'todos') {
+                    const ahora = new Date();
+                    let mesFiltro, anioFiltro;
+
+                    if (mes === 'este-mes') {
+                        mesFiltro = ahora.getMonth();
+                        anioFiltro = ahora.getFullYear();
+                    } else if (mes === 'mes-pasado') {
+                        mesFiltro = ahora.getMonth() === 0 ? 11 : ahora.getMonth() - 1;
+                        anioFiltro = ahora.getMonth() === 0 ? ahora.getFullYear() - 1 : ahora.getFullYear();
+                    }
+
+                    filtradas = filtradas.filter(n => {
+                        const fechaNotif = new Date(n.fecha_envio);
+                        return fechaNotif.getMonth() === mesFiltro && fechaNotif.getFullYear() === anioFiltro;
+                    });
+                }
+
+                state.notificacionesFiltradas = filtradas;
+                renderizarNotificaciones();
+            }
+
+            // Marcar notificación como leída
+            async function marcarLeida(id) {
+                try {
+                    await apiCall(`/api/notificaciones/${id}/leer`, { method: 'PUT' });
+                    mostrarAlerta('✅ Notificación marcada como leída', 'success');
+                    await cargarNotificaciones();
+                } catch (error) {
+                    console.error('❌ Error al marcar como leída:', error);
+                    mostrarAlerta('❌ No se pudo actualizar el estado', 'danger');
+                }
+            }
+
+            // Marcar todas como leídas
+            async function marcarTodasLeidas() {
+                if (!confirm('¿Estás seguro de que quieres marcar TODAS tus notificaciones como leídas?\n\nEsta acción no se puede deshacer.')) {
+                    return;
+                }
+
+                try {
+                    await apiCall('/api/notificaciones/leer-todas', { method: 'PUT' });
+                    mostrarAlerta('✅ Todas las notificaciones marcadas como leídas', 'success');
+                    await cargarNotificaciones();
+                } catch (error) {
+                    console.error('❌ Error al marcar todas como leídas:', error);
+                    mostrarAlerta('❌ No se pudieron marcar todas las notificaciones', 'danger');
+                }
+            }
+
+            // Mostrar alerta
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 4000);
+            }
+
+            // Inicializar
+            async function init() {
+                console.log('👤 Iniciando módulo de notificaciones del empleado...');
+
+                if (!document.getElementById('notificaciones-empleado-container')) {
+                    console.log('❌ No estamos en la vista de notificaciones del empleado, saliendo...');
+                    return;
+                }
+
+                await cargarNotificaciones();
+
+                // Configurar búsqueda en tiempo real
+                const inputBuscar = document.getElementById('input-buscar-empleado');
+                if (inputBuscar) {
+                    let timeoutId;
+                    inputBuscar.addEventListener('input', (e) => {
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            aplicarFiltroActual();
+                        }, 300);
+                    });
+                }
+
+                // Configurar cambio en selects
+                const selects = ['select-orden-empleado', 'select-mes-empleado'];
+                selects.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) {
+                        elemento.addEventListener('change', aplicarFiltroActual);
+                    }
+                });
+
+                console.log('✅ Módulo de notificaciones del empleado iniciado');
+            }
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // API pública del módulo
+            return {
+                init,
+                cargarNotificaciones,
+                filtrarNotificaciones,
+                marcarLeida,
+                marcarTodasLeidas
+            };
+        })();
+    </script>
+</body>
+</html>

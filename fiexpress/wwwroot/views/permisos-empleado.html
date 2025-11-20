@@ -1,163 +1,731 @@
-﻿<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-3">
-                <i class="bi bi-file-text text-primary"></i> Mis Solicitudes de Permiso
-            </h2>
-            <button class="btn btn-primary" onclick="PermisosEmpleadoModule.abrirModalNuevo()">
-                <i class="bi bi-plus-circle"></i> Nueva Solicitud
-            </button>
-        </div>
-    </div>
-
-    <div id="lista-permisos" class="row g-3">
-        <div class="col-12 text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Nueva Solicitud -->
-<div class="modal fade" id="modalPermiso" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Nueva Solicitud de Permiso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formPermiso">
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de Permiso</label>
-                        <select class="form-select" id="tipo" required>
-                            <option value="Ausencia">Ausencia</option>
-                            <option value="Vacaciones">Vacaciones</option>
-                            <option value="Enfermedad">Enfermedad</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha Inicio *</label>
-                            <input type="date" class="form-control" id="fechaInicio" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fecha Fin *</label>
-                            <input type="date" class="form-control" id="fechaFin" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Motivo *</label>
-                        <textarea class="form-control" id="motivo" rows="3" maxlength="200" required></textarea>
-                        <small class="text-muted">Máximo 200 caracteres</small>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="PermisosEmpleadoModule.solicitar()">Enviar Solicitud</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    window.PermisosEmpleadoModule = (function () {
-        async function cargarPermisos() {
-            try {
-                const res = await fetchAuth('/api/permisos/mis-permisos');
-                const permisos = await res.json();
-                renderizarPermisos(permisos);
-            } catch (error) {
-                document.getElementById('lista-permisos').innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-danger">Error al cargar permisos</div>
-                </div>
-            `;
-            }
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Permisos - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mantener consistencia */
+        .card-permiso {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-        function renderizarPermisos(permisos) {
-            const container = document.getElementById('lista-permisos');
-            if (permisos.length === 0) {
-                container.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="bi bi-file-text fs-1 d-block mb-3"></i>
-                        <h5>No has solicitado permisos</h5>
-                        <p>Haz clic en "Nueva Solicitud" para comenzar</p>
-                    </div>
-                </div>
-            `;
-                return;
+            .card-permiso:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
 
-            container.innerHTML = permisos.map(p => `
+        .stat-card {
+            transition: transform 0.2s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+
+        .badge-permiso {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            border-bottom: 3px solid #0d6efd;
+        }
+
+        .btn-group-xs > .btn, .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+
+        .permiso-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #198754, #20c997);
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Permisos del Empleado -->
+    <div class="container-fluid py-4" id="permisos-empleado-container">
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
+                <h2 class="mb-3">
+                    <i class="bi bi-file-text-fill text-primary"></i>
+                    Mis Solicitudes de Permiso
+                </h2>
+                <p class="text-muted">Gestiona y realiza un seguimiento de tus solicitudes de permisos</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas Mejoradas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h6 class="mb-1">${p.tipo}</h6>
-                            <span class="badge ${p.estado === 'Aprobado' ? 'bg-success' : p.estado === 'Rechazado' ? 'bg-danger' : 'bg-warning'}">
-                                ${p.estado}
-                            </span>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Total Solicitudes</h6>
+                                <h3 id="stat-total-permisos" class="mb-0">0</h3>
+                            </div>
+                            <i class="bi bi-file-text fs-1 text-primary opacity-25"></i>
                         </div>
-                        <p class="text-muted mb-2">${p.motivo}</p>
-                        <small class="text-muted">
-                            <i class="bi bi-calendar"></i> ${p.fecha_inicio} al ${p.fecha_fin} |
-                            <i class="bi bi-clock"></i> Solicitado el ${new Date(p.fecha_solicitud).toLocaleDateString()}
-                        </small>
-                        ${p.supervisor ? `<br><small class="text-muted">Supervisor: ${p.supervisor}</small>` : ''}
                     </div>
                 </div>
             </div>
-        `).join('');
-        }
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Pendientes</h6>
+                                <h3 class="text-warning mb-0" id="stat-pendientes-permisos">0</h3>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Aprobados</h6>
+                                <h3 class="text-success mb-0" id="stat-aprobados-permisos">0</h3>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-danger border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Rechazados</h6>
+                                <h3 class="text-danger mb-0" id="stat-rechazados-permisos">0</h3>
+                            </div>
+                            <i class="bi bi-x-circle fs-1 text-danger opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        function abrirModalNuevo() {
-            document.getElementById('formPermiso').reset();
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('fechaInicio').min = hoy;
-            document.getElementById('fechaFin').min = hoy;
-            new bootstrap.Modal(document.getElementById('modalPermiso')).show();
-        }
+        <!-- Barra de acciones -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <button class="btn btn-primary" onclick="PermisosEmpleadoModule.abrirModalNuevo()">
+                    <i class="bi bi-plus-circle me-1"></i> Nueva Solicitud
+                </button>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary active" id="btn-todos-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('todos')">
+                        <i class="bi bi-grid me-1"></i> Todos
+                    </button>
+                    <button class="btn btn-outline-warning" id="btn-pendientes-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('pendientes')">
+                        <i class="bi bi-clock me-1"></i> Pendientes
+                    </button>
+                    <button class="btn btn-outline-success" id="btn-aprobados-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('aprobados')">
+                        <i class="bi bi-check-circle me-1"></i> Aprobados
+                    </button>
+                    <button class="btn btn-outline-danger" id="btn-rechazados-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('rechazados')">
+                        <i class="bi bi-x-circle me-1"></i> Rechazados
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        async function solicitar() {
-            const form = document.getElementById('formPermiso');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
+        <!-- Búsqueda y Filtros -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="input-buscar-permisos" placeholder="Buscar por tipo o motivo...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="select-tipo-permisos">
+                    <option value="">Todos los tipos</option>
+                    <option value="Ausencia">Ausencia</option>
+                    <option value="Vacaciones">Vacaciones</option>
+                    <option value="Enfermedad">Enfermedad</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="select-orden-permisos">
+                    <option value="recientes">Más recientes primero</option>
+                    <option value="antiguas">Más antiguas primero</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" onclick="PermisosEmpleadoModule.limpiarFiltros()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
 
-            const data = {
-                Tipo: document.getElementById('tipo').value,
-                FechaInicio: document.getElementById('fechaInicio').value,
-                FechaFin: document.getElementById('fechaFin').value,
-                Motivo: document.getElementById('motivo').value.trim()
+        <!-- Lista de permisos en cards -->
+        <div class="row g-3" id="lista-permisos-empleado">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted mt-2">Cargando tus solicitudes de permiso...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Solicitud Mejorado -->
+    <div class="modal fade" id="modalPermiso" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle text-primary me-2"></i>Nueva Solicitud de Permiso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPermiso">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Tipo de Permiso *</label>
+                                <select class="form-select" id="tipo" required>
+                                    <option value="">Selecciona un tipo...</option>
+                                    <option value="Ausencia">Ausencia</option>
+                                    <option value="Vacaciones">Vacaciones</option>
+                                    <option value="Enfermedad">Enfermedad</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <small class="text-muted">Selecciona el tipo de permiso que necesitas</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duración</label>
+                                <div class="alert alert-info py-2">
+                                    <small>
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        <span id="info-duracion">Selecciona las fechas para calcular la duración</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Fecha Inicio *</label>
+                                <input type="date" class="form-control" id="fechaInicio" required>
+                                <small class="text-muted">Fecha en la que comienza el permiso</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Fecha Fin *</label>
+                                <input type="date" class="form-control" id="fechaFin" required>
+                                <small class="text-muted">Fecha en la que finaliza el permiso</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Motivo *</label>
+                            <textarea class="form-control" id="motivo" rows="4" maxlength="200"
+                                      placeholder="Describe el motivo de tu solicitud..." required></textarea>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small class="text-muted">Máximo 200 caracteres</small>
+                                <small class="text-muted"><span id="contador-caracteres">0</span>/200</small>
+                            </div>
+                        </div>
+
+                        <!-- Resumen de la solicitud -->
+                        <div class="card bg-light border-0 mt-3" id="resumen-solicitud" style="display: none;">
+                            <div class="card-body py-2">
+                                <h6 class="card-title text-primary mb-2">
+                                    <i class="bi bi-check-circle me-2"></i>Resumen de tu Solicitud
+                                </h6>
+                                <div class="row small">
+                                    <div class="col-md-4 mb-1">
+                                        <strong>Tipo:</strong> <span id="resumen-tipo">-</span>
+                                    </div>
+                                    <div class="col-md-4 mb-1">
+                                        <strong>Duración:</strong> <span id="resumen-duracion">-</span>
+                                    </div>
+                                    <div class="col-md-4 mb-1">
+                                        <strong>Estado:</strong> <span class="badge bg-warning">Pendiente</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="PermisosEmpleadoModule.solicitar()">
+                        <i class="bi bi-send me-1"></i>Enviar Solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        //  MÓDULO AISLADO - Permisos del Empleado
+        window.PermisosEmpleadoModule = (function () {
+            'use strict';
+
+            // Estado privado del módulo
+            const state = {
+                permisos: [],
+                permisosFiltrados: [],
+                filtroActual: 'todos',
+                modalInstance: null
             };
 
-            try {
-                await fetchAuth('/api/permisos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                alert('✅ Solicitud enviada exitosamente');
-                document.getElementById('modalPermiso').closest('.modal').querySelector('.btn-close').click();
-                cargarPermisos();
-            } catch (error) {
-                alert('❌ Error al enviar solicitud');
+            // API Helper
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
+                }
             }
-        }
 
-        // Inicializar
-        cargarPermisos();
+            // Cargar permisos del empleado
+            async function cargarPermisos() {
+                console.log('👤 Cargando permisos del empleado...');
+                try {
+                    state.permisos = await apiCall('/api/permisos/mis-permisos');
+                    console.log('✅ Permisos cargados:', state.permisos.length);
 
-        return {
-            abrirModalNuevo,
-            solicitar
-        };
-    })();</script>
+                    state.permisosFiltrados = [...state.permisos];
+                    actualizarEstadisticas();
+                    renderizarPermisos();
+                    aplicarFiltroActual();
+                } catch (error) {
+                    console.error('❌ Error al cargar permisos:', error);
+                    document.getElementById('lista-permisos-empleado').innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Error al cargar permisos: ${error.message}
+                                </div>
+                            </div>
+                        `;
+                }
+            }
+
+            // Actualizar estadísticas
+            function actualizarEstadisticas() {
+                const total = state.permisos.length;
+                const pendientes = state.permisos.filter(p => p.estado === 'Pendiente').length;
+                const aprobados = state.permisos.filter(p => p.estado === 'Aprobado').length;
+                const rechazados = state.permisos.filter(p => p.estado === 'Rechazado').length;
+
+                document.getElementById('stat-total-permisos').textContent = total;
+                document.getElementById('stat-pendientes-permisos').textContent = pendientes;
+                document.getElementById('stat-aprobados-permisos').textContent = aprobados;
+                document.getElementById('stat-rechazados-permisos').textContent = rechazados;
+            }
+
+            // Renderizar permisos en cards
+            function renderizarPermisos() {
+                const container = document.getElementById('lista-permisos-empleado');
+
+                if (state.permisosFiltrados.length === 0) {
+                    container.innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-info text-center py-4">
+                                    <i class="bi bi-file-text fs-1 d-block mb-3 text-info"></i>
+                                    <h5>No hay solicitudes de permiso</h5>
+                                    <p class="mb-3">Comienza solicitando tu primer permiso</p>
+                                    <button class="btn btn-primary" onclick="PermisosEmpleadoModule.abrirModalNuevo()">
+                                        <i class="bi bi-plus-circle me-1"></i>Nueva Solicitud
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    return;
+                }
+
+                container.innerHTML = state.permisosFiltrados.map(permiso => `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card card-permiso h-100 ${obtenerClaseBordePorEstado(permiso.estado)}">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="permiso-icon me-3">
+                                            <i class="bi ${obtenerIconoPorTipo(permiso.tipo)}"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1 fw-bold">${permiso.tipo}</h6>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge ${obtenerClaseBadgePorEstado(permiso.estado)} status-badge me-2">
+                                                    ${obtenerTextoEstado(permiso.estado)}
+                                                </span>
+                                                <small class="text-muted">
+                                                    ${new Date(permiso.fecha_solicitud).toLocaleDateString('es-ES')}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="card-text text-muted mb-3">
+                                        <i class="bi bi-chat-left-text me-1"></i>
+                                        ${permiso.motivo || 'Sin motivo especificado'}
+                                    </p>
+
+                                    <div class="small text-muted mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span><strong>Inicio:</strong></span>
+                                            <span>${permiso.fecha_inicio}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span><strong>Fin:</strong></span>
+                                            <span>${permiso.fecha_fin}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span><strong>Días:</strong></span>
+                                            <span>${calcularDiasPermiso(permiso.fecha_inicio, permiso.fecha_fin)} días</span>
+                                        </div>
+                                        ${permiso.supervisor ? `
+                                        <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+                                            <span><strong>Supervisor:</strong></span>
+                                            <span>${permiso.supervisor}</span>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            // Obtener clase CSS para el borde según estado
+            function obtenerClaseBordePorEstado(estado) {
+                switch (estado) {
+                    case 'Aprobado': return 'border-success';
+                    case 'Rechazado': return 'border-danger';
+                    case 'Pendiente': return 'border-warning';
+                    default: return '';
+                }
+            }
+
+            // Obtener clase CSS para el badge según estado
+            function obtenerClaseBadgePorEstado(estado) {
+                switch (estado) {
+                    case 'Aprobado': return 'bg-success';
+                    case 'Rechazado': return 'bg-danger';
+                    case 'Pendiente': return 'bg-warning';
+                    default: return 'bg-secondary';
+                }
+            }
+
+            // Obtener texto para el estado
+            function obtenerTextoEstado(estado) {
+                switch (estado) {
+                    case 'Aprobado': return '<i class="bi bi-check-circle me-1"></i>Aprobado';
+                    case 'Rechazado': return '<i class="bi bi-x-circle me-1"></i>Rechazado';
+                    case 'Pendiente': return '<i class="bi bi-clock me-1"></i>Pendiente';
+                    default: return estado;
+                }
+            }
+
+            // Obtener icono según el tipo de permiso
+            function obtenerIconoPorTipo(tipo) {
+                switch (tipo) {
+                    case 'Vacaciones': return 'bi-sun';
+                    case 'Enfermedad': return 'bi-heart-pulse';
+                    case 'Ausencia': return 'bi-person-x';
+                    case 'Otro': return 'bi-question-circle';
+                    default: return 'bi-file-text';
+                }
+            }
+
+            // Calcular días de permiso
+            function calcularDiasPermiso(fechaInicio, fechaFin) {
+                const inicio = new Date(fechaInicio);
+                const fin = new Date(fechaFin);
+                const diffTime = Math.abs(fin - inicio);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                return diffDays;
+            }
+
+            // Filtrar permisos
+            function filtrarPermisos(tipo) {
+                state.filtroActual = tipo;
+
+                // Actualizar botones activos
+                document.getElementById('btn-todos-permisos').classList.remove('active');
+                document.getElementById('btn-pendientes-permisos').classList.remove('active');
+                document.getElementById('btn-aprobados-permisos').classList.remove('active');
+                document.getElementById('btn-rechazados-permisos').classList.remove('active');
+                document.getElementById(`btn-${tipo}-permisos`).classList.add('active');
+
+                aplicarFiltroActual();
+            }
+
+            // Aplicar filtro actual
+            function aplicarFiltroActual() {
+                let filtradas = state.permisos;
+
+                switch (state.filtroActual) {
+                    case 'pendientes':
+                        filtradas = filtradas.filter(p => p.estado === 'Pendiente');
+                        break;
+                    case 'aprobados':
+                        filtradas = filtradas.filter(p => p.estado === 'Aprobado');
+                        break;
+                    case 'rechazados':
+                        filtradas = filtradas.filter(p => p.estado === 'Rechazado');
+                        break;
+                    case 'todos':
+                    default:
+                        break;
+                }
+
+                // Aplicar búsqueda si existe
+                const busqueda = document.getElementById('input-buscar-permisos').value.toLowerCase();
+                if (busqueda) {
+                    filtradas = filtradas.filter(p =>
+                        p.tipo.toLowerCase().includes(busqueda) ||
+                        (p.motivo && p.motivo.toLowerCase().includes(busqueda))
+                    );
+                }
+
+                // Aplicar filtro por tipo
+                const tipoFiltro = document.getElementById('select-tipo-permisos').value;
+                if (tipoFiltro) {
+                    filtradas = filtradas.filter(p => p.tipo === tipoFiltro);
+                }
+
+                // Aplicar orden
+                const orden = document.getElementById('select-orden-permisos').value;
+                if (orden === 'antiguas') {
+                    filtradas.sort((a, b) => new Date(a.fecha_solicitud) - new Date(b.fecha_solicitud));
+                } else {
+                    filtradas.sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud));
+                }
+
+                state.permisosFiltrados = filtradas;
+                renderizarPermisos();
+            }
+
+            // Limpiar filtros
+            function limpiarFiltros() {
+                document.getElementById('input-buscar-permisos').value = '';
+                document.getElementById('select-tipo-permisos').value = '';
+                document.getElementById('select-orden-permisos').value = 'recientes';
+
+                filtrarPermisos('todos');
+                mostrarAlerta(' Filtros limpiados correctamente', 'success');
+            }
+
+            // Abrir modal para nueva solicitud
+            function abrirModalNuevo() {
+                document.getElementById('formPermiso').reset();
+                document.getElementById('resumen-solicitud').style.display = 'none';
+
+                const hoy = new Date().toISOString().split('T')[0];
+                document.getElementById('fechaInicio').min = hoy;
+                document.getElementById('fechaFin').min = hoy;
+
+                // Configurar eventos para calcular duración
+                document.getElementById('fechaInicio').addEventListener('change', actualizarResumen);
+                document.getElementById('fechaFin').addEventListener('change', actualizarResumen);
+                document.getElementById('tipo').addEventListener('change', actualizarResumen);
+                document.getElementById('motivo').addEventListener('input', actualizarResumen);
+
+                if (!state.modalInstance) {
+                    state.modalInstance = new bootstrap.Modal(document.getElementById('modalPermiso'));
+                }
+                state.modalInstance.show();
+
+                // Configurar contador de caracteres
+                document.getElementById('motivo').addEventListener('input', function () {
+                    document.getElementById('contador-caracteres').textContent = this.value.length;
+                });
+            }
+
+            // Actualizar resumen de la solicitud
+            function actualizarResumen() {
+                const tipo = document.getElementById('tipo').value;
+                const fechaInicio = document.getElementById('fechaInicio').value;
+                const fechaFin = document.getElementById('fechaFin').value;
+                const motivo = document.getElementById('motivo').value;
+
+                if (tipo && fechaInicio && fechaFin) {
+                    const dias = calcularDiasPermiso(fechaInicio, fechaFin);
+                    document.getElementById('resumen-tipo').textContent = tipo;
+                    document.getElementById('resumen-duracion').textContent = `${dias} día${dias !== 1 ? 's' : ''}`;
+                    document.getElementById('info-duracion').textContent = `${dias} día${dias !== 1 ? 's' : ''} de permiso`;
+                    document.getElementById('resumen-solicitud').style.display = 'block';
+                } else {
+                    document.getElementById('resumen-solicitud').style.display = 'none';
+                    document.getElementById('info-duracion').textContent = 'Selecciona las fechas para calcular la duración';
+                }
+            }
+
+            // Enviar solicitud de permiso
+            async function solicitar() {
+                const form = document.getElementById('formPermiso');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const data = {
+                    Tipo: document.getElementById('tipo').value,
+                    FechaInicio: document.getElementById('fechaInicio').value,
+                    FechaFin: document.getElementById('fechaFin').value,
+                    Motivo: document.getElementById('motivo').value.trim()
+                };
+
+                // Validar que la fecha fin no sea anterior a la fecha inicio
+                if (new Date(data.FechaFin) < new Date(data.FechaInicio)) {
+                    mostrarAlerta('❌ La fecha de fin no puede ser anterior a la fecha de inicio', 'warning');
+                    return;
+                }
+
+                const btn = document.querySelector('#modalPermiso .btn-primary');
+                const originalText = btn.innerHTML;
+
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Enviando...';
+
+                    await apiCall('/api/permisos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    mostrarAlerta('✅ Solicitud enviada exitosamente', 'success');
+
+                    if (state.modalInstance) {
+                        state.modalInstance.hide();
+                    }
+
+                    await cargarPermisos();
+                } catch (error) {
+                    console.error('❌ Error al enviar solicitud:', error);
+                    mostrarAlerta('❌ Error al enviar solicitud: ' + error.message, 'danger');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+
+            // Mostrar alerta
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 4000);
+            }
+
+            // Inicializar
+            async function init() {
+                console.log('👤 Iniciando módulo de permisos del empleado...');
+
+                if (!document.getElementById('permisos-empleado-container')) {
+                    console.log('❌ No estamos en la vista de permisos del empleado, saliendo...');
+                    return;
+                }
+
+                await cargarPermisos();
+
+                // Configurar búsqueda en tiempo real
+                const inputBuscar = document.getElementById('input-buscar-permisos');
+                if (inputBuscar) {
+                    let timeoutId;
+                    inputBuscar.addEventListener('input', (e) => {
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            aplicarFiltroActual();
+                        }, 300);
+                    });
+                }
+
+                // Configurar cambio en selects
+                const selects = ['select-tipo-permisos', 'select-orden-permisos'];
+                selects.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) {
+                        elemento.addEventListener('change', aplicarFiltroActual);
+                    }
+                });
+
+                console.log('✅ Módulo de permisos del empleado iniciado');
+            }
+
+            // Iniciar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // API pública del módulo
+            return {
+                init,
+                cargarPermisos,
+                abrirModalNuevo,
+                solicitar,
+                filtrarPermisos,
+                limpiarFiltros
+            };
+        })();
+    </script>
+</body>
+</html>

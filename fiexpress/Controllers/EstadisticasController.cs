@@ -1,4 +1,5 @@
 ﻿using fiexpress.Data;
+using fiexpress.Models;
 using fiexpress.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -119,6 +120,217 @@ namespace fiexpress.Controllers
                 return StatusCode(500, new { mensaje = "Error al obtener estadísticas" });
             }
         }
+
+        // Agregar en EstadisticasController.cs
+        [HttpGet("dashboard-empleado")]
+        public async Task<IActionResult> GetDashboardEmpleado()
+        {
+            try
+            {
+                var empleadoId = User.FindFirst("EmpleadoId")?.Value;
+                if (string.IsNullOrEmpty(empleadoId))
+                    return Unauthorized(new { mensaje = "No se pudo identificar al empleado" });
+
+                var hoy = DateOnly.FromDateTime(DateTime.Today);
+                var inicioMes = new DateOnly(hoy.Year, hoy.Month, 1);
+
+                // 1. Datos del empleado
+                var empleado = await _context.Empleados
+                    .Include(e => e.Departamento)
+                    .FirstOrDefaultAsync(e => e.idEmpleado == int.Parse(empleadoId));
+
+                if (empleado == null)
+                    return NotFound(new { mensaje = "Empleado no encontrado" });
+
+                // 2. Fichajes de hoy
+                var fichajesHoy = await _context.Fichajes
+                    .Where(f => f.idEmpleadoFichaje == int.Parse(empleadoId) && f.fecha == hoy)
+                    .OrderByDescending(f => f.hora)
+                    .Select(f => new
+                    {
+                        f.idFichaje,
+                        f.tipo,
+                        hora = f.hora.ToString("HH:mm"),
+                        fecha = f.fecha.ToString("yyyy-MM-dd")
+                    })
+                    .ToListAsync();
+
+                // 3. Horario activo (CORREGIDO - mejor consulta)
+                var horarioActivo = await _context.Horarios
+                    .Include(h => h.Turno)
+                    .Where(h => h.idHorario_De_Empleado == int.Parse(empleadoId)
+                        && h.activo
+                        && h.fecha_inicio <= hoy
+                        && (h.fecha_fin == null || h.fecha_fin >= hoy))
+                    .OrderByDescending(h => h.fecha_inicio) // Tomar el más reciente
+                    .Select(h => new
+                    {
+                        idHorario = h.idHorario,
+                        nombreTurno = h.Turno.nombre,
+                        horaEntrada = h.Turno.hora_entrada.ToString("HH:mm"),
+                        horaSalida = h.Turno.hora_salida.ToString("HH:mm"),
+                        toleranciaMinutos = h.Turno.tolerancia_minutos,
+                        diasActivos = new
+                        {
+                            lunes = h.Turno.lunes,
+                            martes = h.Turno.martes,
+                            miercoles = h.Turno.miercoles,
+                            jueves = h.Turno.jueves,
+                            viernes = h.Turno.viernes,
+                            sabado = h.Turno.sabado,
+                            domingo = h.Turno.domingo
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+
+                // 4. Estadísticas del mes actual (PROCESAR SI NO EXISTEN)
+                // Procesar estadísticas para asegurar datos actualizados
+                for (var fecha = inicioMes; fecha <= hoy; fecha = fecha.AddDays(1))
+                {
+                    await _estadisticasService.ProcesarEstadisticasDelDia(fecha);
+                }
+
+                var estadisticasMes = await _context.Estadisticas
+                    .Where(e => e.idEmpleadoEstadistica == int.Parse(empleadoId)
+                        && e.fecha >= inicioMes
+                        && e.fecha <= hoy)
+                    .ToListAsync();
+
+                // 5. Calcular resumen
+                var resumenMes = new
+                {
+                    totalDias = estadisticasMes.Count,
+                    diasTrabajados = estadisticasMes.Count(e => e.asistencia),
+                    totalMinutosTrabajados = estadisticasMes.Sum(e => e.minutos_trabajados ?? 0),
+                    totalMinutosRetraso = estadisticasMes.Sum(e => e.minutos_retraso ?? 0),
+                    totalMinutosExtra = estadisticasMes.Sum(e => e.minutos_extra ?? 0),
+                    porcentajeAsistencia = estadisticasMes.Count > 0 ?
+                        Math.Round((double)estadisticasMes.Count(e => e.asistencia) / estadisticasMes.Count * 100, 1) : 0
+                };
+
+                // 6. Estado actual del empleado
+                var estadoActual = "Sin fichajes hoy";
+                var ultimoFichaje = fichajesHoy.FirstOrDefault();
+                if (ultimoFichaje != null)
+                {
+                    estadoActual = ultimoFichaje.tipo == "Entrada" ? "En trabajo" : "Fuera de oficina";
+                }
+
+                return Ok(new
+                {
+                    empleado = new
+                    {
+                        id = empleado.idEmpleado,
+                        nombre = empleado.nombre,
+                        codigo_empleado = empleado.codigo_empleado,
+                        email = empleado.email,
+                        foto_url = empleado.foto_url,
+                        departamento = empleado.Departamento.nombre,
+                        activo = empleado.activo
+                    },
+                    fichajesHoy,
+                    horarioActivo,
+                    resumenMes,
+                    estadoActual,
+                    ultimoFichaje,
+                    timestamp = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener dashboard del empleado");
+                return StatusCode(500, new { mensaje = "Error al obtener datos del dashboard" });
+            }
+        }
+
+        // AGREGAR EN EstadisticasController.cs
+        [HttpGet("resumen-empleado")]
+        public async Task<IActionResult> GetResumenEmpleado()
+        {
+            try
+            {
+                var empleadoId = User.FindFirst("EmpleadoId")?.Value;
+                if (string.IsNullOrEmpty(empleadoId))
+                    return Unauthorized(new { mensaje = "No se pudo identificar al empleado" });
+
+                var hoy = DateOnly.FromDateTime(DateTime.Today);
+                var inicioMes = new DateOnly(hoy.Year, hoy.Month, 1);
+
+                // Datos del empleado
+                var empleado = await _context.Empleados
+                    .Include(e => e.Departamento)
+                    .FirstOrDefaultAsync(e => e.idEmpleado == int.Parse(empleadoId));
+
+                if (empleado == null)
+                    return NotFound(new { mensaje = "Empleado no encontrado" });
+
+                // Fichajes de hoy
+                var fichajesHoy = await _context.Fichajes
+                    .Where(f => f.idEmpleadoFichaje == int.Parse(empleadoId) && f.fecha == hoy)
+                    .OrderByDescending(f => f.hora)
+                    .Select(f => new
+                    {
+                        f.idFichaje,
+                        f.tipo,
+                        hora = f.hora.ToString("HH:mm"),
+                        f.fecha
+                    })
+                    .ToListAsync();
+
+                // Horario activo
+                var horarioActivo = await _context.Horarios
+                    .Include(h => h.Turno)
+                    .Where(h => h.idHorario_De_Empleado == int.Parse(empleadoId) && h.activo &&
+                               h.fecha_inicio <= hoy && (h.fecha_fin == null || h.fecha_fin >= hoy))
+                    .Select(h => new
+                    {
+                        h.Turno.nombre,
+                        h.Turno.hora_entrada,
+                        h.Turno.hora_salida,
+                        h.Turno.tolerancia_minutos
+                    })
+                    .FirstOrDefaultAsync();
+
+                // Estadísticas del mes
+                var estadisticasMes = await _context.Estadisticas
+                    .Where(e => e.idEmpleadoEstadistica == int.Parse(empleadoId) &&
+                               e.fecha >= inicioMes && e.fecha <= hoy)
+                    .ToListAsync();
+
+                var resumenMes = new
+                {
+                    totalDias = estadisticasMes.Count,
+                    diasTrabajados = estadisticasMes.Count(e => e.asistencia),
+                    totalHoras = estadisticasMes.Sum(e => e.minutos_trabajados ?? 0) / 60,
+                    totalRetraso = estadisticasMes.Sum(e => e.minutos_retraso ?? 0),
+                    totalExtra = estadisticasMes.Sum(e => e.minutos_extra ?? 0),
+                    porcentajeAsistencia = estadisticasMes.Count > 0 ?
+                        Math.Round((double)estadisticasMes.Count(e => e.asistencia) / estadisticasMes.Count * 100, 1) : 0
+                };
+
+                return Ok(new
+                {
+                    empleado = new
+                    {
+                        id = empleado.idEmpleado,
+                        nombre = empleado.nombre,
+                        codigo_empleado = empleado.codigo_empleado,
+                        foto_url = empleado.foto_url,
+                        departamento = empleado.Departamento.nombre
+                    },
+                    fichajesHoy,
+                    horarioActivo,
+                    resumenMes
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener resumen del empleado");
+                return StatusCode(500, new { mensaje = "Error al obtener resumen" });
+            }
+        }
+
+
 
         // GET: api/estadisticas/empleado/{id}?inicio=2024-01-01&fin=2024-01-31
         [HttpGet("empleado/{id}")]

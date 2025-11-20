@@ -265,6 +265,16 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EstadisticasController",
+    "Method": "GetDashboardEmpleado",
+    "RelativePath": "api/Estadisticas/dashboard-empleado",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.EstadisticasController",
     "Method": "GetEstadisticasEmpleado",
     "RelativePath": "api/Estadisticas/empleado/{id}",
     "HttpMethod": "GET",
@@ -334,6 +344,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.EstadisticasController",
+    "Method": "GetResumenEmpleado",
+    "RelativePath": "api/Estadisticas/resumen-empleado",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

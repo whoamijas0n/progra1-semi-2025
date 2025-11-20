@@ -33,34 +33,34 @@ namespace fiexpress.Controllers
                 switch (request.Tipo.ToUpper())
                 {
                     case "INVALIDO":
-                        mensaje = $"🚨 *ALERTA DE SEGURIDAD - FICHAJE INVÁLIDO* 🚨\n\n" +
+                        mensaje = $" *ALERTA DE SEGURIDAD - FICHAJE INVÁLIDO* \n\n" +
                                  $"*Intento de fichaje no autorizado detectado*\n\n" +
-                                 $"📋 *RFID:* `{request.CodigoRFID}`\n" +
-                                 $"🌐 *IP Dispositivo:* `{request.IP}`\n" +
-                                 $"📍 *Origen:* `ESP32 Físico`\n" +
-                                 $"⏰ *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
-                                 $"⚠️ *Revisar sistema inmediatamente*";
+                                 $" *RFID:* `{request.CodigoRFID}`\n" +
+                                 $" *IP Dispositivo:* `{request.IP}`\n" +
+                                 $" *Origen:* `ESP32 Físico`\n" +
+                                 $" *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
+                                 $" *Revisar sistema inmediatamente*";
                         break;
 
                     case "VALIDO":
-                        mensaje = $"✅ *FICHAJE REGISTRADO EXITOSAMENTE* ✅\n\n" +
+                        mensaje = $" *FICHAJE REGISTRADO EXITOSAMENTE* \n\n" +
                                  $"*Fichaje válido procesado*\n\n" +
-                                 $"📋 *RFID:* `{request.CodigoRFID}`\n" +
-                                 $"👤 *Empleado:* `{request.NombreEmpleado ?? "No especificado"}`\n" +
-                                 $"🌐 *IP Dispositivo:* `{request.IP}`\n" +
-                                 $"📍 *Origen:* `ESP32 Físico`\n" +
-                                 $"⏰ *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
-                                 $"🎉 *Fichaje procesado correctamente*";
+                                 $" *RFID:* `{request.CodigoRFID}`\n" +
+                                 $" *Empleado:* `{request.NombreEmpleado ?? "No especificado"}`\n" +
+                                 $" *IP Dispositivo:* `{request.IP}`\n" +
+                                 $" *Origen:* `ESP32 Físico`\n" +
+                                 $" *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
+                                 $" *Fichaje procesado correctamente*";
                         break;
 
                     case "ERROR":
-                        mensaje = $"❌ *ERROR EN FICHAJE* ❌\n\n" +
+                        mensaje = $" *ERROR EN FICHAJE* \n\n" +
                                  $"*Error al procesar fichaje*\n\n" +
-                                 $"📋 *RFID:* `{request.CodigoRFID}`\n" +
-                                 $"🌐 *IP Dispositivo:* `{request.IP}`\n" +
-                                 $"📍 *Origen:* `ESP32 Físico`\n" +
-                                 $"⏰ *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
-                                 $"🔧 *Revisar conexión con el servidor*";
+                                 $" *RFID:* `{request.CodigoRFID}`\n" +
+                                 $" *IP Dispositivo:* `{request.IP}`\n" +
+                                 $" *Origen:* `ESP32 Físico`\n" +
+                                 $" *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
+                                 $" *Revisar conexión con el servidor*";
                         break;
 
                     default:
@@ -91,14 +91,14 @@ namespace fiexpress.Controllers
         {
             try
             {
-                _logger.LogInformation($"🧪 TEST NOTIFICACIÓN DIRECTA: {request.Mensaje}");
+                _logger.LogInformation($" TEST NOTIFICACIÓN DIRECTA: {request.Mensaje}");
 
-                var mensaje = $"🧪 *TEST NOTIFICACIÓN DIRECTA* 🧪\n\n" +
+                var mensaje = $" *TEST NOTIFICACIÓN DIRECTA* \n\n" +
                              $"*Mensaje de prueba desde ESP32*\n\n" +
-                             $"📝 *Test:* `{request.Mensaje}`\n" +
-                             $"🌐 *IP:* `{request.IP ?? "No especificada"}`\n" +
-                             $"⏰ *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
-                             $"✅ *Conexión Telegram funcionando correctamente*";
+                             $" *Test:* `{request.Mensaje}`\n" +
+                             $" *IP:* `{request.IP ?? "No especificada"}`\n" +
+                             $" *Hora:* `{DateTime.Now:dd/MM/yyyy HH:mm:ss}`\n\n" +
+                             $" *Conexión Telegram funcionando correctamente*";
 
                 var resultado = await _telegramService.SendToAdminsAsync(mensaje);
 

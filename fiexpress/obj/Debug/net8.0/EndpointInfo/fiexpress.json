@@ -461,6 +461,30 @@
         }
       }
     },
+    "/api/Estadisticas/dashboard-empleado": {
+      "get": {
+        "tags": [
+          "Estadisticas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Estadisticas/resumen-empleado": {
+      "get": {
+        "tags": [
+          "Estadisticas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Estadisticas/empleado/{id}": {
       "get": {
         "tags": [

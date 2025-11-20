@@ -4,234 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FiExpress - Iniciar Sesión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            background-image:url(img/background-login.jpg);
-            background-position: center;
-            background-size:cover;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            position: relative;
-            overflow: hidden;
+            font-family: 'Inter', sans-serif;
         }
 
-            body::before {
-                content: '';
-                position: absolute;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-                animation: float 20s ease-in-out infinite;
-            }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            33% {
-                transform: translate(30px, -30px) rotate(120deg);
-            }
-
-            66% {
-                transform: translate(-20px, 20px) rotate(240deg);
-            }
+        /* === NUEVA PALETA DE COLORES PERSONALIZADA === */
+        .bg-gradient-brand {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
         }
 
-        .login-container {
-            position: relative;
-            z-index: 1;
-            perspective: 1000px;
+        .text-brand {
+            color: #2c5364;
         }
 
-        .login-card {
-            max-width: 440px;
-            width: 100%;
-            padding: 3rem 2.5rem;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-            transform-style: preserve-3d;
-            transition: transform 0.3s ease;
+        .bg-brand {
+            background-color: #2c5364;
         }
 
-            .login-card:hover {
-                transform: translateY(-5px);
-            }
-
-        .logo-section {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            animation: fadeInDown 0.6s ease;
+        .bg-brand-dark {
+            background-color: #203a43;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .border-brand {
+            border-color: #2c5364;
         }
 
-        .logo-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            animation: pulse 2s ease-in-out infinite;
+        .ring-brand:focus {
+            --tw-ring-color: #2c5364;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
+        /* Animaciones decorativas */
+        @keyframes scan {
+            0% {
+                top: 0;
+                opacity: 0.5;
             }
 
             50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .logo-icon i {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .logo-section h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .logo-section p {
-            color: #6c757d;
-            font-size: 0.95rem;
-            font-weight: 400;
-        }
-
-        .form-floating {
-            margin-bottom: 1.5rem;
-            animation: fadeIn 0.6s ease backwards;
-        }
-
-            .form-floating:nth-child(1) {
-                animation-delay: 0.1s;
-            }
-
-            .form-floating:nth-child(2) {
-                animation-delay: 0.2s;
-            }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
                 opacity: 1;
-                transform: translateY(0);
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0.5;
             }
         }
 
-        .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 1rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+        .animate-scan {
+            animation: scan 1.5s linear infinite;
         }
 
-            .form-control:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-                background: white;
+        @keyframes blob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
             }
 
-        .form-floating > label {
-            padding: 1rem 1rem;
-            color: #6c757d;
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
         }
 
-        .btn-login {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-            position: relative;
-            overflow: hidden;
-            animation: fadeIn 0.6s ease 0.3s backwards;
+        .animate-blob {
+            animation: blob 7s infinite;
         }
 
-            .btn-login::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-                transition: left 0.5s ease;
-            }
-
-            .btn-login:hover::before {
-                left: 100%;
-            }
-
-            .btn-login:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5);
-            }
-
-            .btn-login:active {
-                transform: translateY(0);
-            }
-
-            .btn-login:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            margin-bottom: 1.5rem;
-            animation: slideDown 0.3s ease;
+        .animation-delay-2000 {
+            animation-delay: 2s;
         }
 
-        @keyframes slideDown {
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* Perspectiva y Clases de Estado */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-typing {
+            transform: scale(1.1) translateX(20px) rotateY(-12deg) !important;
+            transition: all 0.5s ease-in-out;
+            right: 25% !important;
+        }
+
+        .card-validating {
+            transform: scale(0.9) translateX(0) translateY(50px) rotateX(12deg) !important;
+            transition: all 0.5s ease-in-out;
+            top: 28% !important;
+            z-index: 50 !important; /* Máxima prioridad al validar */
+        }
+
+        .card-success {
+            transform: translateX(1000px) rotate(12deg) !important;
+            opacity: 0;
+            transition: all 0.7s ease-in-out;
+        }
+
+        .card-error {
+            transform: translateX(0) translateY(0) rotate(0) !important;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Animación suave para la alerta al aparecer */
+        @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
@@ -243,80 +145,241 @@
             }
         }
 
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 2px;
-        }
-
-        .icon-input {
-            position: relative;
-        }
-
-            .icon-input i {
-                position: absolute;
-                right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #6c757d;
-                z-index: 10;
-            }
-
-        /* Responsive */
-        @media (max-width: 576px) {
-            .login-card {
-                margin: 1rem;
-                padding: 2rem 1.5rem;
-            }
-
-            .logo-section h2 {
-                font-size: 1.75rem;
-            }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
     </style>
 </head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="logo-section">
-               
-                <h2>GitMarket</h2>
-                <p>Inicia sesión para continuar</p>
+<body class="bg-gray-50 overflow-hidden">
+
+    <div class="min-h-screen w-full flex">
+
+        <!-- SECCIÓN IZQUIERDA: FORMULARIO -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 relative z-10 bg-white shadow-2xl lg:shadow-none">
+
+            <div class="max-w-md w-full mx-auto">
+                <div class="mb-8 text-center lg:text-left" style="text-align:center;">
+                  
+                    <h2 class="text-3xl font-bold text-slate-800">FiExpress</h2>
+                    <p class="text-slate-500 mt-2">Sistema de Control de Asistencia</p>
+                </div>
+
+                <div id="alert-container" class="mb-4"></div>
+
+                <form id="login-form" class="space-y-6">
+
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <!-- Icono cambia a color marca al enfocar -->
+                            <i class="bi bi-person-fill text-gray-400 group-focus-within:text-brand transition-colors text-xl"></i>
+                        </div>
+                        <input type="text" id="username" required
+                               class="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 ring-brand focus:border-transparent transition-all duration-300"
+                               placeholder="Usuario">
+                        <label for="username" class="absolute -top-2 left-2 bg-white px-1 text-xs text-brand font-semibold hidden group-focus-within:block">Usuario</label>
+                    </div>
+
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="bi bi-lock-fill text-gray-400 group-focus-within:text-brand transition-colors text-xl"></i>
+                        </div>
+                        <input type="password" id="password" required
+                               class="block w-full pl-10 pr-3 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 ring-brand focus:border-transparent transition-all duration-300"
+                               placeholder="Contraseña">
+                        <label for="password" class="absolute -top-2 left-2 bg-white px-1 text-xs text-brand font-semibold hidden group-focus-within:block">Contraseña</label>
+                    </div>
+
+                    <button type="submit" id="btn-login"
+                            class="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 ring-brand transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-slate-400">
+
+                        <span id="login-text" class="flex items-center gap-2">
+                            Iniciar Sesión <i class="bi bi-arrow-right"></i>
+                        </span>
+
+                        <div id="login-spinner" class="hidden flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Validando...</span>
+                        </div>
+                        <span id="login-success-text" class="hidden flex items-center gap-2"><i class="bi bi-check-circle-fill"></i> Acceso Concedido</span>
+                        <span id="login-error-text" class="hidden flex items-center gap-2"><i class="bi bi-x-circle-fill"></i> Error</span>
+                    </button>
+                </form>
             </div>
 
-            <div id="alert-container"></div>
+            <div class="mt-8 text-center text-xs text-gray-400">
+                &copy; 2025 FiExpress System. Secure Login.
+            </div>
+        </div>
 
-            <form id="login-form">
-                <div class="form-floating icon-input">
-                    <input type="text" class="form-control" id="username" placeholder="Usuario" required>
-                    <label for="username">Usuario</label>
-                    <i class="bi bi-person-fill"></i>
+        <!-- SECCIÓN DERECHA: ANIMACIÓN 3D -->
+        <div class="hidden lg:flex w-1/2 relative items-center justify-center perspective-1000 overflow-hidden bg-gradient-brand">
+
+            <!-- Elementos decorativos de fondo ajustados a la nueva paleta -->
+            <div class="absolute w-[500px] h-[500px] bg-[#2c5364] rounded-full mix-blend-overlay filter blur-[100px] opacity-30 animate-blob top-0 right-0"></div>
+            <div class="absolute w-[500px] h-[500px] bg-[#0f2027] rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000 bottom-0 left-0"></div>
+
+            <div class="relative w-full h-full flex items-center justify-center perspective-1000">
+
+                <!-- 1. EL LECTOR -->
+                <!-- z-0 para que quede al fondo -->
+                <div id="reader-device" class="relative z-0 w-64 h-96 bg-slate-800 rounded-3xl shadow-2xl border border-slate-700 flex flex-col items-center justify-between p-6 transition-all duration-300">
+                    <div class="w-full h-32 bg-black rounded-lg border border-slate-600 relative overflow-hidden flex items-center justify-center">
+                        <div id="screen-bg" class="absolute inset-0 bg-[#2c5364] opacity-20 transition-colors duration-500"></div>
+
+                        <!-- Texto de pantalla: z-10 (menor que la tarjeta) -->
+                        <div class="relative z-10 text-center font-mono font-bold">
+                            <span id="screen-text" class="text-[#2c5364] text-sm animate-pulse">ESPERANDO...</span>
+                        </div>
+
+                        <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-[#2c5364] shadow-[0_0_10px_rgba(44,83,100,0.8)] hidden"></div>
+                    </div>
+
+                    <div class="w-40 h-40 rounded-full bg-slate-700 border-4 border-slate-600 flex items-center justify-center relative">
+                        <div id="led-ring" class="absolute inset-0 rounded-full border-4 border-slate-600 transition-all duration-500 blur-[2px]"></div>
+                        <i class="bi bi-wifi text-5xl text-slate-500"></i>
+                    </div>
+
+                    <div class="text-slate-600 text-xs font-bold tracking-widest">SECURE ACCESS</div>
                 </div>
 
-                <div class="form-floating icon-input">
-                    <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
-                    <label for="password">Contraseña</label>
-                    <i class="bi bi-lock-fill"></i>
+                <!-- 2. LA TARJETA -->
+                <!-- z-20 AQUI ASEGURA QUE SIEMPRE ESTÉ SOBRE EL LECTOR Y SU TEXTO -->
+                <div id="employee-card" class="absolute z-20 w-56 h-80 bg-white rounded-2xl shadow-xl overflow-hidden border-t border-white/50"
+                     style="right: 15%; transform-style: preserve-3d;">
+
+                    <div class="h-full w-full relative flex flex-col">
+                        <!-- Header de tarjeta con el color de la marca -->
+                        <div class="h-24 bg-brand p-4 flex justify-between items-start">
+                            <div class="w-3 h-3 rounded-full bg-white/50"></div>
+                            <div class="text-white/80 text-[10px] font-mono">ID: EMP-2025</div>
+                        </div>
+                        <div class="absolute top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-200 rounded-lg border-4 border-white shadow-sm overflow-hidden flex items-center justify-center">
+                            <i class="bi bi-person-bounding-box text-5xl text-gray-400"></i>
+                        </div>
+                        <div class="mt-16 flex-1 p-4 text-center space-y-3">
+                            <div class="h-4 w-32 bg-gray-200 rounded mx-auto"></div>
+                            <div class="h-3 w-20 bg-gray-100 rounded mx-auto"></div>
+                            <div class="pt-4 space-y-2 opacity-50">
+                                <div class="h-2 w-full bg-gray-100 rounded"></div>
+                                <div class="h-2 w-full bg-gray-100 rounded"></div>
+                            </div>
+                        </div>
+                        <div class="h-12 bg-white border-t border-gray-100 flex items-center justify-center gap-1 px-4 opacity-50">
+                            <div class="w-full h-4 bg-black/80" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10% 50%, 0 0);"></div>
+                        </div>
+                    </div>
+                    <!-- Brillo -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none"></div>
                 </div>
 
-                <button type="submit" class="btn btn-login" id="btn-login">
-                    <span id="login-text">Iniciar Sesión</span>
-                    <span id="login-spinner" class="d-none spinner-border spinner-border-sm ms-2"></span>
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 
     <script>
+        const card = document.getElementById('employee-card');
+        const reader = document.getElementById('reader-device');
+        const screenText = document.getElementById('screen-text');
+        const screenBg = document.getElementById('screen-bg');
+        const ledRing = document.getElementById('led-ring');
+        const scanLine = document.getElementById('scan-line');
+        const inputs = document.querySelectorAll('input');
+
+        let currentState = 'idle';
+
+        // Parallax Mouse Move
+        document.addEventListener('mousemove', (e) => {
+            if (currentState === 'idle' || currentState === 'typing') {
+                const x = (window.innerWidth - e.pageX) / 50;
+                const y = (window.innerHeight - e.pageY) / 50;
+                if (currentState === 'idle') {
+                    card.style.transform = `rotateY(${x}deg) rotateX(${y}deg) translateZ(20px)`;
+                }
+            }
+        });
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (currentState !== 'validating') setVisualState('typing');
+            });
+            input.addEventListener('blur', () => {
+                const user = document.getElementById('username').value;
+                const pass = document.getElementById('password').value;
+                if (user === '' && pass === '' && currentState !== 'validating') setVisualState('idle');
+            });
+        });
+
+        function setVisualState(state) {
+            currentState = state;
+
+            // RESETEAMOS LAS CLASES
+            card.className = `absolute z-20 w-56 h-80 bg-white rounded-2xl shadow-xl overflow-hidden border-t border-white/50`;
+            reader.classList.remove('shake-animation');
+            scanLine.classList.add('hidden');
+            scanLine.classList.remove('animate-scan');
+
+            if (state === 'idle') {
+                card.style.right = '15%';
+                screenText.innerText = "ESPERANDO...";
+                // Texto color brand
+                screenText.className = "text-[#2c5364] text-sm animate-pulse";
+                screenBg.className = "absolute inset-0 bg-[#2c5364] opacity-20 transition-colors duration-500";
+                ledRing.className = "absolute inset-0 rounded-full border-4 border-slate-600 blur-[2px]";
+            }
+            else if (state === 'typing') {
+                card.classList.add('card-typing');
+                screenText.innerText = "LISTO...";
+                screenText.className = "text-yellow-400 text-sm";
+                ledRing.className = "absolute inset-0 rounded-full border-4 border-yellow-500 blur-[2px] opacity-50";
+            }
+            else if (state === 'validating') {
+                card.classList.add('card-validating');
+                screenText.innerText = "LEYENDO...";
+                screenText.className = "text-white text-sm font-bold";
+                scanLine.classList.remove('hidden');
+                scanLine.classList.add('animate-scan');
+                // Usamos el color intermedio para validar
+                ledRing.className = "absolute inset-0 rounded-full border-4 border-[#2c5364] shadow-[0_0_15px_rgba(44,83,100,0.4)] blur-[2px]";
+            }
+            else if (state === 'success') {
+                card.classList.add('card-success');
+                screenText.innerText = "BIENVENIDO";
+                screenText.className = "text-green-400 text-sm font-bold";
+                screenBg.className = "absolute inset-0 bg-green-500 opacity-30";
+                ledRing.className = "absolute inset-0 rounded-full border-4 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.6)] blur-[2px]";
+            }
+            else if (state === 'error') {
+                card.classList.add('card-error');
+                reader.classList.add('shake-animation');
+                screenText.innerText = "DENEGADO";
+                screenText.className = "text-red-400 text-sm font-bold";
+                screenBg.className = "absolute inset-0 bg-red-500 opacity-30";
+                ledRing.className = "absolute inset-0 rounded-full border-4 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.6)] blur-[2px]";
+            }
+        }
+
+        // LÓGICA DE LOGIN
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
 
             const btn = document.getElementById('btn-login');
+            const btnText = document.getElementById('login-text');
+            const btnSpinner = document.getElementById('login-spinner');
+            const btnSuccess = document.getElementById('login-success-text');
+            const btnError = document.getElementById('login-error-text');
+
             btn.disabled = true;
-            document.getElementById('login-text').classList.add('d-none');
-            document.getElementById('login-spinner').classList.remove('d-none');
+            btnText.classList.add('hidden');
+            btnSuccess.classList.add('hidden');
+            btnError.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+
+            setVisualState('validating');
 
             try {
                 const res = await fetch('/api/auth/login', {
@@ -329,40 +392,63 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    // ✅ REDIRECCIÓN SEGÚN ROL DEL USUARIO QUE ACABA DE LOGUEARSE
-                    const destino = (data.usuario.rol === 'Admin' || data.usuario.esSupervisor)
-                        ? '/index.html'
-                        : '/panel-empleado.html';
+                    setVisualState('success');
+                    btnSpinner.classList.add('hidden');
+                    btnSuccess.classList.remove('hidden');
+                    btn.classList.remove('bg-brand', 'hover:bg-brand-dark');
+                    btn.classList.add('bg-green-500', 'hover:bg-green-600');
 
-                    window.location.href = destino;
+                    setTimeout(() => {
+                        const destino = (data.usuario.rol === 'Admin' || data.usuario.esSupervisor)
+                            ? '/index.html'
+                            : '/panel-empleado.html';
+                        window.location.href = destino;
+                    }, 1000);
+
                 } else {
-                    mostrarAlerta(data.mensaje || 'Credenciales incorrectas', 'danger');
-                    resetButton();
+                    throw new Error(data.mensaje || 'Credenciales incorrectas');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                mostrarAlerta('Error de conexión', 'danger');
-                resetButton();
+                setVisualState('error');
+                btnSpinner.classList.add('hidden');
+                btnError.classList.remove('hidden');
+                btn.classList.remove('bg-brand', 'hover:bg-brand-dark');
+                btn.classList.add('bg-red-500', 'hover:bg-red-600');
+                mostrarAlerta(error.message || 'Error de conexión', 'danger');
+
+                setTimeout(() => {
+                    resetButton();
+                    setVisualState('idle');
+                }, 2000);
             }
         });
 
         function resetButton() {
             const btn = document.getElementById('btn-login');
             btn.disabled = false;
-            document.getElementById('login-text').classList.remove('d-none');
-            document.getElementById('login-spinner').classList.add('d-none');
+            btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-green-500');
+            btn.classList.add('bg-brand', 'hover:bg-brand-dark');
+            document.getElementById('login-text').classList.remove('hidden');
+            document.getElementById('login-spinner').classList.add('hidden');
+            document.getElementById('login-error-text').classList.add('hidden');
+            document.getElementById('login-success-text').classList.add('hidden');
         }
 
         function mostrarAlerta(mensaje, tipo) {
             const container = document.getElementById('alert-container');
+            // Usamos color brand-dark para el borde si no es danger, para mantener tema
+            const colorClass = tipo === 'danger'
+                ? 'bg-red-50 text-red-700 border-red-200'
+                : 'bg-slate-50 text-slate-700 border-slate-200';
+
             container.innerHTML = `
-                    <div class="alert alert-${tipo} alert-dismissible fade show">
-                        ${mensaje}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="p-4 mb-4 text-sm border rounded-lg ${colorClass} flex justify-between items-center animate-fade-in" role="alert">
+                        <span><i class="bi bi-exclamation-triangle-fill mr-2"></i>${mensaje}</span>
+                        <button onclick="this.parentElement.remove()" class="font-bold text-lg">&times;</button>
                     </div>
                 `;
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

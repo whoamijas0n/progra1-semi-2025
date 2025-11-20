@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Dashboard - FiExpress</title>
+    <title>Dashboard Empleado - FiExpress</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -15,27 +15,29 @@
                 transform: translateY(-3px);
             }
 
-        .jornada-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .info-personal {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .fichaje-btn {
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 12px 24px;
-        }
-
         .avatar {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             object-fit: cover;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid #e9ecef;
+        }
+
+        .badge-status {
+            font-size: 0.7rem;
+            padding: 0.35em 0.65em;
+        }
+
+        .fichaje-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .fichaje-entrada {
+            border-left-color: #198754;
+        }
+
+        .fichaje-salida {
+            border-left-color: #dc3545;
         }
 
         .progress {
@@ -43,94 +45,94 @@
             border-radius: 4px;
         }
 
-        .badge-status {
-            font-size: 0.75rem;
-            padding: 0.4em 0.8em;
+        .turno-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
         }
 
-        .loader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
+        .quick-action-btn {
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+            .quick-action-btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .dia-activo {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .dia-inactivo {
+            color: #6c757d;
+            opacity: 0.6;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4" id="dashboard-container">
+    <!-- Dashboard Empleado -->
+    <div class="container-fluid py-4" id="dashboard-empleado-container">
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="mb-2">
-                    <i class="bi bi-speedometer2 text-primary me-2"></i>
+                <h2 class="mb-3">
+                    <i class="bi bi-speedometer2 text-primary"></i>
                     Mi Dashboard
                 </h2>
-                <p class="text-muted mb-0">Resumen de tu actividad y estado actual</p>
+                <p class="text-muted">Resumen de tu actividad y asistencia</p>
             </div>
         </div>
 
-        <!-- Información Personal y Estado de Jornada -->
+        <!-- Información del Empleado -->
         <div class="row mb-4">
-            <!-- Información Personal -->
-            <div class="col-md-4 mb-3">
-                <div class="card info-personal text-white h-100">
+            <div class="col-12">
+                <div class="card">
                     <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <img id="avatar-empleado" src="" class="avatar rounded-circle me-3" alt="Avatar"
-                                 onerror="this.src='https://ui-avatars.com/api/?name=U&size=120&background=0D6EFD&color=fff&bold=true'">
-                            <div class="flex-grow-1">
-                                <h4 id="nombre-empleado" class="mb-1">Cargando...</h4>
-                                <p id="info-empleado" class="mb-0 opacity-90">Departamento: Cargando...</p>
-                                <p id="codigo-empleado" class="mb-0 opacity-90">Código: --</p>
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <img id="empleado-avatar"
+                                     class="avatar rounded-circle"
+                                     alt="Avatar"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=U&size=100&background=0D6EFD&color=fff&bold=true'">
                             </div>
-                        </div>
-                        <div class="row text-center mt-3">
-                            <div class="col-4">
-                                <h5 id="dias-trabajados-mes" class="mb-1">0</h5>
-                                <small>Días Este Mes</small>
+                            <div class="col-md-6">
+                                <h4 class="mb-1" id="empleado-nombre">Cargando...</h4>
+                                <p class="text-muted mb-1">
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    <span id="empleado-codigo">-</span> |
+                                    <span id="empleado-departamento">-</span>
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    <span id="fecha-actual">-</span>
+                                </p>
                             </div>
-                            <div class="col-4">
-                                <h5 id="horas-mes" class="mb-1">0h</h5>
-                                <small>Horas Mes</small>
-                            </div>
-                            <div class="col-4">
-                                <h5 id="asistencia-percent" class="mb-1">0%</h5>
-                                <small>Asistencia</small>
+                            <div class="col-md-4 text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-outline-primary" onclick="DashboardEmpleado.recargarDashboard()">
+                                        <i class="bi bi-arrow-clockwise"></i> Actualizar
+                                    </button>
+                                    <button class="btn btn-primary" onclick="DashboardEmpleado.verEstadisticasCompletas()">
+                                        <i class="bi bi-graph-up me-1"></i>Estadísticas
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Estado de Jornada -->
-            <div class="col-md-8 mb-3">
-                <div class="card jornada-card h-100">
-                    <div class="card-body">
-                        <div class="row align-items-center h-100">
-                            <div class="col-md-8">
-                                <h3 id="estado-jornada" class="mb-2">Estado de Jornada</h3>
-                                <p id="detalle-jornada" class="mb-3 opacity-90">Cargando información...</p>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button id="btn-fichaje-entrada" class="btn btn-light fichaje-btn" onclick="DashboardEmpleado.registrarFichaje('Entrada')">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i>Entrada
-                                    </button>
-                                    <button id="btn-fichaje-salida" class="btn btn-outline-light fichaje-btn" onclick="DashboardEmpleado.registrarFichaje('Salida')">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Salida
-                                    </button>
-                                    <button class="btn btn-outline-light" onclick="DashboardEmpleado.recargarDashboard()">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-center">
-                                <div id="reloj-jornada" class="display-4 fw-bold mb-2">--:--</div>
-                                <small class="opacity-90">Tiempo en jornada</small>
-                                <div class="mt-2">
-                                    <small id="hora-actual" class="opacity-75">--:--</small>
-                                </div>
-                            </div>
-                        </div>
+        <!-- Estado Actual -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle fs-4 me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1" id="estado-actual-text">Cargando estado...</h5>
+                        <p class="mb-0" id="estado-detalle">Obteniendo información actual</p>
                     </div>
                 </div>
             </div>
@@ -138,65 +140,62 @@
 
         <!-- Estadísticas Rápidas -->
         <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card border-start border-primary border-4 h-100">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-primary border-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Horas Esta Semana</h6>
-                                <h3 class="mb-0 text-primary" id="stat-horas-semana">0h</h3>
-                                <small class="text-muted" id="stat-progreso-semana">0/40h</small>
+                                <h6 class="text-muted mb-1">Asistencia Mes</h6>
+                                <h3 class="mb-0" id="stat-asistencia">0%</h3>
                             </div>
-                            <i class="bi bi-clock-history fs-1 text-primary opacity-25"></i>
+                            <i class="bi bi-person-check fs-1 text-primary opacity-25"></i>
                         </div>
                         <div class="progress mt-2">
-                            <div class="progress-bar bg-primary" id="barra-semana" style="width: 0%"></div>
+                            <div class="progress-bar bg-primary" id="barra-asistencia" style="width: 0%"></div>
                         </div>
+                        <small class="text-muted" id="stat-dias-asistencia">0/0 días</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card border-start border-success border-4 h-100">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-success border-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Días Asistidos</h6>
-                                <h3 class="mb-0 text-success" id="stat-dias-asistidos">0</h3>
-                                <small class="text-muted" id="stat-progreso-dias">0/5 días</small>
+                                <h6 class="text-muted mb-1">Horas Trabajadas</h6>
+                                <h3 class="text-success mb-0" id="stat-horas-trabajadas">0h</h3>
                             </div>
-                            <i class="bi bi-calendar-check fs-1 text-success opacity-25"></i>
+                            <i class="bi bi-clock-history fs-1 text-success opacity-25"></i>
                         </div>
-                        <div class="progress mt-2">
-                            <div class="progress-bar bg-success" id="barra-dias" style="width: 0%"></div>
-                        </div>
+                        <small class="text-muted" id="stat-minutos-trabajados">0 minutos</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card border-start border-warning border-4 h-100">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-warning border-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Minutos Retraso</h6>
-                                <h3 class="mb-0 text-warning" id="stat-minutos-retraso">0m</h3>
-                                <small class="text-muted">Acumulado mensual</small>
+                                <h6 class="text-muted mb-1">Tiempo Retraso</h6>
+                                <h3 class="text-warning mb-0" id="stat-retraso">0m</h3>
                             </div>
                             <i class="bi bi-alarm fs-1 text-warning opacity-25"></i>
                         </div>
+                        <small class="text-muted">Acumulado mes</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card border-start border-info border-4 h-100">
+            <div class="col-md-3">
+                <div class="card stat-card border-start border-info border-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="text-muted mb-1">Horas Extra</h6>
-                                <h3 class="mb-0 text-info" id="stat-horas-extra">0h</h3>
-                                <small class="text-muted">Este mes</small>
+                                <h3 class="text-info mb-0" id="stat-extra">0m</h3>
                             </div>
                             <i class="bi bi-plus-circle fs-1 text-info opacity-25"></i>
                         </div>
+                        <small class="text-muted">Tiempo adicional</small>
                     </div>
                 </div>
             </div>
@@ -204,117 +203,177 @@
 
         <!-- Contenido Principal -->
         <div class="row">
-            <!-- Mis Fichajes de Hoy -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+            <!-- Columna Izquierda -->
+            <div class="col-lg-8">
+                <div class="row">
+                    <!-- Turno Activo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-clock text-primary me-2"></i>
+                                    Mi Turno
+                                </h5>
+                                <span class="badge bg-primary" id="badge-turno-activo">Activo</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="turno-activo-container">
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status"></div>
+                                        <p class="text-muted mt-2 mb-0">Cargando turno...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Días del Turno -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-calendar-week text-success me-2"></i>
+                                    Días Laborales
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="dias-turno-container" class="text-center">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                    <p class="text-muted mt-2 mb-0">Cargando días...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fichajes de Hoy -->
+                <div class="card mb-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-clock-history text-primary me-2"></i>
                             Mis Fichajes de Hoy
+                            <span class="badge bg-primary ms-2" id="contador-fichajes">0</span>
                         </h5>
-                        <button class="btn btn-sm btn-outline-primary" onclick="DashboardEmpleado.recargarFichajes()">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
+                        <div>
+                            <span class="text-muted small me-2" id="timestamp-fichajes"></span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="DashboardEmpleado.recargarFichajes()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Hora</th>
-                                        <th>Tipo</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabla-mis-fichajes">
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted py-4">
-                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                            Cargando fichajes...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="card-body">
+                        <div id="fichajes-hoy-container">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="text-muted mt-2 mb-0">Cargando fichajes...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Mi Horario Actual -->
-            <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+            <!-- Columna Derecha -->
+            <div class="col-lg-4">
+                <!-- Acciones Rápidas -->
+                <div class="card mb-4">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">
-                            <i class="bi bi-calendar-week text-success me-2"></i>
-                            Mi Horario Actual
+                            <i class="bi bi-lightning-charge text-warning me-2"></i>
+                            Acciones Rápidas
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="info-horario">
-                            <div class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando horario...
-                            </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary quick-action-btn" onclick="DashboardEmpleado.verMisFichajes()">
+                                <i class="bi bi-clock-history me-2"></i>Historial Fichajes
+                            </button>
+                            <button class="btn btn-outline-success quick-action-btn" onclick="DashboardEmpleado.solicitarPermiso()">
+                                <i class="bi bi-file-text me-2"></i>Solicitar Permiso
+                            </button>
+                            <button class="btn btn-outline-info quick-action-btn" onclick="DashboardEmpleado.verNotificaciones()">
+                                <i class="bi bi-bell me-2"></i>Notificaciones
+                            </button>
+                            <button class="btn btn-outline-warning quick-action-btn" onclick="DashboardEmpleado.verHorario()">
+                                <i class="bi bi-calendar-week me-2"></i>Mi Horario Completo
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Notificaciones Recientes -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <!-- Progreso del Mes -->
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
                         <h5 class="mb-0">
-                            <i class="bi bi-bell text-warning me-2"></i>
-                            Notificaciones Recientes
+                            <i class="bi bi-graph-up text-info me-2"></i>
+                            Progreso del Mes
                         </h5>
-                        <a href="#" class="btn btn-sm btn-outline-warning" onclick="window.cargarVista('notificaciones-empleado', 'Mis Notificaciones')">
-                            Ver Todas
-                        </a>
                     </div>
                     <div class="card-body">
-                        <div id="lista-notificaciones">
-                            <div class="text-center text-muted py-3">
-                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                                Cargando notificaciones...
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Días transcurridos</small>
+                                <small class="text-muted" id="progreso-mes-text">0%</small>
                             </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" id="barra-mes" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Objetivo asistencia</small>
+                                <small class="text-muted" id="objetivo-asistencia-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="barra-objetivo" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted" id="dias-restantes">0 días restantes</small>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Timestamp -->
-        <div class="row mt-3">
-            <div class="col-12 text-end">
-                <small class="text-muted">
-                    <i class="bi bi-clock me-1"></i>
-                    Actualizado: <span id="ultima-actualizacion">--:--:--</span>
-                </small>
+                <!-- Rendimiento -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-award text-warning me-2"></i>
+                            Mi Rendimiento
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Promedio diario:</span>
+                            <span class="badge bg-info" id="promedio-diario">0h</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Días consecutivos:</span>
+                            <span class="badge bg-success" id="dias-consecutivos">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Próximo objetivo:</span>
+                            <span class="badge bg-warning" id="proximo-objetivo">+5%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Dashboard Empleado - Corregido y Funcional
+        // ✅ DASHBOARD EMPLEADO - VERSIÓN COMPLETAMENTE FUNCIONAL
         window.DashboardEmpleado = (function () {
             'use strict';
 
             const state = {
-                empleadoId: null,
-                datos: {},
-                intervaloReloj: null,
-                intervaloActualizacion: null,
-                intervaloHora: null
+                datos: null,
+                intervalos: []
             };
 
-            // ✅ CORRECCIÓN: Helper para llamadas API con manejo de 404
+            // API Helper MEJORADO
             async function apiCall(url, options = {}) {
                 try {
+                    console.log(`🔍 Llamando API: ${url}`);
                     const response = await fetch(url, {
                         credentials: 'include',
                         headers: {
@@ -324,459 +383,422 @@
                         ...options
                     });
 
-                    if (response.status === 401) {
-                        window.location.href = '/login.html';
-                        throw new Error('No autenticado');
-                    }
-
-                    if (response.status === 404) {
-                        console.warn(`Endpoint no encontrado: ${url}`);
-                        return null; // Retorna null en lugar de error para 404
-                    }
-
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`❌ Error ${response.status}:`, errorText);
+
+                        // Si es error 404, puede ser que el endpoint no exista
+                        if (response.status === 404) {
+                            throw new Error(`Endpoint no encontrado: ${url}`);
+                        }
+
                         throw new Error(`Error ${response.status}: ${response.statusText}`);
                     }
 
-                    return await response.json();
+                    const data = await response.json();
+                    console.log(`✅ Respuesta API ${url}:`, data);
+                    return data;
+
                 } catch (error) {
-                    console.error('Error en API call:', error);
-                    return null; // Retorna null en caso de error
+                    console.error('❌ API Call Error:', error);
+                    mostrarNotificacion(`Error: ${error.message}`, 'danger');
+                    return null;
                 }
             }
 
-            // ✅ CORRECCIÓN: Cargar datos principales con manejo de errores
+            // Cargar dashboard completo - USANDO NUEVO ENDPOINT
             async function cargarDashboard() {
+                console.log('📊 Cargando dashboard empleado...');
+
                 try {
-                    // Obtener información del usuario
-                    const usuario = await apiCall('/api/auth/usuario-actual');
-                    if (!usuario) {
-                        mostrarError('No se pudo cargar la información del usuario');
+                    // Usar el nuevo endpoint de dashboard
+                    const dashboardData = await apiCall('/api/estadisticas/dashboard-empleado');
+
+                    if (!dashboardData) {
+                        mostrarNotificacion('No se pudieron cargar los datos del dashboard', 'warning');
                         return;
                     }
 
-                    state.empleadoId = usuario.id;
-                    state.datos.usuario = usuario;
-
-                    // ✅ CORRECCIÓN: Cargar datos con manejo individual de errores
-                    const promises = [
-                        apiCall(`/api/fichajes/empleado/${state.empleadoId}?fecha=${new Date().toISOString().split('T')[0]}`),
-                        apiCall(`/api/estadisticas/empleado/${state.empleadoId}?inicio=${getInicioMes()}&fin=${getFinMes()}`),
-                        apiCall(`/api/horarios/activo/empleado/${state.empleadoId}`),
-                        apiCall('/api/notificaciones/mis-notificaciones?soloNoLeidas=true&limit=3'),
-                        apiCall(`/api/rfid/empleado/${state.empleadoId}`)
-                    ];
-
-                    const resultados = await Promise.allSettled(promises);
-
-                    // Procesar resultados individualmente
-                    state.datos.fichajes = resultados[0].status === 'fulfilled' ? (resultados[0].value || []) : [];
-                    state.datos.estadisticas = resultados[1].status === 'fulfilled' ? (resultados[1].value || {}) : {};
-                    state.datos.horario = resultados[2].status === 'fulfilled' ? resultados[2].value : null;
-                    state.datos.notificaciones = resultados[3].status === 'fulfilled' ? (resultados[3].value || []) : [];
-                    state.datos.rfid = resultados[4].status === 'fulfilled' ? (resultados[4].value || []) : [];
-
-                    actualizarVista();
-                    actualizarTimestamp();
+                    state.datos = dashboardData;
+                    actualizarVistaCompleta();
+                    actualizarFechas();
+                    mostrarNotificacion('Dashboard actualizado correctamente', 'success');
 
                 } catch (error) {
-                    console.error('Error cargando dashboard:', error);
-                    mostrarError('Error al cargar los datos del dashboard');
+                    console.error('Error crítico al cargar dashboard:', error);
+                    mostrarNotificacion('Error crítico al cargar el dashboard', 'danger');
                 }
             }
 
-            // ✅ CORRECCIÓN: Actualizar vista con verificaciones de elementos
-            function actualizarVista() {
-                if (!document.getElementById('dashboard-container')) return;
-
-                actualizarInformacionPersonal();
-                actualizarEstadoJornada();
+            // Actualizar toda la vista
+            function actualizarVistaCompleta() {
+                actualizarInfoEmpleado();
+                actualizarEstadoActual();
                 actualizarEstadisticas();
+                actualizarTurnoActivo();
+                actualizarDiasTurno();
                 actualizarFichajesHoy();
-                actualizarHorario();
-                actualizarNotificaciones();
+                actualizarProgresoMes();
+                actualizarRendimiento();
             }
 
-            function actualizarInformacionPersonal() {
-                const usuario = state.datos.usuario;
-                if (!usuario) return;
+            // Actualizar información del empleado
+            function actualizarInfoEmpleado() {
+                const emp = state.datos.empleado;
+                if (!emp) return;
 
-                safeUpdateElement('nombre-empleado', usuario.nombre);
-                safeUpdateElement('info-empleado', `Departamento: ${usuario.departamento || 'No asignado'}`);
-                safeUpdateElement('codigo-empleado', `Código: ${usuario.codigo_empleado || '--'}`);
+                document.getElementById('empleado-nombre').textContent = emp.nombre || 'Usuario';
+                document.getElementById('empleado-codigo').textContent = emp.codigo_empleado || '-';
+                document.getElementById('empleado-departamento').textContent = emp.departamento || '-';
 
-                const avatar = document.getElementById('avatar-empleado');
-                if (avatar && usuario.foto_url) {
-                    avatar.src = usuario.foto_url;
-                }
-
-                // Actualizar estadísticas resumidas
-                const stats = state.datos.estadisticas;
-                if (stats && stats.resumen) {
-                    safeUpdateElement('dias-trabajados-mes', stats.resumen.diasTrabajados || 0);
-                    safeUpdateElement('horas-mes', (stats.resumen.totalHorasTrabajadas || 0) + 'h');
-                    safeUpdateElement('asistencia-percent', (stats.resumen.porcentajeAsistencia || 0) + '%');
-                }
-            }
-
-            function actualizarEstadoJornada() {
-                const fichajes = state.datos.fichajes;
-                const ultimoFichaje = fichajes.length > 0 ? fichajes[fichajes.length - 1] : null;
-                const necesitaEntrada = !ultimoFichaje || ultimoFichaje.tipo === 'Salida';
-
-                safeUpdateElement('estado-jornada', necesitaEntrada ? 'Fuera de Jornada' : 'En Jornada Laboral');
-
-                if (necesitaEntrada) {
-                    safeUpdateElement('detalle-jornada', 'Presiona "Entrada" para comenzar tu jornada');
-                    safeUpdateElement('reloj-jornada', '--:--');
-                    setButtonState('btn-fichaje-entrada', false);
-                    setButtonState('btn-fichaje-salida', true);
-                    detenerRelojJornada();
+                // Avatar con fallback
+                const avatarImg = document.getElementById('empleado-avatar');
+                if (emp.foto_url) {
+                    avatarImg.src = emp.foto_url;
                 } else {
-                    safeUpdateElement('detalle-jornada', `Última acción: ${ultimoFichaje.tipo} a las ${ultimoFichaje.hora}`);
-                    setButtonState('btn-fichaje-entrada', true);
-                    setButtonState('btn-fichaje-salida', false);
-                    iniciarRelojJornada(ultimoFichaje.hora);
+                    const nombre = emp.nombre || 'Usuario';
+                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&size=100&background=0D6EFD&color=fff&bold=true`;
+                    avatarImg.src = avatarUrl;
                 }
             }
 
+            // Actualizar estado actual
+            function actualizarEstadoActual() {
+                const estado = state.datos.estadoActual || 'Sin información';
+                const ultimoFichaje = state.datos.ultimoFichaje;
+
+                document.getElementById('estado-actual-text').textContent = estado;
+
+                let detalle = 'Actualizado: ' + new Date().toLocaleTimeString();
+                if (ultimoFichaje) {
+                    detalle = `Último fichaje: ${ultimoFichaje.tipo} a las ${ultimoFichaje.hora}`;
+                }
+                document.getElementById('estado-detalle').textContent = detalle;
+
+                // Colores según estado
+                const alert = document.querySelector('.alert-info');
+                if (estado.includes('trabajo')) {
+                    alert.className = 'alert alert-success d-flex align-items-center';
+                } else if (estado.includes('Fuera')) {
+                    alert.className = 'alert alert-warning d-flex align-items-center';
+                } else {
+                    alert.className = 'alert alert-info d-flex align-items-center';
+                }
+            }
+
+            // Actualizar estadísticas
             function actualizarEstadisticas() {
-                const stats = state.datos.estadisticas;
-                if (!stats || !stats.resumen) return;
+                const resumen = state.datos.resumenMes;
+                if (!resumen) return;
 
-                // Horas semanales
-                const horasSemanales = Math.round((stats.resumen.totalMinutosTrabajados || 0) / 60);
-                safeUpdateElement('stat-horas-semana', horasSemanales + 'h');
-                const progresoSemana = Math.min((horasSemanales / 40) * 100, 100);
-                safeUpdateElement('stat-progreso-semana', `${horasSemanales}/40h`);
-                updateProgressBar('barra-semana', progresoSemana);
+                // Asistencia
+                const porcentajeAsistencia = resumen.porcentajeAsistencia || 0;
+                document.getElementById('stat-asistencia').textContent = porcentajeAsistencia + '%';
+                document.getElementById('barra-asistencia').style.width = porcentajeAsistencia + '%';
+                document.getElementById('stat-dias-asistencia').textContent =
+                    `${resumen.diasTrabajados || 0}/${resumen.totalDias || 0} días`;
 
-                // Días asistidos
-                const diasAsistidos = stats.resumen.diasTrabajados || 0;
-                safeUpdateElement('stat-dias-asistidos', diasAsistidos);
-                const progresoDias = Math.min((diasAsistidos / 5) * 100, 100);
-                safeUpdateElement('stat-progreso-dias', `${diasAsistidos}/5 días`);
-                updateProgressBar('barra-dias', progresoDias);
+                // Horas trabajadas
+                const horas = Math.floor((resumen.totalMinutosTrabajados || 0) / 60);
+                const minutos = (resumen.totalMinutosTrabajados || 0) % 60;
+                document.getElementById('stat-horas-trabajadas').textContent = horas + 'h';
+                document.getElementById('stat-minutos-trabajados').textContent =
+                    `${resumen.totalMinutosTrabajados || 0} minutos`;
 
-                // Minutos retraso
-                safeUpdateElement('stat-minutos-retraso', (stats.resumen.totalMinutosRetraso || 0) + 'm');
+                // Retraso
+                document.getElementById('stat-retraso').textContent = (resumen.totalMinutosRetraso || 0) + 'm';
 
                 // Horas extra
-                safeUpdateElement('stat-horas-extra', Math.round((stats.resumen.totalMinutosExtra || 0) / 60) + 'h');
+                document.getElementById('stat-extra').textContent = (resumen.totalMinutosExtra || 0) + 'm';
             }
 
-            function actualizarFichajesHoy() {
-                const tbody = document.getElementById('tabla-mis-fichajes');
-                if (!tbody) return;
+            // Actualizar turno activo - COMPLETAMENTE CORREGIDO
+            function actualizarTurnoActivo() {
+                const container = document.getElementById('turno-activo-container');
+                const turno = state.datos.horarioActivo;
 
-                const fichajes = state.datos.fichajes;
-
-                if (fichajes.length === 0) {
-                    tbody.innerHTML = `
-                            <tr>
-                                <td colspan="3" class="text-center text-muted py-4">
-                                    <i class="bi bi-clock fs-4 d-block mb-2"></i>
-                                    No hay fichajes hoy
-                                </td>
-                            </tr>
+                if (!turno) {
+                    container.innerHTML = `
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-clock fs-1 d-block mb-2 opacity-50"></i>
+                                <p class="mb-2">No tienes un turno activo asignado</p>
+                                <small class="text-muted">Contacta con tu supervisor para asignarte un horario</small>
+                            </div>
                         `;
+                    document.getElementById('badge-turno-activo').textContent = 'Sin turno';
+                    document.getElementById('badge-turno-activo').className = 'badge bg-secondary';
                     return;
                 }
 
-                tbody.innerHTML = fichajes.map(f => `
-                        <tr>
-                            <td>
-                                <strong>${f.hora || '--:--'}</strong>
-                            </td>
-                            <td>
-                                <span class="badge ${f.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} badge-status">
-                                    <i class="bi ${f.tipo === 'Entrada' ? 'bi-box-arrow-in-right' : 'bi-box-arrow-right'} me-1"></i>
-                                    ${f.tipo}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info badge-status">Registrado</span>
-                            </td>
-                        </tr>
-                    `).join('');
-            }
-
-            function actualizarHorario() {
-                const contenedor = document.getElementById('info-horario');
-                if (!contenedor) return;
-
-                const horario = state.datos.horario;
-
-                if (!horario) {
-                    contenedor.innerHTML = `
-                            <div class="text-center text-muted">
-                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                                No tienes un horario asignado actualmente
+                // ✅ ESTRUCTURA CORRECTA - usando propiedades directas
+                container.innerHTML = `
+                        <div class="text-center">
+                            <h4 class="text-primary mb-3">${turno.nombreTurno || 'Turno'}</h4>
+                            <div class="mb-3">
+                                <div class="fs-5 fw-bold text-dark">${turno.horaEntrada || '--:--'} - ${turno.horaSalida || '--:--'}</div>
+                                <small class="text-muted">Horario de trabajo</small>
                             </div>
-                        `;
-                    return;
-                }
-
-                const turno = horario.turno;
-                contenedor.innerHTML = `
-                        <div class="row text-center">
-                            <div class="col-6 mb-3">
-                                <h6 class="text-muted mb-1">Entrada</h6>
-                                <h4 class="text-success">${turno.hora_entrada}</h4>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <h6 class="text-muted mb-1">Salida</h6>
-                                <h4 class="text-danger">${turno.hora_salida}</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <h6 class="text-muted mb-2">Días Laborales:</h6>
-                                <div class="d-flex flex-wrap gap-2">
-                                    ${getDiasLaborales(turno)}
-                                </div>
+                            <div class="mb-3">
+                                <span class="badge bg-info">Tolerancia: ${turno.toleranciaMinutos || 0} min</span>
                             </div>
                         </div>
                     `;
+
+                document.getElementById('badge-turno-activo').textContent = 'Activo';
+                document.getElementById('badge-turno-activo').className = 'badge bg-success';
             }
 
-            function actualizarNotificaciones() {
-                const contenedor = document.getElementById('lista-notificaciones');
-                if (!contenedor) return;
+            // Actualizar días del turno
+            function actualizarDiasTurno() {
+                const container = document.getElementById('dias-turno-container');
+                const turno = state.datos.horarioActivo;
 
-                const notificaciones = state.datos.notificaciones;
+                if (!turno || !turno.diasActivos) {
+                    container.innerHTML = '<p class="text-muted">No hay información de días</p>';
+                    return;
+                }
 
-                if (!notificaciones || notificaciones.length === 0) {
-                    contenedor.innerHTML = `
-                            <div class="text-center text-muted">
-                                <i class="bi bi-bell-slash fs-4 d-block mb-2"></i>
-                                No hay notificaciones nuevas
+                const dias = [
+                    { nombre: 'Lun', key: 'lunes' },
+                    { nombre: 'Mar', key: 'martes' },
+                    { nombre: 'Mié', key: 'miercoles' },
+                    { nombre: 'Jue', key: 'jueves' },
+                    { nombre: 'Vie', key: 'viernes' },
+                    { nombre: 'Sáb', key: 'sabado' },
+                    { nombre: 'Dom', key: 'domingo' }
+                ];
+
+                const hoy = new Date().getDay();
+                const diaActual = hoy === 0 ? 6 : hoy - 1; // Ajustar para que Domingo=6
+
+                container.innerHTML = `
+                        <div class="row g-1">
+                            ${dias.map((dia, index) => `
+                                <div class="col">
+                                    <div class="text-center p-2 rounded ${turno.diasActivos[dia.key] ?
+                        (index === diaActual ? 'bg-primary text-white' : 'bg-light') :
+                        'bg-secondary text-white opacity-50'}">
+                                        <div class="fw-bold">${dia.nombre}</div>
+                                        <small>${turno.diasActivos[dia.key] ? '✓' : '✗'}</small>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <small class="text-muted mt-2 d-block">Hoy: ${dias[diaActual].nombre}</small>
+                    `;
+            }
+
+            // Actualizar fichajes de hoy
+            function actualizarFichajesHoy() {
+                const container = document.getElementById('fichajes-hoy-container');
+                const fichajes = state.datos.fichajesHoy || [];
+
+                document.getElementById('contador-fichajes').textContent = fichajes.length;
+                document.getElementById('timestamp-fichajes').textContent =
+                    'Actualizado: ' + new Date().toLocaleTimeString();
+
+                if (fichajes.length === 0) {
+                    container.innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-clock fs-1 d-block mb-2"></i>
+                                <p class="mb-2">No hay fichajes registrados hoy</p>
+                                <small class="text-muted">Recuerda fichar tu entrada y salida</small>
                             </div>
                         `;
                     return;
                 }
 
-                contenedor.innerHTML = notificaciones.map(n => `
-                        <div class="alert alert-light border d-flex align-items-center mb-2">
-                            <i class="bi bi-bell text-warning me-3 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">${n.titulo}</h6>
-                                <p class="mb-1 small text-muted">${n.mensaje}</p>
-                                <small class="text-muted">${new Date(n.fecha_envio).toLocaleDateString()}</small>
+                container.innerHTML = fichajes.map(fichaje => `
+                        <div class="card fichaje-card mb-2 ${fichaje.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
+                            <div class="card-body py-3">
+                                <div class="row align-items-center">
+                                    <div class="col-1 text-center">
+                                        <i class="bi ${fichaje.tipo === 'Entrada' ? 'bi-box-arrow-in-right text-success' : 'bi-box-arrow-right text-danger'} fs-5"></i>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge ${fichaje.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">
+                                                ${fichaje.tipo}
+                                            </span>
+                                            <strong class="fs-6">${fichaje.hora}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <small class="text-muted">${fichaje.fecha}</small>
+                                    </div>
+                                </div>
                             </div>
-                            ${!n.leido ? '<span class="badge bg-warning">Nuevo</span>' : ''}
                         </div>
                     `).join('');
             }
 
-            // ✅ CORRECCIÓN: Funciones del reloj con verificaciones
-            function iniciarRelojJornada(horaInicio) {
-                detenerRelojJornada();
-                const [horas, minutos] = horaInicio.split(':');
-                const inicio = new Date();
-                inicio.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+            // Actualizar progreso del mes
+            function actualizarProgresoMes() {
+                const hoy = new Date();
+                const totalDiasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+                const progresoMes = (hoy.getDate() / totalDiasMes) * 100;
 
-                state.intervaloReloj = setInterval(() => {
-                    const ahora = new Date();
-                    const diferencia = ahora - inicio;
-                    const horas = Math.floor(diferencia / (1000 * 60 * 60));
-                    const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('progreso-mes-text').textContent = Math.round(progresoMes) + '%';
+                document.getElementById('barra-mes').style.width = progresoMes + '%';
 
-                    safeUpdateElement('reloj-jornada',
-                        `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`);
-                }, 1000);
+                // Objetivo de asistencia
+                const resumen = state.datos.resumenMes;
+                const objetivoAsistencia = resumen?.porcentajeAsistencia || 0;
+                document.getElementById('objetivo-asistencia-text').textContent = Math.round(objetivoAsistencia) + '%';
+                document.getElementById('barra-objetivo').style.width = objetivoAsistencia + '%';
+
+                // Días restantes
+                const diasRestantes = totalDiasMes - hoy.getDate();
+                document.getElementById('dias-restantes').textContent = `${diasRestantes} días restantes`;
             }
 
-            function detenerRelojJornada() {
-                if (state.intervaloReloj) {
-                    clearInterval(state.intervaloReloj);
-                    state.intervaloReloj = null;
-                }
+            // Actualizar rendimiento
+            function actualizarRendimiento() {
+                const resumen = state.datos.resumenMes;
+                if (!resumen) return;
+
+                // Promedio diario
+                const promedioDiario = resumen.totalDias > 0 ?
+                    Math.round(resumen.totalMinutosTrabajados / resumen.totalDias / 60) : 0;
+                document.getElementById('promedio-diario').textContent = promedioDiario + 'h';
+
+                // Días consecutivos (simulado - en una implementación real se calcularía)
+                const diasConsecutivos = Math.min(resumen.diasTrabajados || 0, 5);
+                document.getElementById('dias-consecutivos').textContent = diasConsecutivos;
+
+                // Próximo objetivo
+                const asistenciaActual = resumen.porcentajeAsistencia || 0;
+                const proximoObjetivo = Math.min(asistenciaActual + 5, 100);
+                document.getElementById('proximo-objetivo').textContent = `+${proximoObjetivo - asistenciaActual}%`;
             }
 
-            // ✅ CORRECCIÓN: Registrar fichaje mejorado
-            async function registrarFichaje(tipo) {
-                try {
-                    // Verificar si hay tarjetas RFID activas
-                    const tarjetasRFID = state.datos.rfid;
-                    const tarjetaActiva = tarjetasRFID.find(r => r.activo);
-
-                    if (!tarjetaActiva) {
-                        mostrarError('No tienes una tarjeta RFID activa asignada. Contacta con administración.');
-                        return;
-                    }
-
-                    const response = await fetch('/api/fichajes/rfid', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            CodigoRFID: tarjetaActiva.codigo_rfid,
-                            IP: 'dashboard-web'
-                        })
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        mostrarExito(`Fichaje de ${tipo.toLowerCase()} registrado correctamente`);
-                        await cargarDashboard(); // Recargar datos
-                    } else {
-                        const error = await response.json();
-                        mostrarError(error.mensaje || 'Error al registrar el fichaje');
-                    }
-                } catch (error) {
-                    console.error('Error registrando fichaje:', error);
-                    mostrarError('Error de conexión al registrar el fichaje');
-                }
-            }
-
-            // ✅ CORRECCIÓN: Funciones de utilidad seguras
-            function safeUpdateElement(id, content) {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = content;
-                }
-            }
-
-            function setButtonState(id, disabled) {
-                const button = document.getElementById(id);
-                if (button) {
-                    button.disabled = disabled;
-                }
-            }
-
-            function updateProgressBar(id, percentage) {
-                const progressBar = document.getElementById(id);
-                if (progressBar) {
-                    progressBar.style.width = percentage + '%';
-                }
-            }
-
-            function getDiasLaborales(turno) {
-                const dias = [
-                    { key: 'lunes', label: 'Lun' },
-                    { key: 'martes', label: 'Mar' },
-                    { key: 'miercoles', label: 'Mié' },
-                    { key: 'jueves', label: 'Jue' },
-                    { key: 'viernes', label: 'Vie' },
-                    { key: 'sabado', label: 'Sáb' },
-                    { key: 'domingo', label: 'Dom' }
-                ];
-
-                return dias.map(dia =>
-                    turno[dia.key] ?
-                        `<span class="badge bg-primary">${dia.label}</span>` :
-                        `<span class="badge bg-light text-muted">${dia.label}</span>`
-                ).join('');
-            }
-
-            function getInicioMes() {
+            // Funciones de utilidad
+            function actualizarFechas() {
                 const ahora = new Date();
-                return new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString().split('T')[0];
+                const opciones = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                document.getElementById('fecha-actual').textContent =
+                    ahora.toLocaleDateString('es-ES', opciones);
             }
 
-            function getFinMes() {
-                const ahora = new Date();
-                return new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).toISOString().split('T')[0];
+            // Funciones públicas
+            async function recargarDashboard() {
+                await cargarDashboard();
             }
 
-            function actualizarTimestamp() {
-                safeUpdateElement('ultima-actualizacion', new Date().toLocaleTimeString('es-ES'));
+            async function recargarFichajes() {
+                // Recargar dashboard completo para obtener fichajes actualizados
+                await recargarDashboard();
             }
 
-            function actualizarHoraActual() {
-                safeUpdateElement('hora-actual',
-                    new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+            function verEstadisticasCompletas() {
+                if (window.cargarVista) {
+                    window.cargarVista('estadisticas-personales', 'Mis Estadísticas');
+                } else {
+                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
+                }
             }
 
-            function mostrarExito(mensaje) {
-                mostrarNotificacion(mensaje, 'success');
+            function verMisFichajes() {
+                if (window.cargarVista) {
+                    window.cargarVista('fichajes-personales', 'Mis Fichajes');
+                } else {
+                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
+                }
             }
 
-            function mostrarError(mensaje) {
-                mostrarNotificacion(mensaje, 'danger');
+            function solicitarPermiso() {
+                if (window.cargarVista) {
+                    window.cargarVista('permisos-empleado', 'Solicitar Permiso');
+                } else {
+                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
+                }
             }
 
-            function mostrarNotificacion(mensaje, tipo) {
-                // Sistema de notificaciones simple
-                const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
-                const notification = document.createElement('div');
-                notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-                notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-                notification.innerHTML = `
+            function verNotificaciones() {
+                if (window.cargarVista) {
+                    window.cargarVista('notificaciones-empleado', 'Notificaciones');
+                } else {
+                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
+                }
+            }
+
+            function verHorario() {
+                if (window.cargarVista) {
+                    window.cargarVista('horario-personal', 'Mi Horario');
+                } else {
+                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
+                }
+            }
+
+            // Mostrar notificación
+            function mostrarNotificacion(mensaje, tipo = 'info') {
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
                         <div class="d-flex align-items-center">
-                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-2"></i>
+                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
                             <span>${mensaje}</span>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     `;
-                document.body.appendChild(notification);
+                document.body.appendChild(alertDiv);
 
                 setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
+                    if (alertDiv.parentNode) alertDiv.remove();
+                }, 4000);
+            }
+
+            // Auto-refresh
+            function configurarAutoRefresh() {
+                const intervalo = setInterval(() => {
+                    if (!document.hidden) {
+                        console.log('🔄 Auto-refresh del dashboard');
+                        cargarDashboard();
                     }
-                }, 5000);
+                }, 120000); // 2 minutos
+                state.intervalos.push(intervalo);
             }
 
-            // ✅ CORRECCIÓN: Funciones públicas
-            async function recargarDashboard() {
-                await cargarDashboard();
-                mostrarExito('Dashboard actualizado');
-            }
-
-            async function recargarFichajes() {
-                if (!state.empleadoId) return;
-
-                const fichajes = await apiCall(`/api/fichajes/empleado/${state.empleadoId}?fecha=${new Date().toISOString().split('T')[0]}`);
-                if (fichajes) {
-                    state.datos.fichajes = fichajes;
-                    actualizarFichajesHoy();
-                    actualizarEstadoJornada();
-                    mostrarExito('Fichajes actualizados');
-                }
-            }
-
-            // ✅ CORRECCIÓN: Inicialización segura
+            // Inicializar
             async function init() {
-                // Iniciar actualización de hora actual
-                state.intervaloHora = setInterval(actualizarHoraActual, 1000);
-                actualizarHoraActual();
+                if (!document.getElementById('dashboard-empleado-container')) {
+                    console.log('❌ No se encontró el contenedor del dashboard');
+                    return;
+                }
 
-                // Cargar dashboard
+                console.log('🚀 Iniciando dashboard empleado...');
                 await cargarDashboard();
-
-                // Auto-actualización cada 30 segundos
-                state.intervaloActualizacion = setInterval(() => {
-                    cargarDashboard();
-                }, 30000);
+                configurarAutoRefresh();
+                console.log('✅ Dashboard empleado iniciado correctamente');
             }
 
-            // ✅ CORRECCIÓN: Limpieza de intervalos
-            function cleanup() {
-                if (state.intervaloReloj) clearInterval(state.intervaloReloj);
-                if (state.intervaloActualizacion) clearInterval(state.intervaloActualizacion);
-                if (state.intervaloHora) clearInterval(state.intervaloHora);
-            }
-
-            // Iniciar cuando esté listo
+            // Iniciar cuando el DOM esté listo
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
                 init();
             }
 
-            // Limpiar al salir
-            window.addEventListener('beforeunload', cleanup);
-
+            // API pública
             return {
                 init,
                 recargarDashboard,
                 recargarFichajes,
-                registrarFichaje,
-                cleanup
+                verEstadisticasCompletas,
+                verMisFichajes,
+                solicitarPermiso,
+                verNotificaciones,
+                verHorario
             };
         })();
     </script>

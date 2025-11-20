@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("fiexpress")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b994319cfb4f6551ed4424ee287ad9e98aca9427")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3097a5273c69a1764a8d555c1dcc1bf23253539")]
 [assembly: System.Reflection.AssemblyProductAttribute("fiexpress")]
 [assembly: System.Reflection.AssemblyTitleAttribute("fiexpress")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -473,6 +473,62 @@
         }
       }
     },
+    "/api/Estadisticas/mis-estadisticas-detalladas": {
+      "get": {
+        "tags": [
+          "Estadisticas"
+        ],
+        "parameters": [
+          {
+            "name": "inicio",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fin",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Estadisticas/mis-graficos": {
+      "get": {
+        "tags": [
+          "Estadisticas"
+        ],
+        "parameters": [
+          {
+            "name": "inicio",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fin",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Estadisticas/resumen-empleado": {
       "get": {
         "tags": [

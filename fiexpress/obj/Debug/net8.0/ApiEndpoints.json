@@ -332,6 +332,48 @@
   },
   {
     "ContainingType": "fiexpress.Controllers.EstadisticasController",
+    "Method": "GetMisEstadisticasDetalladas",
+    "RelativePath": "api/Estadisticas/mis-estadisticas-detalladas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "inicio",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fin",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.EstadisticasController",
+    "Method": "GetDatosGraficos",
+    "RelativePath": "api/Estadisticas/mis-graficos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "inicio",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fin",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "fiexpress.Controllers.EstadisticasController",
     "Method": "ProcesarEstadisticasDia",
     "RelativePath": "api/Estadisticas/procesar-dia",
     "HttpMethod": "POST",

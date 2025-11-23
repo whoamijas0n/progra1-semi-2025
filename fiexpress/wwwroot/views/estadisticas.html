@@ -7,9 +7,98 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* Estilos personalizados para mantener consistencia */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .loading-steps {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-hidden {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .content-visible {
+            opacity: 1;
+        }
+
         .card-estadistica {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            animation: fadeInUp 0.6s ease;
         }
 
             .card-estadistica:hover {
@@ -19,6 +108,7 @@
 
         .stat-card {
             transition: transform 0.2s ease;
+            animation: fadeInUp 0.6s ease;
         }
 
             .stat-card:hover {
@@ -41,57 +131,86 @@
             height: 8px;
         }
 
-        .nav-tabs .nav-link.active {
-            font-weight: 600;
-            border-bottom: 3px solid #0d6efd;
+        .empleado-inactivo {
+            opacity: 0.7;
+            position: relative;
+            border-left: 4px solid #dc3545;
         }
 
-        .table-actions {
-            white-space: nowrap;
+        .empleado-activo {
+            border-left: 4px solid #198754;
+        }
+
+        .btn-vista-activa {
+            font-weight: bold;
+            border-width: 2px;
+        }
+
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .animate-delay-5 {
+            animation-delay: 0.5s;
         }
 
         .search-highlight {
             background-color: #fff3cd;
             font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
-
-        /* Indicador de empleado inactivo */
-        .empleado-inactivo {
-            opacity: 0.6;
-            position: relative;
-        }
-
-            .empleado-inactivo::after {
-                content: "INACTIVO";
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background: #dc3545;
-                color: white;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 0.7rem;
-                font-weight: bold;
-            }
     </style>
 </head>
 <body>
+    <!-- Pantalla de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-logo"><i class="bi bi-graph-up"></i></div>
+        <div class="loading-text">Cargando panel de estadísticas...</div>
+        <div class="loading-progress">
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+        </div>
+        <div id="loading-steps" class="loading-steps">Iniciando sistema...</div>
+    </div>
+
     <!-- Vista de Panel de Estadísticas -->
-    <div class="container-fluid py-4" id="estadisticas-container">
+    <div class="container-fluid py-4 content-hidden" id="estadisticas-container">
+        <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="mb-3">
-                    <i class="bi bi-graph-up text-primary"></i>
-                    Panel de Estadísticas
-                </h2>
-                <p class="text-muted">Estadísticas automáticas basadas en horarios y fichajes de los empleados <strong>activos</strong>.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-3">
+                            <i class="bi bi-graph-up text-primary"></i>
+                            Panel de Estadísticas
+                        </h2>
+                        <p class="text-muted">Estadísticas automáticas basadas en horarios y fichajes de los empleados.</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary" onclick="EstadisticasModule.recargarEstadisticas()">
+                            <i class="bi bi-arrow-clockwise"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Estadísticas Principales -->
+        <!-- Estadísticas Principales CORREGIDAS -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card stat-card border-start border-primary border-4">
+                <div class="card stat-card border-start border-primary border-4 animate-delay-1">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -104,7 +223,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-success border-4">
+                <div class="card stat-card border-start border-success border-4 animate-delay-2">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -117,7 +236,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-warning border-4">
+                <div class="card stat-card border-start border-warning border-4 animate-delay-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -130,7 +249,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-info border-4">
+                <div class="card stat-card border-start border-info border-4 animate-delay-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -144,8 +263,8 @@
             </div>
         </div>
 
-        <!-- Barra de Búsqueda Rápida Mejorada -->
-        <div class="card mb-4">
+        <!-- Barra de Búsqueda Rápida MEJORADA -->
+        <div class="card mb-4 animate-delay-2">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-8">
@@ -156,25 +275,23 @@
                             <span class="input-group-text bg-light">
                                 <i class="bi bi-search text-muted"></i>
                             </span>
-                            <input type="text"
-                                   class="form-control"
-                                   id="busqueda-rapida"
+                            <input type="text" class="form-control" id="busqueda-rapida"
                                    placeholder="Buscar por nombre, código o departamento...">
                             <button class="btn btn-outline-secondary" type="button" onclick="EstadisticasModule.limpiarBusqueda()">
                                 <i class="bi bi-x-circle"></i>
                             </button>
                         </div>
-                        <small class="text-muted">Escribe para filtrar la lista de empleados activos en tiempo real</small>
+                        <small class="text-muted">Escribe para filtrar y ordenar la lista de empleados en tiempo real</small>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
                             <i class="bi bi-eye me-1"></i>Vista Rápida
                         </label>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary" onclick="EstadisticasModule.mostrarTodos()">
+                            <button class="btn btn-primary btn-vista-activa" id="btn-activos" onclick="EstadisticasModule.mostrarSoloActivos()">
                                 <i class="bi bi-people me-1"></i> Ver Activos
                             </button>
-                            <button class="btn btn-outline-secondary" onclick="EstadisticasModule.mostrarInactivos()">
+                            <button class="btn btn-outline-secondary" id="btn-inactivos" onclick="EstadisticasModule.mostrarSoloInactivos()">
                                 <i class="bi bi-person-x me-1"></i> Ver Inactivos
                             </button>
                         </div>
@@ -183,25 +300,19 @@
             </div>
         </div>
 
-        <!-- Filtros Principales Mejorados -->
-        <div class="card mb-4">
+        <!-- Filtros Principales SIMPLIFICADOS -->
+        <div class="card mb-4 animate-delay-3">
             <div class="card-body">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Fecha Inicio</label>
-                        <input type="date" class="form-control" id="filtro-inicio" value="">
+                        <input type="date" class="form-control" id="filtro-inicio">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Fecha Fin</label>
-                        <input type="date" class="form-control" id="filtro-fin" value="">
+                        <input type="date" class="form-control" id="filtro-fin">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Empleado</label>
-                        <select class="form-select" id="filtro-empleado">
-                            <option value="">Todos los empleados activos</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Departamento</label>
                         <select class="form-select" id="filtro-departamento">
                             <option value="">Todos los departamentos</option>
@@ -209,14 +320,11 @@
                     </div>
                     <div class="col-md-12">
                         <div class="d-flex gap-2">
-                            <button class="btn btn-primary" onclick="EstadisticasModule.cargarEstadisticas()">
+                            <button class="btn btn-primary" onclick="EstadisticasModule.aplicarFiltros()">
                                 <i class="bi bi-filter me-1"></i> Aplicar Filtros
                             </button>
                             <button class="btn btn-outline-secondary" onclick="EstadisticasModule.limpiarFiltros()">
                                 <i class="bi bi-x-circle me-1"></i> Limpiar
-                            </button>
-                            <button class="btn btn-success" onclick="EstadisticasModule.exportarReporte()">
-                                <i class="bi bi-download me-1"></i> Exportar
                             </button>
                         </div>
                     </div>
@@ -226,185 +334,361 @@
 
         <!-- Lista de Estadísticas en Cards -->
         <div class="row g-3" id="lista-estadisticas">
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <p class="text-muted mt-2">Cargando estadísticas de empleados activos...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detalle Empleado -->
-    <div class="modal fade" id="modalDetalleEmpleado" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-light">
-                    <h5 class="modal-title" id="modalEmpleadoTitle">
-                        <i class="bi bi-graph-up me-2"></i>Detalle de Estadísticas
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="detalle-empleado-content">
-                        <!-- Contenido cargado dinámicamente -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i>Cerrar
-                    </button>
-                </div>
-            </div>
+            <!-- El contenido se carga dinámicamente -->
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
     <script>
-        //  MÓDULO AISLADO - Gestión de Estadísticas (SOLO EMPLEADOS ACTIVOS)
+        // ✅ MÓDULO COMPLETAMENTE FUNCIONAL Y CORREGIDO - SIN AUTO-REFRESH
         window.EstadisticasModule = (function () {
             'use strict';
 
-            // Estado privado del módulo
             const state = {
                 estadisticas: null,
                 empleados: [],
-                empleadosActivos: [],
-                empleadosInactivos: [],
                 departamentos: [],
-                modalDetalle: null,
                 estadisticasOriginales: null,
-                mostrarInactivos: false // Control para mostrar/ocultar inactivos
+                mostrarSoloActivos: true, // Por defecto solo mostrar activos
+                busquedaActual: '',
+                pasosCarga: [
+                    "Iniciando sistema...",
+                    "Cargando información de empleados...",
+                    "Obteniendo departamentos...",
+                    "Configurando filtros...",
+                    "Cargando estadísticas...",
+                    "Procesando datos...",
+                    "Preparando interfaz...",
+                    "¡Listo!"
+                ],
+                pasoActual: 0
             };
 
-            // API Helper
+            const STORAGE_KEY = 'fiExpress_estadisticas_data';
+
+            // ✅ CONTROL DE PANTALLA DE CARGA
+            function actualizarProgresoCarga(paso, mensajePersonalizado = null) {
+                const progressBar = document.getElementById('loading-progress-bar');
+                const stepsText = document.getElementById('loading-steps');
+
+                const progreso = ((paso + 1) / state.pasosCarga.length) * 100;
+                progressBar.style.width = `${progreso}%`;
+
+                const mensaje = mensajePersonalizado || state.pasosCarga[paso];
+                stepsText.textContent = mensaje;
+                state.pasoActual = paso;
+            }
+
+            function mostrarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const contenido = document.getElementById('estadisticas-container');
+                overlay.classList.remove('hidden');
+                contenido.classList.add('content-hidden');
+                contenido.classList.remove('content-visible');
+                actualizarProgresoCarga(0);
+            }
+
+            function ocultarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const contenido = document.getElementById('estadisticas-container');
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Panel de estadísticas listo!");
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    contenido.classList.remove('content-hidden');
+                    contenido.classList.add('content-visible');
+                }, 800);
+            }
+
+            // ✅ PERSISTENCIA DE DATOS
+            function guardarDatosEnStorage(datos) {
+                try {
+                    const datosConTimestamp = {
+                        ...datos,
+                        timestamp: Date.now(),
+                        filtros: {
+                            inicio: document.getElementById('filtro-inicio').value,
+                            fin: document.getElementById('filtro-fin').value,
+                            departamento: document.getElementById('filtro-departamento').value
+                        }
+                    };
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(datosConTimestamp));
+                } catch (error) {
+                    console.warn('No se pudo guardar en sessionStorage:', error);
+                }
+            }
+
+            function cargarDatosDesdeStorage() {
+                try {
+                    const datosGuardados = sessionStorage.getItem(STORAGE_KEY);
+                    if (!datosGuardados) return null;
+
+                    const datos = JSON.parse(datosGuardados);
+                    const cincoMinutos = 5 * 60 * 1000;
+
+                    // Verificar que los datos no sean viejos y que los filtros sean los mismos
+                    const filtrosActuales = {
+                        inicio: document.getElementById('filtro-inicio').value,
+                        fin: document.getElementById('filtro-fin').value,
+                        departamento: document.getElementById('filtro-departamento').value
+                    };
+
+                    if (Date.now() - datos.timestamp > cincoMinutos ||
+                        JSON.stringify(datos.filtros) !== JSON.stringify(filtrosActuales)) {
+                        sessionStorage.removeItem(STORAGE_KEY);
+                        return null;
+                    }
+
+                    return datos;
+                } catch (error) {
+                    console.warn('Error al cargar datos desde sessionStorage:', error);
+                    return null;
+                }
+            }
+
+            // ✅ API HELPER MEJORADO
             async function apiCall(url, options = {}) {
                 try {
+                    console.log(`🔍 API Call: ${url}`);
                     const response = await fetch(url, {
                         credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
                         ...options
                     });
 
                     if (!response.ok) {
-                        const text = await response.text();
-                        console.error(`API Error ${response.status}:`, text);
+                        const errorText = await response.text();
+                        console.error(`❌ API Error ${response.status}:`, errorText);
                         throw new Error(`Error ${response.status}: ${response.statusText}`);
                     }
 
-                    return await response.json();
+                    const data = await response.json();
+                    return data;
                 } catch (error) {
-                    console.error('API Call Error:', error);
-                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    console.error('💥 API Call Error:', error);
+                    mostrarAlerta(`Error de conexión: ${error.message}`, 'danger');
                     throw error;
                 }
             }
 
-            // Cargar estadísticas
-            async function cargarEstadisticas() {
+            // ✅ FUNCIÓN PRINCIPAL MEJORADA
+            async function cargarEstadisticas(forceRefresh = false) {
+                console.log('📊 Cargando estadísticas...');
+
+                if (!forceRefresh) {
+                    const datosGuardados = cargarDatosDesdeStorage();
+                    if (datosGuardados) {
+                        console.log('✅ Usando datos guardados en sessionStorage');
+                        state.estadisticas = datosGuardados;
+                        state.estadisticasOriginales = JSON.parse(JSON.stringify(datosGuardados));
+                        actualizarVistaCompleta();
+                        ocultarPantallaCarga();
+                        return;
+                    }
+                }
+
+                mostrarPantallaCarga();
+
                 try {
-                    mostrarLoading();
+                    actualizarProgresoCarga(1, "Validando fechas...");
 
                     const inicio = document.getElementById('filtro-inicio').value;
                     const fin = document.getElementById('filtro-fin').value;
-                    const empleadoId = document.getElementById('filtro-empleado').value;
                     const departamentoId = document.getElementById('filtro-departamento').value;
 
+                    // ✅ VALIDACIÓN DE FECHAS MEJORADA
                     if (!inicio || !fin) {
-                        mostrarAlerta('Selecciona un rango de fechas', 'warning');
+                        mostrarAlerta('❌ Debes seleccionar un rango de fechas válido', 'warning');
+                        ocultarPantallaCarga();
                         return;
                     }
 
+                    if (new Date(inicio) > new Date(fin)) {
+                        mostrarAlerta('❌ La fecha de inicio no puede ser mayor a la fecha fin', 'warning');
+                        ocultarPantallaCarga();
+                        return;
+                    }
+
+                    // ✅ CONSTRUCCIÓN CORRECTA DE URL
                     let url = `/api/estadisticas/generales?inicio=${inicio}&fin=${fin}`;
-                    if (empleadoId) url += `&empleadoId=${empleadoId}`;
                     if (departamentoId) url += `&departamentoId=${departamentoId}`;
 
+                    console.log(`🔗 URL de API: ${url}`);
+
+                    actualizarProgresoCarga(2, "Solicitando datos a la API...");
                     state.estadisticas = await apiCall(url);
                     state.estadisticasOriginales = JSON.parse(JSON.stringify(state.estadisticas));
 
-                    //  FILTRAR SOLO EMPLEADOS ACTIVOS POR DEFECTO
-                    if (state.estadisticas && state.estadisticas.estadisticasDetalladas) {
-                        state.estadisticas.estadisticasDetalladas = state.estadisticas.estadisticasDetalladas.filter(est => {
-                            const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                            return empleado ? empleado.activo : false;
-                        });
-                    }
+                    actualizarProgresoCarga(3, "Procesando estadísticas...");
 
-                    mostrarEstadisticas();
-                    actualizarEstadisticasPrincipales();
-                    actualizarTimestamp();
+                    // ✅ GUARDAR Y ACTUALIZAR
+                    guardarDatosEnStorage(state.estadisticas);
+                    actualizarProgresoCarga(4, "Actualizando interfaz...");
+                    actualizarVistaCompleta();
+
+                    mostrarAlerta('✅ Estadísticas actualizadas correctamente', 'success');
+                    setTimeout(ocultarPantallaCarga, 500);
 
                 } catch (error) {
-                    console.error(' Error al cargar estadísticas:', error);
-                    mostrarError('Error al cargar estadísticas: ' + error.message);
+                    console.error('💥 Error crítico al cargar estadísticas:', error);
+                    mostrarAlerta('❌ Error crítico al cargar las estadísticas', 'danger');
+                    ocultarPantallaCarga();
                 }
             }
 
-            // Mostrar estadísticas en cards
+            // ✅ FUNCIÓN CRÍTICA: ACTUALIZAR ESTADÍSTICAS PRINCIPALES (COMPLETAMENTE CORREGIDA)
+            function actualizarEstadisticasPrincipales() {
+                if (!state.estadisticas || !state.estadisticas.resumenGeneral) {
+                    console.warn('⚠️ No hay datos para actualizar estadísticas principales');
+
+                    // Resetear a valores por defecto
+                    document.getElementById('stat-total-empleados').textContent = '0';
+                    document.getElementById('stat-asistencia').textContent = '0%';
+                    document.getElementById('stat-retraso').textContent = '0h';
+                    document.getElementById('stat-extra').textContent = '0h';
+                    return;
+                }
+
+                const resumen = state.estadisticas.resumenGeneral;
+                console.log('📈 Resumen general:', resumen);
+
+                // ✅ EMPLEADOS ACTIVOS: SIEMPRE contar solo empleados activos del sistema
+                const empleadosActivos = state.empleados.filter(emp => emp.activo).length;
+                document.getElementById('stat-total-empleados').textContent = empleadosActivos;
+
+                // ✅ ASISTENCIA PROMEDIO: Solo de empleados activos en las estadísticas filtradas
+                let asistenciaPromedio = 0;
+                if (state.estadisticas.estadisticasDetalladas && state.estadisticas.estadisticasDetalladas.length > 0) {
+                    const estadisticasActivas = state.estadisticas.estadisticasDetalladas.filter(est => {
+                        const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                        return empleado ? empleado.activo : false;
+                    });
+
+                    if (estadisticasActivas.length > 0) {
+                        asistenciaPromedio = estadisticasActivas.reduce((sum, est) => sum + est.porcentajeAsistencia, 0) / estadisticasActivas.length;
+                    }
+                }
+                document.getElementById('stat-asistencia').textContent = `${asistenciaPromedio.toFixed(1)}%`;
+
+                // ✅ HORAS DE RETRASO (minutos a horas) - Solo de empleados activos
+                let totalRetrasoMinutos = 0;
+                if (state.estadisticas.estadisticasDetalladas) {
+                    state.estadisticas.estadisticasDetalladas.forEach(est => {
+                        const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                        if (empleado && empleado.activo) {
+                            totalRetrasoMinutos += est.totalMinutosRetraso || 0;
+                        }
+                    });
+                }
+                const horasRetraso = (totalRetrasoMinutos / 60).toFixed(1);
+                document.getElementById('stat-retraso').textContent = `${horasRetraso}h`;
+
+                // ✅ HORAS EXTRA (minutos a horas) - Solo de empleados activos
+                let totalExtraMinutos = 0;
+                if (state.estadisticas.estadisticasDetalladas) {
+                    state.estadisticas.estadisticasDetalladas.forEach(est => {
+                        const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                        if (empleado && empleado.activo) {
+                            totalExtraMinutos += est.totalMinutosExtra || 0;
+                        }
+                    });
+                }
+                const horasExtra = (totalExtraMinutos / 60).toFixed(1);
+                document.getElementById('stat-extra').textContent = `${horasExtra}h`;
+
+                console.log('✅ Estadísticas principales actualizadas correctamente');
+            }
+
+            // ✅ ACTUALIZAR VISTA COMPLETA
+            function actualizarVistaCompleta() {
+                actualizarEstadisticasPrincipales();
+                mostrarEstadisticas();
+                actualizarBotonesVista();
+            }
+
+            // ✅ MOSTRAR ESTADÍSTICAS EN CARDS CON ORDENACIÓN POR BÚSQUEDA
             function mostrarEstadisticas() {
                 const container = document.getElementById('lista-estadisticas');
-
-                // Usar datos originales si existen
                 const datosAMostrar = state.estadisticasOriginales || state.estadisticas;
 
                 if (!datosAMostrar || !datosAMostrar.estadisticasDetalladas) {
                     container.innerHTML = `
-                                <div class="col-12">
-                                    <div class="alert alert-info text-center py-4">
-                                        <i class="bi bi-graph-up fs-1 d-block mb-3 text-info"></i>
-                                        <h5>No hay estadísticas disponibles</h5>
-                                        <p class="mb-0">No se encontraron datos con los filtros aplicados</p>
-                                    </div>
+                            <div class="col-12">
+                                <div class="alert alert-info text-center py-4">
+                                    <i class="bi bi-graph-up fs-1 d-block mb-3 text-info"></i>
+                                    <h5>No hay estadísticas disponibles</h5>
+                                    <p class="mb-0">No se encontraron datos con los filtros aplicados</p>
                                 </div>
-                            `;
+                            </div>
+                        `;
                     return;
                 }
 
-                let estadisticas = datosAMostrar.estadisticasDetalladas;
+                let estadisticas = [...datosAMostrar.estadisticasDetalladas];
 
-                //  FILTRAR POR ESTADO (ACTIVOS/INACTIVOS)
-                if (!state.mostrarInactivos) {
+                // ✅ FILTRAR POR ESTADO (ACTIVOS/INACTIVOS)
+                if (state.mostrarSoloActivos) {
                     estadisticas = estadisticas.filter(est => {
                         const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
                         return empleado ? empleado.activo : false;
                     });
+                } else {
+                    estadisticas = estadisticas.filter(est => {
+                        const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                        return empleado ? !empleado.activo : true;
+                    });
+                }
+
+                // ✅ ORDENAR POR BÚSQUEDA SI HAY TEXTO
+                if (state.busquedaActual) {
+                    estadisticas = ordenarPorRelevancia(estadisticas, state.busquedaActual);
                 }
 
                 if (estadisticas.length === 0) {
-                    const mensaje = state.mostrarInactivos ?
-                        'No hay estadísticas de empleados inactivos' :
-                        'No hay estadísticas de empleados activos';
+                    const mensaje = state.mostrarSoloActivos ?
+                        'No hay estadísticas de empleados activos' :
+                        'No hay estadísticas de empleados inactivos';
 
                     container.innerHTML = `
-                                <div class="col-12">
-                                    <div class="alert alert-info text-center py-4">
-                                        <i class="bi bi-inbox fs-1 d-block mb-3 text-info"></i>
-                                        <h5>${mensaje}</h5>
-                                        <p class="mb-0">No se encontraron datos con los filtros aplicados</p>
-                                    </div>
+                            <div class="col-12">
+                                <div class="alert alert-warning text-center py-4">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3 text-warning"></i>
+                                    <h5>${mensaje}</h5>
+                                    <p class="mb-0">Intenta con otros filtros o rango de fechas</p>
                                 </div>
-                            `;
+                            </div>
+                        `;
                     return;
                 }
 
                 container.innerHTML = estadisticas.map(est => {
                     const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                    const esActivo = empleado ? empleado.activo : false;
+                    const esActivo = empleado ? empleado.activo : true;
+                    const textoBusqueda = state.busquedaActual.toLowerCase();
+
+                    // ✅ RESALTAR TEXTO DE BÚSQUEDA
+                    const resaltarTexto = (texto) => {
+                        if (!textoBusqueda || !texto) return texto;
+                        const regex = new RegExp(`(${textoBusqueda})`, 'gi');
+                        return texto.toString().replace(regex, '<mark class="search-highlight">$1</mark>');
+                    };
 
                     return `
                             <div class="col-md-6 col-lg-4">
-                                <div class="card card-estadistica h-100 ${!esActivo ? 'empleado-inactivo' : ''}">
+                                <div class="card card-estadistica h-100 ${esActivo ? 'empleado-activo' : 'empleado-inactivo'}">
                                     <div class="card-body">
                                         <div class="d-flex align-items-start mb-3">
-                                            <img src="${est.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(est.empleado?.nombre || 'Empleado') + '&size=100&background=0D6EFD&color=fff&bold=true'}"
+                                            <img src="${est.empleado?.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(est.empleado?.nombre || 'Empleado')}&size=100&background=0D6EFD&color=fff&bold=true`}"
                                                  class="avatar rounded-circle me-3"
                                                  alt="${est.empleado?.nombre}"
-                                                 onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${est.empleado?.nombre}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
+                                                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(est.empleado?.nombre || 'Empleado')}&size=100&background=0D6EFD&color=fff&bold=true'">
                                             <div class="flex-grow-1">
-                                                <h6 class="card-title mb-1 fw-bold">${est.empleado?.nombre || 'N/A'}</h6>
-                                                <p class="text-muted small mb-2">${est.empleado?.codigo_empleado || ''}</p>
-                                                <span class="badge bg-primary">${est.empleado?.departamento || 'N/A'}</span>
+                                                <h6 class="card-title mb-1 fw-bold">${resaltarTexto(est.empleado?.nombre) || 'N/A'}</h6>
+                                                <p class="text-muted small mb-2">${resaltarTexto(est.empleado?.codigo_empleado) || ''}</p>
+                                                <span class="badge bg-primary">${resaltarTexto(est.empleado?.departamento) || 'N/A'}</span>
                                                 ${!esActivo ? '<span class="badge bg-danger ms-1">Inactivo</span>' : ''}
                                             </div>
                                         </div>
@@ -441,13 +725,6 @@
                                                 <small class="text-muted">Extra</small>
                                             </div>
                                         </div>
-
-                                        <div class="btn-group w-100">
-                                            <button class="btn btn-outline-primary btn-sm"
-                                                    onclick="EstadisticasModule.verDetalleEmpleado(${est.empleado?.idEmpleado})">
-                                                <i class="bi bi-eye me-1"></i>Detalle
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -455,597 +732,203 @@
                 }).join('');
             }
 
-            // Mostrar estadísticas filtradas por búsqueda
-            function mostrarEstadisticasFiltradas(estadisticasFiltradas) {
-                const container = document.getElementById('lista-estadisticas');
+            // ✅ ORDENAR POR RELEVANCIA DE BÚSQUEDA
+            function ordenarPorRelevancia(estadisticas, textoBusqueda) {
+                const texto = textoBusqueda.toLowerCase();
 
-                //  FILTRAR POR ESTADO (ACTIVOS/INACTIVOS)
-                if (!state.mostrarInactivos) {
-                    estadisticasFiltradas = estadisticasFiltradas.filter(est => {
-                        const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                        return empleado ? empleado.activo : false;
-                    });
-                }
+                return estadisticas.sort((a, b) => {
+                    const aPuntos = calcularPuntosRelevancia(a, texto);
+                    const bPuntos = calcularPuntosRelevancia(b, texto);
 
-                if (estadisticasFiltradas.length === 0) {
-                    const mensaje = state.mostrarInactivos ?
-                        'No se encontraron empleados inactivos' :
-                        'No se encontraron empleados activos';
-
-                    container.innerHTML = `
-                                <div class="col-12">
-                                    <div class="alert alert-info text-center py-4">
-                                        <i class="bi bi-search fs-1 d-block mb-3 text-info"></i>
-                                        <h5>${mensaje}</h5>
-                                        <p class="mb-0">No hay resultados para tu búsqueda</p>
-                                    </div>
-                                </div>
-                            `;
-                    return;
-                }
-
-                container.innerHTML = estadisticasFiltradas.map(est => {
-                    const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                    const esActivo = empleado ? empleado.activo : false;
-
-                    return `
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card card-estadistica h-100 ${!esActivo ? 'empleado-inactivo' : ''}">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="${est.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(est.empleado?.nombre || 'Empleado') + '&size=100&background=0D6EFD&color=fff&bold=true'}"
-                                                 class="avatar rounded-circle me-3"
-                                                 alt="${est.empleado?.nombre}"
-                                                 onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${est.empleado?.nombre}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
-                                            <div class="flex-grow-1">
-                                                <h6 class="card-title mb-1 fw-bold">${est.empleado?.nombre || 'N/A'}</h6>
-                                                <p class="text-muted small mb-2">${est.empleado?.codigo_empleado || ''}</p>
-                                                <span class="badge bg-primary">${est.empleado?.departamento || 'N/A'}</span>
-                                                ${!esActivo ? '<span class="badge bg-danger ms-1">Inactivo</span>' : ''}
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <small class="text-muted">Asistencia</small>
-                                                <small class="fw-bold ${est.porcentajeAsistencia >= 90 ? 'text-success' : est.porcentajeAsistencia >= 70 ? 'text-warning' : 'text-danger'}">
-                                                    ${est.porcentajeAsistencia}%
-                                                </small>
-                                            </div>
-                                            <div class="progress">
-                                                <div class="progress-bar ${est.porcentajeAsistencia >= 90 ? 'bg-success' : est.porcentajeAsistencia >= 70 ? 'bg-warning' : 'bg-danger'}"
-                                                     style="width: ${est.porcentajeAsistencia}%">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row text-center mb-3">
-                                            <div class="col-4">
-                                                <div class="border-end">
-                                                    <h6 class="mb-0 fw-bold">${est.diasTrabajados}/${est.totalDias}</h6>
-                                                    <small class="text-muted">Días</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="border-end">
-                                                    <h6 class="mb-0 fw-bold text-warning">${Math.floor(est.totalMinutosRetraso / 60)}h</h6>
-                                                    <small class="text-muted">Retraso</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <h6 class="mb-0 fw-bold text-info">${Math.floor(est.totalMinutosExtra / 60)}h</h6>
-                                                <small class="text-muted">Extra</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="btn-group w-100">
-                                            <button class="btn btn-outline-primary btn-sm"
-                                                    onclick="EstadisticasModule.verDetalleEmpleado(${est.empleado?.idEmpleado})">
-                                                <i class="bi bi-eye me-1"></i>Detalle
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                }).join('');
+                    return bPuntos - aPuntos; // Orden descendente
+                });
             }
 
-            // Ver detalle de empleado
-            async function verDetalleEmpleado(empleadoId) {
-                try {
-                    const inicio = document.getElementById('filtro-inicio').value;
-                    const fin = document.getElementById('filtro-fin').value;
+            function calcularPuntosRelevancia(estadistica, texto) {
+                let puntos = 0;
+                const campos = [
+                    estadistica.empleado?.nombre,
+                    estadistica.empleado?.codigo_empleado,
+                    estadistica.empleado?.departamento
+                ];
 
-                    if (!inicio || !fin) {
-                        mostrarAlerta('Selecciona un rango de fechas primero', 'warning');
-                        return;
-                    }
+                campos.forEach(campo => {
+                    if (!campo) return;
 
-                    const detalle = await apiCall(`/api/estadisticas/empleado/${empleadoId}?inicio=${inicio}&fin=${fin}`);
-                    mostrarModalDetalle(detalle);
+                    const campoLower = campo.toLowerCase();
 
-                } catch (error) {
-                    console.error(' Error al cargar detalle:', error);
-                    mostrarAlerta('Error al cargar detalle: ' + error.message, 'danger');
-                }
+                    // Coincidencia exacta
+                    if (campoLower === texto) puntos += 10;
+
+                    // Coincidencia al inicio
+                    if (campoLower.startsWith(texto)) puntos += 5;
+
+                    // Coincidencia en cualquier parte
+                    if (campoLower.includes(texto)) puntos += 3;
+                });
+
+                return puntos;
             }
 
-            // Mostrar modal de detalle
-            function mostrarModalDetalle(detalle) {
-                const content = document.getElementById('detalle-empleado-content');
-                const empleado = state.empleados.find(e => e.idEmpleado === detalle.empleado.idEmpleado);
-                const esActivo = empleado ? empleado.activo : false;
-
-                content.innerHTML = `
-                            <div class="row mb-4">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-center">
-                                        <img src="${detalle.empleado.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(detalle.empleado.nombre) + '&size=200&background=0D6EFD&color=fff&bold=true'}"
-                                             class="avatar rounded-circle me-3"
-                                             style="width: 80px; height: 80px;"
-                                             alt="${detalle.empleado.nombre}">
-                                        <div>
-                                            <h4 class="mb-1">${detalle.empleado.nombre}</h4>
-                                            <p class="text-muted mb-0">${detalle.empleado.codigo_empleado} • ${detalle.empleado.departamento}</p>
-                                            <small class="text-muted">Período: ${detalle.periodo}</small>
-                                            ${!esActivo ? '<div class="mt-1"><span class="badge bg-danger">Empleado Inactivo</span></div>' : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Resumen en Cards -->
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-3">
-                                    <div class="card text-center border-primary">
-                                        <div class="card-body">
-                                            <i class="bi bi-calendar-check fs-1 text-primary mb-2"></i>
-                                            <h3 class="text-primary">${detalle.resumen.diasTrabajados}/${detalle.resumen.totalDias}</h3>
-                                            <small class="text-muted">Días Trabajados</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="card text-center border-success">
-                                        <div class="card-body">
-                                            <i class="bi bi-check-circle fs-1 text-success mb-2"></i>
-                                            <h3 class="text-success">${detalle.resumen.porcentajeAsistencia}%</h3>
-                                            <small class="text-muted">Asistencia</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="card text-center border-warning">
-                                        <div class="card-body">
-                                            <i class="bi bi-clock-history fs-1 text-warning mb-2"></i>
-                                            <h3 class="text-warning">${Math.floor(detalle.resumen.totalMinutosRetraso / 60)}h</h3>
-                                            <small class="text-muted">Retraso Total</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="card text-center border-info">
-                                        <div class="card-body">
-                                            <i class="bi bi-plus-circle fs-1 text-info mb-2"></i>
-                                            <h3 class="text-info">${Math.floor(detalle.resumen.totalMinutosExtra / 60)}h</h3>
-                                            <small class="text-muted">Horas Extra</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Detalle por día -->
-                            <h5 class="mb-3">
-                                <i class="bi bi-calendar-week me-2"></i>Detalle por Día
-                            </h5>
-                            <div class="table-responsive">
-                                <table class="table table-sm table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Estado</th>
-                                            <th>Horas Trabajadas</th>
-                                            <th>Retraso</th>
-                                            <th>Extra</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${detalle.detallePorDia.map(dia => `
-                                            <tr>
-                                                <td>${new Date(dia.fecha).toLocaleDateString('es-ES')}</td>
-                                                <td>
-                                                    <span class="badge ${getBadgeClassEstado(dia.estado_dia)}">
-                                                        ${getEstadoTexto(dia.estado_dia)}
-                                                    </span>
-                                                </td>
-                                                <td>${dia.horasTrabajadas}</td>
-                                                <td>${dia.retrasoFormateado}</td>
-                                                <td>${dia.extraFormateado}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
-
-                if (!state.modalDetalle) {
-                    state.modalDetalle = new bootstrap.Modal(document.getElementById('modalDetalleEmpleado'));
-                }
-
-                const estadoTexto = esActivo ? '' : ' (INACTIVO)';
-                document.getElementById('modalEmpleadoTitle').textContent = `Estadísticas - ${detalle.empleado.nombre}${estadoTexto}`;
-                state.modalDetalle.show();
-            }
-
-            // Actualizar estadísticas principales
-            function actualizarEstadisticasPrincipales() {
-                if (!state.estadisticas || !state.estadisticas.resumenGeneral) {
-                    return;
-                }
-
-                const resumen = state.estadisticas.resumenGeneral;
-
-                //  CONTAR SOLO EMPLEADOS ACTIVOS
-                const empleadosActivosCount = state.empleados.filter(emp => emp.activo).length;
-                document.getElementById('stat-total-empleados').textContent = empleadosActivosCount;
-                document.getElementById('stat-asistencia').textContent = resumen.promedioAsistencia.toFixed(1) + '%';
-                document.getElementById('stat-retraso').textContent = Math.floor(resumen.totalRetraso / 60) + 'h';
-                document.getElementById('stat-extra').textContent = Math.floor(resumen.totalExtra / 60) + 'h';
-            }
-
-            // Cargar empleados y departamentos para filtros
+            // ✅ CARGAR FILTROS MEJORADO
             async function cargarFiltros() {
                 try {
-                    // Cargar TODOS los empleados para poder filtrar por estado
+                    actualizarProgresoCarga(1, "Cargando empleados...");
+
+                    // Cargar TODOS los empleados para filtros
                     state.empleados = await apiCall('/api/empleados?incluirInactivos=true');
 
-                    // Separar empleados activos e inactivos
-                    state.empleadosActivos = state.empleados.filter(emp => emp.activo);
-                    state.empleadosInactivos = state.empleados.filter(emp => !emp.activo);
+                    actualizarProgresoCarga(2, "Cargando departamentos...");
+                    state.departamentos = await apiCall('/api/departamentos?incluirInactivos=true');
 
-                    const selectEmpleado = document.getElementById('filtro-empleado');
-                    selectEmpleado.innerHTML = '<option value="">Todos los empleados activos</option>';
-
-                    //  SOLO MOSTRAR EMPLEADOS ACTIVOS EN EL FILTRO POR DEFECTO
-                    state.empleadosActivos.forEach(emp => {
-                        selectEmpleado.innerHTML += `<option value="${emp.idEmpleado}">${emp.nombre} (${emp.codigo_empleado})</option>`;
-                    });
-
-                    // Cargar departamentos
-                    state.departamentos = await apiCall('/api/departamentos?incluirInactivos=false');
                     const selectDepto = document.getElementById('filtro-departamento');
                     selectDepto.innerHTML = '<option value="">Todos los departamentos</option>';
                     state.departamentos.forEach(depto => {
                         selectDepto.innerHTML += `<option value="${depto.idDepartamento}">${depto.nombre}</option>`;
                     });
+
                 } catch (error) {
-                    console.error('Error al cargar filtros:', error);
+                    console.error('❌ Error al cargar filtros:', error);
+                    mostrarAlerta('Error al cargar los filtros', 'danger');
                 }
             }
 
-            // Búsqueda en tiempo real
+            // ✅ BÚSQUEDA RÁPIDA MEJORADA
             function configurarBusquedaRapida() {
                 const inputBusqueda = document.getElementById('busqueda-rapida');
-
                 inputBusqueda.addEventListener('input', function (e) {
-                    const texto = e.target.value.toLowerCase().trim();
-
-                    if (!state.estadisticas || !state.estadisticas.estadisticasDetalladas) return;
-
-                    // Si no hay texto, mostrar todos según el filtro actual
-                    if (texto === '') {
-                        mostrarEstadisticas();
-                        return;
-                    }
-
-                    // Filtrar estadísticas por búsqueda
-                    const filtradas = state.estadisticas.estadisticasDetalladas.filter(est =>
-                        est.empleado.nombre.toLowerCase().includes(texto) ||
-                        est.empleado.codigo_empleado.toLowerCase().includes(texto) ||
-                        est.empleado.departamento.toLowerCase().includes(texto)
-                    );
-
-                    mostrarEstadisticasFiltradas(filtradas);
+                    state.busquedaActual = e.target.value.trim();
+                    mostrarEstadisticas();
                 });
             }
 
-            // Limpiar búsqueda
-            function limpiarBusqueda() {
+            // ✅ FUNCIONES DE VISTA RÁPIDA MEJORADAS
+            function mostrarSoloActivos() {
+                state.mostrarSoloActivos = true;
+                state.busquedaActual = '';
                 document.getElementById('busqueda-rapida').value = '';
+                actualizarBotonesVista();
                 mostrarEstadisticas();
+                mostrarAlerta('👥 Mostrando solo empleados activos', 'info');
             }
 
-            // Mostrar solo empleados activos
-            function mostrarTodos() {
-                state.mostrarInactivos = false;
-                limpiarBusqueda();
-                document.getElementById('filtro-empleado').value = '';
-                document.getElementById('filtro-departamento').value = '';
-                cargarEstadisticas();
-                mostrarAlerta('🔍 Mostrando solo empleados activos', 'info');
+            function mostrarSoloInactivos() {
+                state.mostrarSoloActivos = false;
+                state.busquedaActual = '';
+                document.getElementById('busqueda-rapida').value = '';
+                actualizarBotonesVista();
+                mostrarEstadisticas();
+                mostrarAlerta('👥 Mostrando empleados inactivos', 'warning');
             }
 
-            // Mostrar empleados inactivos
-            function mostrarInactivos() {
-                state.mostrarInactivos = true;
+            function actualizarBotonesVista() {
+                const btnActivos = document.getElementById('btn-activos');
+                const btnInactivos = document.getElementById('btn-inactivos');
 
-                if (!state.estadisticas || !state.estadisticasOriginales) {
-                    mostrarAlerta('Primero carga las estadísticas con el rango de fechas', 'warning');
-                    return;
+                if (state.mostrarSoloActivos) {
+                    btnActivos.classList.remove('btn-outline-primary');
+                    btnActivos.classList.add('btn-primary', 'btn-vista-activa');
+                    btnInactivos.classList.remove('btn-primary', 'btn-vista-activa');
+                    btnInactivos.classList.add('btn-outline-secondary');
+                } else {
+                    btnInactivos.classList.remove('btn-outline-secondary');
+                    btnInactivos.classList.add('btn-primary', 'btn-vista-activa');
+                    btnActivos.classList.remove('btn-primary', 'btn-vista-activa');
+                    btnActivos.classList.add('btn-outline-primary');
                 }
-
-                // Filtrar para mostrar solo inactivos
-                const estadisticasInactivas = state.estadisticasOriginales.estadisticasDetalladas.filter(est => {
-                    const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                    return empleado ? !empleado.activo : false;
-                });
-
-                if (estadisticasInactivas.length === 0) {
-                    mostrarAlerta('No hay estadísticas de empleados inactivos', 'info');
-                    return;
-                }
-
-                // Mostrar estadísticas inactivas
-                const container = document.getElementById('lista-estadisticas');
-                container.innerHTML = estadisticasInactivas.map(est => {
-                    return `
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card card-estadistica h-100 empleado-inactivo">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="${est.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(est.empleado?.nombre || 'Empleado') + '&size=100&background=0D6EFD&color=fff&bold=true'}"
-                                                 class="avatar rounded-circle me-3"
-                                                 alt="${est.empleado?.nombre}"
-                                                 onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${est.empleado?.nombre}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
-                                            <div class="flex-grow-1">
-                                                <h6 class="card-title mb-1 fw-bold">${est.empleado?.nombre || 'N/A'}</h6>
-                                                <p class="text-muted small mb-2">${est.empleado?.codigo_empleado || ''}</p>
-                                                <span class="badge bg-primary">${est.empleado?.departamento || 'N/A'}</span>
-                                                <span class="badge bg-danger ms-1">Inactivo</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <small class="text-muted">Asistencia</small>
-                                                <small class="fw-bold ${est.porcentajeAsistencia >= 90 ? 'text-success' : est.porcentajeAsistencia >= 70 ? 'text-warning' : 'text-danger'}">
-                                                    ${est.porcentajeAsistencia}%
-                                                </small>
-                                            </div>
-                                            <div class="progress">
-                                                <div class="progress-bar ${est.porcentajeAsistencia >= 90 ? 'bg-success' : est.porcentajeAsistencia >= 70 ? 'bg-warning' : 'bg-danger'}"
-                                                     style="width: ${est.porcentajeAsistencia}%">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row text-center mb-3">
-                                            <div class="col-4">
-                                                <div class="border-end">
-                                                    <h6 class="mb-0 fw-bold">${est.diasTrabajados}/${est.totalDias}</h6>
-                                                    <small class="text-muted">Días</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="border-end">
-                                                    <h6 class="mb-0 fw-bold text-warning">${Math.floor(est.totalMinutosRetraso / 60)}h</h6>
-                                                    <small class="text-muted">Retraso</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <h6 class="mb-0 fw-bold text-info">${Math.floor(est.totalMinutosExtra / 60)}h</h6>
-                                                <small class="text-muted">Extra</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="btn-group w-100">
-                                            <button class="btn btn-outline-primary btn-sm"
-                                                    onclick="EstadisticasModule.verDetalleEmpleado(${est.empleado?.idEmpleado})">
-                                                <i class="bi bi-eye me-1"></i>Detalle
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                }).join('');
-
-                mostrarAlerta('👥 Mostrando empleados inactivos', 'info');
             }
 
-            // Aplicar filtros
+            // ✅ FUNCIONES DE FILTROS
             function aplicarFiltros() {
-                cargarEstadisticas();
+                cargarEstadisticas(true);
             }
 
-            // Limpiar filtros
             function limpiarFiltros() {
                 document.getElementById('filtro-inicio').value = '';
                 document.getElementById('filtro-fin').value = '';
-                document.getElementById('filtro-empleado').value = '';
                 document.getElementById('filtro-departamento').value = '';
-                limpiarBusqueda();
-                state.mostrarInactivos = false;
+                document.getElementById('busqueda-rapida').value = '';
+                state.busquedaActual = '';
+                state.mostrarSoloActivos = true;
+                actualizarBotonesVista();
+                mostrarAlerta('🔄 Filtros limpiados', 'info');
             }
 
-            // Exportar reporte
-            function exportarReporte() {
-                if (!state.estadisticas) {
-                    mostrarAlerta('No hay datos para exportar', 'warning');
-                    return;
-                }
-
-                try {
-                    const wb = XLSX.utils.book_new();
-                    wb.Props = {
-                        Title: "Reporte de Estadísticas - FiExpress",
-                        Author: "FiExpress",
-                        CreatedDate: new Date()
-                    };
-
-                    // Hoja 1: Resumen General
-                    wb.SheetNames.push("Resumen General");
-                    const resumen = state.estadisticas.resumenGeneral || {};
-                    const resumenData = [
-                        ["Período", state.estadisticas.periodo || "No especificado"],
-                        ["Total Empleados Activos", state.empleadosActivos.length],
-                        ["Asistencia Promedio", `${(resumen.promedioAsistencia || 0).toFixed(1)}%`],
-                        ["Total Retraso (min)", resumen.totalRetraso || 0],
-                        ["Total Horas Extra (min)", resumen.totalExtra || 0],
-                        ["Días Trabajados Totales", resumen.totalDiasTrabajados || 0]
-                    ];
-                    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-                    wb.Sheets["Resumen General"] = wsResumen;
-
-                    // Hoja 2: Detalle por Empleado (SOLO ACTIVOS)
-                    let detalleData = [];
-
-                    if (state.estadisticas.estadisticasDetalladas) {
-                        detalleData = state.estadisticas.estadisticasDetalladas
-                            .filter(est => {
-                                const empleado = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
-                                return empleado ? empleado.activo : false;
-                            })
-                            .map(est => ({
-                                "Código Empleado": est.empleado?.codigo_empleado || "—",
-                                "Nombre": est.empleado?.nombre || "—",
-                                "Departamento": est.empleado?.departamento || "—",
-                                "Días Trabajados": `${est.diasTrabajados || 0}/${est.totalDias || 0}`,
-                                "Asistencia (%)": `${(est.porcentajeAsistencia || 0).toFixed(1)}%`,
-                                "Retraso Total (min)": est.totalMinutosRetraso || 0,
-                                "Horas Extra (min)": est.totalMinutosExtra || 0
-                            }));
-                    }
-
-                    if (detalleData.length > 0) {
-                        wb.SheetNames.push("Detalle por Empleado");
-                        const wsDetalle = XLSX.utils.json_to_sheet(detalleData);
-                        wb.Sheets["Detalle por Empleado"] = wsDetalle;
-                    }
-
-                    const fecha = new Date().toISOString().split('T')[0];
-                    const fileName = `Estadisticas_Activos_FiExpress_${fecha}.xlsx`;
-                    XLSX.writeFile(wb, fileName);
-                    mostrarAlerta(' Reporte exportado correctamente (solo empleados activos)', 'success');
-                } catch (error) {
-                    console.error('Error al exportar:', error);
-                    mostrarAlerta(' Error al generar el archivo Excel', 'danger');
-                }
+            function limpiarBusqueda() {
+                document.getElementById('busqueda-rapida').value = '';
+                state.busquedaActual = '';
+                mostrarEstadisticas();
             }
 
-            // Funciones auxiliares
-            function getBadgeClassEstado(estado) {
-                const clases = {
-                    'NORMAL': 'bg-success',
-                    'RETRASO_LEVE': 'bg-warning',
-                    'RETRASO_GRAVE': 'bg-danger',
-                    'EXTRA_NORMAL': 'bg-info',
-                    'EXTRA_ALTO': 'bg-primary',
-                    'AUSENTE': 'bg-secondary',
-                    'NO_LABORAL': 'bg-light text-dark',
-                    'SIN_HORARIO': 'bg-dark'
-                };
-                return clases[estado] || 'bg-secondary';
+            function recargarEstadisticas() {
+                cargarEstadisticas(true);
             }
 
-            function getEstadoTexto(estado) {
-                const textos = {
-                    'NORMAL': 'Normal',
-                    'RETRASO_LEVE': 'Retraso Leve',
-                    'RETRASO_GRAVE': 'Retraso Grave',
-                    'EXTRA_NORMAL': 'Extra Normal',
-                    'EXTRA_ALTO': 'Extra Alto',
-                    'AUSENTE': 'Ausente',
-                    'NO_LABORAL': 'No Laboral',
-                    'SIN_HORARIO': 'Sin Horario'
-                };
-                return textos[estado] || estado;
-            }
-
-            function mostrarLoading() {
-                const container = document.getElementById('lista-estadisticas');
-                const mensaje = state.mostrarInactivos ?
-                    'Cargando estadísticas de empleados inactivos...' :
-                    'Cargando estadísticas de empleados activos...';
-
-                container.innerHTML = `
-                            <div class="col-12 text-center py-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                                <p class="text-muted mt-2">${mensaje}</p>
-                            </div>
-                        `;
-            }
-
-            function mostrarError(mensaje) {
-                const container = document.getElementById('lista-estadisticas');
-                container.innerHTML = `
-                            <div class="col-12">
-                                <div class="alert alert-danger text-center py-4">
-                                    <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
-                                    <h5>Error al cargar estadísticas</h5>
-                                    <p class="mb-0">${mensaje}</p>
-                                    <button class="btn btn-primary mt-2" onclick="EstadisticasModule.cargarEstadisticas()">
-                                        <i class="bi bi-arrow-clockwise me-1"></i> Reintentar
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-            }
-
-            function actualizarTimestamp() {
-                const ahora = new Date();
-                // Podrías agregar un timestamp en el futuro si lo deseas
-            }
-
-            function mostrarAlerta(mensaje, tipo = 'info') {
-                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
-                alertasAnteriores.forEach(alerta => alerta.remove());
-
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
-                alertDiv.style.zIndex = '9999';
-                alertDiv.style.minWidth = '300px';
-                alertDiv.innerHTML = `
-                            <div class="d-flex align-items-center">
-                                <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
-                                <span>${mensaje}</span>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        `;
-                document.body.appendChild(alertDiv);
-
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
-                }, 4000);
-            }
-
-            // Inicializar
-            async function init() {
-                console.log(' Iniciando módulo de estadísticas...');
-
-                if (!document.getElementById('estadisticas-container')) {
-                    console.log(' No estamos en la vista de estadísticas, saliendo...');
-                    return;
-                }
-
-                // Establecer fechas por defecto (últimos 30 días)
+            // ✅ CONFIGURACIÓN AUTOMÁTICA
+            function configurarFechasPorDefecto() {
                 const hoy = new Date();
                 const hace30Dias = new Date();
                 hace30Dias.setDate(hoy.getDate() - 30);
 
                 document.getElementById('filtro-inicio').value = hace30Dias.toISOString().split('T')[0];
                 document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
+            }
 
-                await cargarFiltros();
-                await cargarEstadisticas();
-                configurarBusquedaRapida();
+            // ✅ ELIMINADO: configurarAutoRefresh - NO MÁS AUTO-REFRESH
 
-                console.log(' Módulo de estadísticas iniciado (solo empleados activos)');
+            // ✅ ALERTAS MEJORADAS
+            function mostrarAlerta(mensaje, tipo = 'info') {
+                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
+                alertasAnteriores.forEach(alerta => alerta.remove());
+
+                const iconos = {
+                    success: 'bi-check-circle',
+                    danger: 'bi-exclamation-triangle',
+                    warning: 'bi-exclamation-circle',
+                    info: 'bi-info-circle'
+                };
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
+                alertDiv.style.zIndex = '9999';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${iconos[tipo]} me-2"></i>
+                            <span>${mensaje}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) alertDiv.remove();
+                }, 5000);
+            }
+
+            // ✅ INICIALIZACIÓN
+            async function init() {
+                console.log('📈 Iniciando módulo de estadísticas...');
+
+                if (!document.getElementById('estadisticas-container')) {
+                    console.log('❌ No estamos en la vista de estadísticas');
+                    return;
+                }
+
+                try {
+                    mostrarPantallaCarga();
+                    configurarFechasPorDefecto();
+                    await cargarFiltros();
+                    await cargarEstadisticas(false);
+                    configurarBusquedaRapida();
+                    // ✅ ELIMINADO: configurarAutoRefresh - NO MÁS AUTO-REFRESH
+                    actualizarBotonesVista();
+
+                    console.log('✅ Módulo de estadísticas iniciado correctamente');
+                } catch (error) {
+                    console.error('💥 Error en inicialización:', error);
+                    mostrarAlerta('Error al inicializar el módulo de estadísticas', 'danger');
+                }
             }
 
             // Iniciar cuando el DOM esté listo
@@ -1059,13 +942,12 @@
             return {
                 init,
                 cargarEstadisticas,
-                verDetalleEmpleado,
+                recargarEstadisticas,
+                aplicarFiltros,
                 limpiarFiltros,
-                exportarReporte,
                 limpiarBusqueda,
-                mostrarTodos,
-                mostrarInactivos,
-                aplicarFiltros
+                mostrarSoloActivos,
+                mostrarSoloInactivos
             };
         })();
     </script>

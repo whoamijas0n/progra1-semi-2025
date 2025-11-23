@@ -7,8 +7,100 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /* ✅ Pantalla de carga */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .loading-steps {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-hidden {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .content-visible {
+            opacity: 1;
+        }
+
+        /* Estilos existentes */
         .stat-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeInUp 0.6s ease;
         }
 
             .stat-card:hover {
@@ -30,6 +122,7 @@
         .fichaje-card {
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
+            animation: fadeInUp 0.6s ease;
         }
 
         .fichaje-entrada {
@@ -69,11 +162,46 @@
             color: #6c757d;
             opacity: 0.6;
         }
+
+        /* Animaciones para elementos individuales */
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .animate-delay-5 {
+            animation-delay: 0.5s;
+        }
     </style>
 </head>
 <body>
+    <!-- ✅ Pantalla de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-logo">
+            <i class="bi bi-clock-history"></i>
+        </div>
+        <div class="loading-text">Cargando tu dashboard...</div>
+        <div class="loading-progress">
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+        </div>
+        <div id="loading-steps" class="loading-steps">
+            Iniciando sistema...
+        </div>
+    </div>
+
     <!-- Dashboard Empleado -->
-    <div class="container-fluid py-4" id="dashboard-empleado-container">
+    <div class="container-fluid py-4 content-hidden" id="dashboard-empleado-container">
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
@@ -88,7 +216,7 @@
         <!-- Información del Empleado -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
+                <div class="card animate-delay-1">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-2 text-center">
@@ -128,7 +256,7 @@
         <!-- Estado Actual -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="alert alert-info d-flex align-items-center">
+                <div class="alert alert-info d-flex align-items-center animate-delay-2">
                     <i class="bi bi-info-circle fs-4 me-3"></i>
                     <div>
                         <h5 class="alert-heading mb-1" id="estado-actual-text">Cargando estado...</h5>
@@ -141,7 +269,7 @@
         <!-- Estadísticas Rápidas -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card stat-card border-start border-primary border-4">
+                <div class="card stat-card border-start border-primary border-4 animate-delay-1">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -158,7 +286,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-success border-4">
+                <div class="card stat-card border-start border-success border-4 animate-delay-2">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -172,7 +300,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-warning border-4">
+                <div class="card stat-card border-start border-warning border-4 animate-delay-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -186,7 +314,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card stat-card border-start border-info border-4">
+                <div class="card stat-card border-start border-info border-4 animate-delay-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -208,7 +336,7 @@
                 <div class="row">
                     <!-- Turno Activo -->
                     <div class="col-md-6 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 animate-delay-3">
                             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="bi bi-clock text-primary me-2"></i>
@@ -229,7 +357,7 @@
 
                     <!-- Días del Turno -->
                     <div class="col-md-6 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 animate-delay-4">
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-calendar-week text-success me-2"></i>
@@ -247,7 +375,7 @@
                 </div>
 
                 <!-- Fichajes de Hoy -->
-                <div class="card mb-4">
+                <div class="card mb-4 animate-delay-5">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-clock-history text-primary me-2"></i>
@@ -275,7 +403,7 @@
             <!-- Columna Derecha -->
             <div class="col-lg-4">
                 <!-- Acciones Rápidas -->
-                <div class="card mb-4">
+                <div class="card mb-4 animate-delay-3">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">
                             <i class="bi bi-lightning-charge text-warning me-2"></i>
@@ -301,7 +429,7 @@
                 </div>
 
                 <!-- Progreso del Mes -->
-                <div class="card mb-4">
+                <div class="card mb-4 animate-delay-4">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">
                             <i class="bi bi-graph-up text-info me-2"></i>
@@ -334,7 +462,7 @@
                 </div>
 
                 <!-- Rendimiento -->
-                <div class="card">
+                <div class="card animate-delay-5">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">
                             <i class="bi bi-award text-warning me-2"></i>
@@ -361,14 +489,102 @@
     </div>
 
     <script>
-        // ✅ DASHBOARD EMPLEADO - VERSIÓN COMPLETAMENTE FUNCIONAL
+        // ✅ DASHBOARD EMPLEADO - CON PERSISTENCIA DE DATOS Y BOTÓN DE REFRESH
         window.DashboardEmpleado = (function () {
             'use strict';
 
             const state = {
                 datos: null,
-                intervalos: []
+                intervalos: [],
+                pasosCarga: [
+                    "Iniciando sistema...",
+                    "Cargando información personal...",
+                    "Obteniendo estadísticas...",
+                    "Consultando turno activo...",
+                    "Cargando fichajes del día...",
+                    "Calculando progreso del mes...",
+                    "Preparando interfaz...",
+                    "¡Listo!"
+                ],
+                pasoActual: 0
             };
+
+            // Clave para guardar en sessionStorage
+            const STORAGE_KEY = 'fiExpress_dashboard_data';
+
+            // ✅ NUEVO: Control de pantalla de carga
+            function actualizarProgresoCarga(paso, mensajePersonalizado = null) {
+                const progressBar = document.getElementById('loading-progress-bar');
+                const stepsText = document.getElementById('loading-steps');
+
+                const progreso = ((paso + 1) / state.pasosCarga.length) * 100;
+                progressBar.style.width = `${progreso}%`;
+
+                const mensaje = mensajePersonalizado || state.pasosCarga[paso];
+                stepsText.textContent = mensaje;
+
+                state.pasoActual = paso;
+            }
+
+            function mostrarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const contenido = document.getElementById('dashboard-empleado-container');
+
+                overlay.classList.remove('hidden');
+                contenido.classList.add('content-hidden');
+                contenido.classList.remove('content-visible');
+
+                // Reiniciar progreso
+                actualizarProgresoCarga(0);
+            }
+
+            function ocultarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const contenido = document.getElementById('dashboard-empleado-container');
+
+                // Último paso de progreso
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Dashboard listo!");
+
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    contenido.classList.remove('content-hidden');
+                    contenido.classList.add('content-visible');
+                }, 800);
+            }
+
+            // ✅ NUEVO: Guardar datos en sessionStorage
+            function guardarDatosEnStorage(datos) {
+                try {
+                    const datosConTimestamp = {
+                        ...datos,
+                        timestamp: Date.now()
+                    };
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(datosConTimestamp));
+                } catch (error) {
+                    console.warn('No se pudo guardar en sessionStorage:', error);
+                }
+            }
+
+            // ✅ NUEVO: Cargar datos desde sessionStorage
+            function cargarDatosDesdeStorage() {
+                try {
+                    const datosGuardados = sessionStorage.getItem(STORAGE_KEY);
+                    if (!datosGuardados) return null;
+
+                    const datos = JSON.parse(datosGuardados);
+                    // Verificar que los datos no sean demasiado viejos (por ejemplo, 5 minutos)
+                    const cincoMinutos = 5 * 60 * 1000;
+                    if (Date.now() - datos.timestamp > cincoMinutos) {
+                        sessionStorage.removeItem(STORAGE_KEY);
+                        return null;
+                    }
+
+                    return datos;
+                } catch (error) {
+                    console.warn('Error al cargar datos desde sessionStorage:', error);
+                    return null;
+                }
+            }
 
             // API Helper MEJORADO
             async function apiCall(url, options = {}) {
@@ -387,7 +603,6 @@
                         const errorText = await response.text();
                         console.error(`❌ Error ${response.status}:`, errorText);
 
-                        // Si es error 404, puede ser que el endpoint no exista
                         if (response.status === 404) {
                             throw new Error(`Endpoint no encontrado: ${url}`);
                         }
@@ -406,31 +621,72 @@
                 }
             }
 
-            // Cargar dashboard completo - USANDO NUEVO ENDPOINT
-            async function cargarDashboard() {
+            // Cargar dashboard completo
+            async function cargarDashboard(forceRefresh = false) {
                 console.log('📊 Cargando dashboard empleado...');
 
+                // ✅ NUEVO: Si no es forzado, intentar cargar desde sessionStorage
+                if (!forceRefresh) {
+                    const datosGuardados = cargarDatosDesdeStorage();
+                    if (datosGuardados) {
+                        console.log('✅ Usando datos guardados en sessionStorage');
+                        state.datos = datosGuardados;
+                        actualizarVistaCompleta();
+                        ocultarPantallaCarga();
+                        return;
+                    }
+                }
+
+                // Si no hay datos guardados o es un refresh forzado, cargar desde API
+                mostrarPantallaCarga();
+
                 try {
-                    // Usar el nuevo endpoint de dashboard
+                    actualizarProgresoCarga(1, "Cargando información personal...");
+
                     const dashboardData = await apiCall('/api/estadisticas/dashboard-empleado');
 
                     if (!dashboardData) {
                         mostrarNotificacion('No se pudieron cargar los datos del dashboard', 'warning');
+                        ocultarPantallaCarga();
                         return;
                     }
 
                     state.datos = dashboardData;
-                    actualizarVistaCompleta();
+
+                    // ✅ NUEVO: Guardar los datos en sessionStorage
+                    guardarDatosEnStorage(dashboardData);
+
+                    actualizarProgresoCarga(2, "Procesando estadísticas...");
+                    actualizarEstadisticas();
+
+                    actualizarProgresoCarga(3, "Configurando turno activo...");
+                    actualizarTurnoActivo();
+
+                    actualizarProgresoCarga(4, "Cargando fichajes del día...");
+                    actualizarFichajesHoy();
+
+                    actualizarProgresoCarga(5, "Actualizando información...");
+                    actualizarInfoEmpleado();
+                    actualizarEstadoActual();
+                    actualizarDiasTurno();
+                    actualizarProgresoMes();
+                    actualizarRendimiento();
                     actualizarFechas();
+
+                    actualizarProgresoCarga(6, "Finalizando carga...");
                     mostrarNotificacion('Dashboard actualizado correctamente', 'success');
+
+                    // Pequeño delay para que se vea el último paso
+                    setTimeout(ocultarPantallaCarga, 500);
 
                 } catch (error) {
                     console.error('Error crítico al cargar dashboard:', error);
                     mostrarNotificacion('Error crítico al cargar el dashboard', 'danger');
+                    ocultarPantallaCarga();
                 }
             }
 
-            // Actualizar toda la vista
+            // Actualizar toda la vista (para recargas)
             function actualizarVistaCompleta() {
                 actualizarInfoEmpleado();
                 actualizarEstadoActual();
@@ -440,9 +696,10 @@
                 actualizarFichajesHoy();
                 actualizarProgresoMes();
                 actualizarRendimiento();
+                actualizarFechas();
             }
 
-            // Actualizar información del empleado
+            // Resto de las funciones permanecen igual...
             function actualizarInfoEmpleado() {
                 const emp = state.datos.empleado;
                 if (!emp) return;
@@ -451,7 +708,6 @@
                 document.getElementById('empleado-codigo').textContent = emp.codigo_empleado || '-';
                 document.getElementById('empleado-departamento').textContent = emp.departamento || '-';
 
-                // Avatar con fallback
                 const avatarImg = document.getElementById('empleado-avatar');
                 if (emp.foto_url) {
                     avatarImg.src = emp.foto_url;
@@ -462,7 +718,6 @@
                 }
             }
 
-            // Actualizar estado actual
             function actualizarEstadoActual() {
                 const estado = state.datos.estadoActual || 'Sin información';
                 const ultimoFichaje = state.datos.ultimoFichaje;
@@ -475,80 +730,70 @@
                 }
                 document.getElementById('estado-detalle').textContent = detalle;
 
-                // Colores según estado
                 const alert = document.querySelector('.alert-info');
                 if (estado.includes('trabajo')) {
-                    alert.className = 'alert alert-success d-flex align-items-center';
+                    alert.className = 'alert alert-success d-flex align-items-center animate-delay-2';
                 } else if (estado.includes('Fuera')) {
-                    alert.className = 'alert alert-warning d-flex align-items-center';
+                    alert.className = 'alert alert-warning d-flex align-items-center animate-delay-2';
                 } else {
-                    alert.className = 'alert alert-info d-flex align-items-center';
+                    alert.className = 'alert alert-info d-flex align-items-center animate-delay-2';
                 }
             }
 
-            // Actualizar estadísticas
             function actualizarEstadisticas() {
                 const resumen = state.datos.resumenMes;
                 if (!resumen) return;
 
-                // Asistencia
                 const porcentajeAsistencia = resumen.porcentajeAsistencia || 0;
                 document.getElementById('stat-asistencia').textContent = porcentajeAsistencia + '%';
                 document.getElementById('barra-asistencia').style.width = porcentajeAsistencia + '%';
                 document.getElementById('stat-dias-asistencia').textContent =
                     `${resumen.diasTrabajados || 0}/${resumen.totalDias || 0} días`;
 
-                // Horas trabajadas
                 const horas = Math.floor((resumen.totalMinutosTrabajados || 0) / 60);
                 const minutos = (resumen.totalMinutosTrabajados || 0) % 60;
                 document.getElementById('stat-horas-trabajadas').textContent = horas + 'h';
                 document.getElementById('stat-minutos-trabajados').textContent =
                     `${resumen.totalMinutosTrabajados || 0} minutos`;
 
-                // Retraso
                 document.getElementById('stat-retraso').textContent = (resumen.totalMinutosRetraso || 0) + 'm';
-
-                // Horas extra
                 document.getElementById('stat-extra').textContent = (resumen.totalMinutosExtra || 0) + 'm';
             }
 
-            // Actualizar turno activo - COMPLETAMENTE CORREGIDO
             function actualizarTurnoActivo() {
                 const container = document.getElementById('turno-activo-container');
                 const turno = state.datos.horarioActivo;
 
                 if (!turno) {
                     container.innerHTML = `
-                            <div class="text-center text-muted py-3">
-                                <i class="bi bi-clock fs-1 d-block mb-2 opacity-50"></i>
-                                <p class="mb-2">No tienes un turno activo asignado</p>
-                                <small class="text-muted">Contacta con tu supervisor para asignarte un horario</small>
-                            </div>
-                        `;
+                                    <div class="text-center text-muted py-3">
+                                        <i class="bi bi-clock fs-1 d-block mb-2 opacity-50"></i>
+                                        <p class="mb-2">No tienes un turno activo asignado</p>
+                                        <small class="text-muted">Contacta con tu supervisor para asignarte un horario</small>
+                                    </div>
+                                `;
                     document.getElementById('badge-turno-activo').textContent = 'Sin turno';
                     document.getElementById('badge-turno-activo').className = 'badge bg-secondary';
                     return;
                 }
 
-                // ✅ ESTRUCTURA CORRECTA - usando propiedades directas
                 container.innerHTML = `
-                        <div class="text-center">
-                            <h4 class="text-primary mb-3">${turno.nombreTurno || 'Turno'}</h4>
-                            <div class="mb-3">
-                                <div class="fs-5 fw-bold text-dark">${turno.horaEntrada || '--:--'} - ${turno.horaSalida || '--:--'}</div>
-                                <small class="text-muted">Horario de trabajo</small>
-                            </div>
-                            <div class="mb-3">
-                                <span class="badge bg-info">Tolerancia: ${turno.toleranciaMinutos || 0} min</span>
-                            </div>
-                        </div>
-                    `;
+                                <div class="text-center">
+                                    <h4 class="text-primary mb-3">${turno.nombreTurno || 'Turno'}</h4>
+                                    <div class="mb-3">
+                                        <div class="fs-5 fw-bold text-dark">${turno.horaEntrada || '--:--'} - ${turno.horaSalida || '--:--'}</div>
+                                        <small class="text-muted">Horario de trabajo</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-info">Tolerancia: ${turno.toleranciaMinutos || 0} min</span>
+                                    </div>
+                                </div>
+                            `;
 
                 document.getElementById('badge-turno-activo').textContent = 'Activo';
                 document.getElementById('badge-turno-activo').className = 'badge bg-success';
             }
 
-            // Actualizar días del turno
             function actualizarDiasTurno() {
                 const container = document.getElementById('dias-turno-container');
                 const turno = state.datos.horarioActivo;
@@ -569,26 +814,25 @@
                 ];
 
                 const hoy = new Date().getDay();
-                const diaActual = hoy === 0 ? 6 : hoy - 1; // Ajustar para que Domingo=6
+                const diaActual = hoy === 0 ? 6 : hoy - 1;
 
                 container.innerHTML = `
-                        <div class="row g-1">
-                            ${dias.map((dia, index) => `
-                                <div class="col">
-                                    <div class="text-center p-2 rounded ${turno.diasActivos[dia.key] ?
+                                <div class="row g-1">
+                                    ${dias.map((dia, index) => `
+                                        <div class="col">
+                                            <div class="text-center p-2 rounded ${turno.diasActivos[dia.key] ?
                         (index === diaActual ? 'bg-primary text-white' : 'bg-light') :
                         'bg-secondary text-white opacity-50'}">
-                                        <div class="fw-bold">${dia.nombre}</div>
-                                        <small>${turno.diasActivos[dia.key] ? '✓' : '✗'}</small>
-                                    </div>
+                                                <div class="fw-bold">${dia.nombre}</div>
+                                                <small>${turno.diasActivos[dia.key] ? '✓' : '✗'}</small>
+                                            </div>
+                                        </div>
+                                    `).join('')}
                                 </div>
-                            `).join('')}
-                        </div>
-                        <small class="text-muted mt-2 d-block">Hoy: ${dias[diaActual].nombre}</small>
-                    `;
+                                <small class="text-muted mt-2 d-block">Hoy: ${dias[diaActual].nombre}</small>
+                            `;
             }
 
-            // Actualizar fichajes de hoy
             function actualizarFichajesHoy() {
                 const container = document.getElementById('fichajes-hoy-container');
                 const fichajes = state.datos.fichajesHoy || [];
@@ -599,40 +843,39 @@
 
                 if (fichajes.length === 0) {
                     container.innerHTML = `
-                            <div class="text-center text-muted py-4">
-                                <i class="bi bi-clock fs-1 d-block mb-2"></i>
-                                <p class="mb-2">No hay fichajes registrados hoy</p>
-                                <small class="text-muted">Recuerda fichar tu entrada y salida</small>
-                            </div>
-                        `;
+                                    <div class="text-center text-muted py-4">
+                                        <i class="bi bi-clock fs-1 d-block mb-2"></i>
+                                        <p class="mb-2">No hay fichajes registrados hoy</p>
+                                        <small class="text-muted">Recuerda fichar tu entrada y salida</small>
+                                    </div>
+                                `;
                     return;
                 }
 
                 container.innerHTML = fichajes.map(fichaje => `
-                        <div class="card fichaje-card mb-2 ${fichaje.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
-                            <div class="card-body py-3">
-                                <div class="row align-items-center">
-                                    <div class="col-1 text-center">
-                                        <i class="bi ${fichaje.tipo === 'Entrada' ? 'bi-box-arrow-in-right text-success' : 'bi-box-arrow-right text-danger'} fs-5"></i>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="d-flex align-items-center">
-                                            <span class="badge ${fichaje.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">
-                                                ${fichaje.tipo}
-                                            </span>
-                                            <strong class="fs-6">${fichaje.hora}</strong>
+                                <div class="card fichaje-card mb-2 ${fichaje.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
+                                    <div class="card-body py-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-1 text-center">
+                                                <i class="bi ${fichaje.tipo === 'Entrada' ? 'bi-box-arrow-in-right text-success' : 'bi-box-arrow-right text-danger'} fs-5"></i>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge ${fichaje.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">
+                                                        ${fichaje.tipo}
+                                                    </span>
+                                                    <strong class="fs-6">${fichaje.hora}</strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <small class="text-muted">${fichaje.fecha}</small>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-4 text-end">
-                                        <small class="text-muted">${fichaje.fecha}</small>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `).join('');
+                            `).join('');
             }
 
-            // Actualizar progreso del mes
             function actualizarProgresoMes() {
                 const hoy = new Date();
                 const totalDiasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
@@ -641,38 +884,31 @@
                 document.getElementById('progreso-mes-text').textContent = Math.round(progresoMes) + '%';
                 document.getElementById('barra-mes').style.width = progresoMes + '%';
 
-                // Objetivo de asistencia
                 const resumen = state.datos.resumenMes;
                 const objetivoAsistencia = resumen?.porcentajeAsistencia || 0;
                 document.getElementById('objetivo-asistencia-text').textContent = Math.round(objetivoAsistencia) + '%';
                 document.getElementById('barra-objetivo').style.width = objetivoAsistencia + '%';
 
-                // Días restantes
                 const diasRestantes = totalDiasMes - hoy.getDate();
                 document.getElementById('dias-restantes').textContent = `${diasRestantes} días restantes`;
             }
 
-            // Actualizar rendimiento
             function actualizarRendimiento() {
                 const resumen = state.datos.resumenMes;
                 if (!resumen) return;
 
-                // Promedio diario
                 const promedioDiario = resumen.totalDias > 0 ?
                     Math.round(resumen.totalMinutosTrabajados / resumen.totalDias / 60) : 0;
                 document.getElementById('promedio-diario').textContent = promedioDiario + 'h';
 
-                // Días consecutivos (simulado - en una implementación real se calcularía)
                 const diasConsecutivos = Math.min(resumen.diasTrabajados || 0, 5);
                 document.getElementById('dias-consecutivos').textContent = diasConsecutivos;
 
-                // Próximo objetivo
                 const asistenciaActual = resumen.porcentajeAsistencia || 0;
                 const proximoObjetivo = Math.min(asistenciaActual + 5, 100);
                 document.getElementById('proximo-objetivo').textContent = `+${proximoObjetivo - asistenciaActual}%`;
             }
 
-            // Funciones de utilidad
             function actualizarFechas() {
                 const ahora = new Date();
                 const opciones = {
@@ -687,11 +923,11 @@
 
             // Funciones públicas
             async function recargarDashboard() {
-                await cargarDashboard();
+                // ✅ NUEVO: Forzar recarga desde API
+                await cargarDashboard(true);
             }
 
             async function recargarFichajes() {
-                // Recargar dashboard completo para obtener fichajes actualizados
                 await recargarDashboard();
             }
 
@@ -735,7 +971,6 @@
                 }
             }
 
-            // Mostrar notificación
             function mostrarNotificacion(mensaje, tipo = 'info') {
                 const alertasAnteriores = document.querySelectorAll('.alert-fixed');
                 alertasAnteriores.forEach(alerta => alerta.remove());
@@ -745,12 +980,12 @@
                 alertDiv.style.zIndex = '9999';
                 alertDiv.style.minWidth = '300px';
                 alertDiv.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
-                            <span>${mensaje}</span>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    `;
+                                <div class="d-flex align-items-center">
+                                    <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
+                                    <span>${mensaje}</span>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
                 document.body.appendChild(alertDiv);
 
                 setTimeout(() => {
@@ -758,18 +993,16 @@
                 }, 4000);
             }
 
-            // Auto-refresh
             function configurarAutoRefresh() {
                 const intervalo = setInterval(() => {
                     if (!document.hidden) {
                         console.log('🔄 Auto-refresh del dashboard');
-                        cargarDashboard();
+                        cargarDashboard(true); // Forzar recarga en auto-refresh
                     }
-                }, 120000); // 2 minutos
+                }, 120000);
                 state.intervalos.push(intervalo);
             }
 
-            // Inicializar
             async function init() {
                 if (!document.getElementById('dashboard-empleado-container')) {
                     console.log('❌ No se encontró el contenedor del dashboard');
@@ -777,19 +1010,18 @@
                 }
 
                 console.log('🚀 Iniciando dashboard empleado...');
-                await cargarDashboard();
+                // ✅ NUEVO: Cargar sin forzar, para usar datos guardados si existen
+                await cargarDashboard(false);
                 configurarAutoRefresh();
                 console.log('✅ Dashboard empleado iniciado correctamente');
             }
 
-            // Iniciar cuando el DOM esté listo
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
                 init();
             }
 
-            // API pública
             return {
                 init,
                 recargarDashboard,

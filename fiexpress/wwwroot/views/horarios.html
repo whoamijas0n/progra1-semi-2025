@@ -7,130 +7,266 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* Estilos personalizados para mejorar la apariencia */
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark Consistente) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-header, .modal-header, .modal-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+        }
+
+        /* Stats Cards (Estilo Sólido Dashboard) */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes Estadísticas */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs y Selects Oscuros */
+        .form-control, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        /* Fix Select */
+        .form-select {
+            background-color: rgba(16, 26, 43, 0.95) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white !important;
+                padding: 10px;
+            }
+
+        /* Card Horario */
         .card-horario {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            transition: transform 0.3s ease;
+            /* Fondo solido/glass simple */
+            background: var(--glass-bg) !important;
         }
 
             .card-horario:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+                border-color: rgba(255,255,255,0.3) !important;
             }
 
+        /* Avatar */
         .avatar {
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border: 3px solid #e9ecef;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
-        .stat-card {
-            transition: transform 0.2s ease;
+        /* Modales */
+        .modal-content {
+            background: rgba(16, 26, 43, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
         }
 
-            .stat-card:hover {
-                transform: translateY(-3px);
-            }
-
-        #selEmpleado {
-            font-size: 0.9rem;
+        .btn-close {
+            filter: invert(1) grayscale(100%);
         }
 
-            #selEmpleado option {
-                padding: 8px 12px;
-                border-bottom: 1px solid #f0f0f0;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-                #selEmpleado option:hover {
-                    background-color: #e9ecef;
-                }
-
-        .btn-group-xs > .btn, .btn-xs {
-            padding: 0.25rem 0.4rem;
-            font-size: 0.75rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
+        .text-muted {
+            color: #94a3b8 !important;
         }
 
-        .turno-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        /* Badges */
+        .badge-glass {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            font-weight: normal;
+        }
+
+        /* Info Card Interna */
+        .info-card-glass {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px dashed var(--border-light);
+            border-radius: 8px;
+        }
+
+        /* Turno Info Especial */
+        .turno-info-glass {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(142, 68, 173, 0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
             padding: 15px;
-        }
-
-        .badge-turno {
-            font-size: 0.75em;
-            padding: 4px 8px;
         }
     </style>
 </head>
 <body>
     <!-- Vista de Gestión de Horarios -->
-    <div class="container-fluid py-4" id="horarios-container">
-        <div class="row mb-4">
+    <div class="container-fluid py-2" id="horarios-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
             <div class="col-12">
-                <h2 class="mb-3">
-                    <i class="bi bi-calendar-week text-primary"></i>
-                    Gestión de Horarios
+                <h2 class="mb-1 text-white">
+                    <i class="bi bi-calendar-week me-2" style="color: var(--accent-color);"></i>Gestión de Horarios
                 </h2>
-                <p class="text-muted">Administra y asigna horarios de trabajo a los empleados.</p>
+                <p class="mb-0 text-muted">Administra y asigna horarios de trabajo a los empleados.</p>
             </div>
         </div>
 
         <!-- Estadísticas -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-primary border-4">
-                    <div class="card-body">
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Total Horarios</h6>
-                                <h3 id="stat-total" class="mb-0">0</h3>
+                                <div class="stat-label mb-1">Total</div>
+                                <div class="stat-value" id="stat-total">0</div>
                             </div>
-                            <i class="bi bi-calendar-week fs-1 text-primary opacity-25"></i>
+                            <i class="bi bi-calendar-week fs-1 text-primary opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-success border-4">
-                    <div class="card-body">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Activos</h6>
-                                <h3 class="text-success mb-0" id="stat-activos">0</h3>
+                                <div class="stat-label mb-1">Activos</div>
+                                <div class="stat-value text-success" id="stat-activos">0</div>
                             </div>
-                            <i class="bi bi-check-circle fs-1 text-success opacity-25"></i>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-warning border-4">
-                    <div class="card-body">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Turnos Únicos</h6>
-                                <h3 class="text-warning mb-0" id="stat-turnos">0</h3>
+                                <div class="stat-label mb-1">Turnos Únicos</div>
+                                <div class="stat-value text-warning" id="stat-turnos">0</div>
                             </div>
-                            <i class="bi bi-clock fs-1 text-warning opacity-25"></i>
+                            <i class="bi bi-clock fs-1 text-warning opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-info border-4">
-                    <div class="card-body">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-1">Empleados Activos</h6>
-                                <h3 class="text-info mb-0" id="stat-empleados">0</h3>
+                                <div class="stat-label mb-1">Empleados</div>
+                                <div class="stat-value text-info" id="stat-empleados">0</div>
                             </div>
-                            <i class="bi bi-people fs-1 text-info opacity-25"></i>
+                            <i class="bi bi-people fs-1 text-info opacity-50"></i>
                         </div>
                     </div>
                 </div>
@@ -138,31 +274,33 @@
         </div>
 
         <!-- Barra de búsqueda y acciones -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="input-group">
-                    <span class="input-group-text bg-light">
-                        <i class="bi bi-search text-muted"></i>
-                    </span>
-                    <input type="text" class="form-control" id="input-buscar" placeholder="Buscar por empleado, turno o departamento...">
+        <div class="card mb-4 animate-entry delay-2">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="input-buscar" placeholder="Buscar por empleado, turno o departamento...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="select-estado">
+                            <option value="">Estado: Todos</option>
+                            <option value="activo">Activos</option>
+                            <option value="inactivo">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100 fw-bold shadow-sm" onclick="HorariosModule.abrirModalNuevo()">
+                            <i class="bi bi-plus-lg me-1"></i> Nuevo Horario
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" id="select-estado">
-                    <option value="">Todos los estados</option>
-                    <option value="activo">Activos</option>
-                    <option value="inactivo">Inactivos</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary w-100" onclick="HorariosModule.abrirModalNuevo()">
-                    <i class="bi bi-plus-lg me-1"></i> Nuevo Horario
-                </button>
             </div>
         </div>
 
         <!-- Lista de horarios -->
-        <div class="row g-3" id="lista-horarios">
+        <div class="row g-3 animate-entry delay-3" id="lista-horarios">
             <div class="col-12 text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
@@ -174,11 +312,11 @@
 
     <!-- Modal Crear/Editar Horario -->
     <div class="modal fade" id="modalHorario" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-light">
-                    <h5 class="modal-title" id="modalTitle">
-                        <i class="bi bi-calendar-plus me-2"></i>Nuevo Horario
+                <div class="modal-header">
+                    <h5 class="modal-title text-white" id="modalTitle">
+                        <i class="bi bi-calendar-plus me-2 text-primary"></i>Nuevo Horario
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -186,127 +324,89 @@
                     <form id="formHorario">
                         <input type="hidden" id="horarioId">
 
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <label class="form-label fw-bold">Seleccionar Empleado *</label>
+                        <!-- Paso 1: Selección Empleado -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-warning small text-uppercase ls-1 mb-2">1. Seleccionar Empleado</label>
 
-                                <!-- 🔍 BARRA DE BÚSQUEDA MEJORADA -->
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text bg-light">
-                                        <i class="bi bi-search"></i>
-                                    </span>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="buscarEmpleado"
-                                           placeholder="Buscar por nombre, código, email o departamento..."
-                                           aria-label="Buscar empleado">
-                                </div>
-                                <small class="text-muted d-block mb-2">
-                                    <i class="bi bi-info-circle me-1"></i>Escribe para filtrar la lista. Se muestran solo empleados activos.
-                                </small>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="buscarEmpleado" placeholder="Filtrar lista...">
+                            </div>
 
-                                <!-- 📋 COMBOBOX CON BÚSQUEDA -->
-                                <select class="form-select" id="selEmpleado" required size="6" style="min-height: 150px;">
-                                    <option value="">Seleccione un empleado de la lista...</option>
-                                </select>
+                            <select class="form-select border-secondary" id="selEmpleado" required size="5" style="min-height: 120px;">
+                                <option value="">Seleccione un empleado de la lista...</option>
+                            </select>
 
-                                <div class="mt-2">
-                                    <small class="text-muted">
-                                        <i class="bi bi-people me-1"></i>
-                                        <span id="contadorEmpleados">0</span> empleados disponibles
-                                    </small>
-                                </div>
+                            <div class="mt-2 d-flex justify-content-between small text-muted">
+                                <span><i class="bi bi-info-circle me-1"></i>Se muestran solo empleados activos</span>
+                                <span><span id="contadorEmpleados" class="text-info fw-bold">0</span> disponibles</span>
                             </div>
                         </div>
 
-                        <!-- Información del empleado seleccionado -->
-                        <div class="row mb-4" id="info-empleado" style="display: none;">
-                            <div class="col-md-12">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-primary">
-                                            <i class="bi bi-check-circle me-2"></i>Empleado Seleccionado
-                                        </h6>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-2">
-                                                <small><strong>Nombre:</strong> <span id="info-nombre">-</span></small>
-                                            </div>
-                                            <div class="col-md-6 mb-2">
-                                                <small><strong>Email:</strong> <span id="info-email">-</span></small>
-                                            </div>
-                                            <div class="col-md-6 mb-2">
-                                                <small><strong>Departamento:</strong> <span id="info-departamento">-</span></small>
-                                            </div>
-                                            <div class="col-md-6 mb-2">
-                                                <small><strong>Rol:</strong> <span id="info-rol">-</span></small>
-                                            </div>
-                                            <div class="col-md-12 mt-1">
-                                                <small><strong>Código:</strong> <span id="info-codigo">-</span></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Información del empleado (Glass Card interna) -->
+                        <div class="info-card-glass p-3 mb-4" id="info-empleado" style="display: none;">
+                            <h6 class="text-info mb-2 small text-uppercase fw-bold">
+                                <i class="bi bi-person-check me-2"></i>Empleado Seleccionado
+                            </h6>
+                            <div class="row g-2 small">
+                                <div class="col-md-6"><span class="text-muted">Nombre:</span> <span class="text-white fw-bold ms-1" id="info-nombre">-</span></div>
+                                <div class="col-md-6"><span class="text-muted">Email:</span> <span class="text-white ms-1" id="info-email">-</span></div>
+                                <div class="col-md-6"><span class="text-muted">Depto:</span> <span class="text-white ms-1" id="info-departamento">-</span></div>
+                                <div class="col-md-6"><span class="text-muted">Rol:</span> <span class="text-white ms-1" id="info-rol">-</span></div>
+                                <div class="col-12"><span class="text-muted">Código:</span> <span class="text-white font-monospace ms-1" id="info-codigo">-</span></div>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <!-- Paso 2: Configuración -->
+                        <div class="row mb-3">
+                            <label class="form-label fw-bold text-warning small text-uppercase ls-1 mb-2">2. Configuración</label>
+
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Turno *</label>
+                                <label class="form-label small">Turno *</label>
                                 <select class="form-select" id="selTurno" required>
                                     <option value="">Seleccione un turno...</option>
                                 </select>
                             </div>
+
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Fecha Inicio *</label>
+                                <label class="form-label small">Fecha Inicio *</label>
                                 <input type="date" class="form-control" id="txtFechaInicio" required>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Fecha Fin (Opcional)</label>
+                                <label class="form-label small">Fecha Fin (Opcional)</label>
                                 <input type="date" class="form-control" id="txtFechaFin">
-                                <small class="text-muted">Dejar vacío si es horario indefinido</small>
+                                <small class="text-muted d-block mt-1">Dejar vacío si es indefinido</small>
                             </div>
+
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Estado del Horario</label>
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" id="chkActivo" checked>
-                                    <label class="form-check-label fw-bold" for="chkActivo">Horario activo</label>
+                                <label class="form-label small">Estado</label>
+                                <div class="form-check form-switch p-2 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="chkActivo" checked>
+                                    <label class="form-check-label text-white" for="chkActivo">Horario Activo</label>
                                 </div>
-                                <small class="text-muted">Los horarios inactivos no se consideran en los cálculos</small>
                             </div>
                         </div>
 
-                        <!-- Información del turno seleccionado -->
-                        <div class="row" id="info-turno" style="display: none;">
-                            <div class="col-md-12">
-                                <div class="turno-info">
-                                    <h6 class="card-title text-white">
-                                        <i class="bi bi-clock me-2"></i>Información del Turno Seleccionado
-                                    </h6>
-                                    <div class="row text-white">
-                                        <div class="col-md-4 mb-2">
-                                            <small><strong>Horario:</strong> <span id="info-horario">-</span></small>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <small><strong>Tolerancia:</strong> <span id="info-tolerancia">-</span> min</small>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <small><strong>Días:</strong> <span id="info-dias">-</span></small>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- Información del turno -->
+                        <div class="turno-info-glass" id="info-turno" style="display: none;">
+                            <h6 class="text-white mb-2 small text-uppercase fw-bold">
+                                <i class="bi bi-clock me-2"></i>Detalles del Turno
+                            </h6>
+                            <div class="row text-white g-2 small">
+                                <div class="col-4"><strong>Horario:</strong> <span id="info-horario" class="ms-1">-</span></div>
+                                <div class="col-4"><strong>Tolerancia:</strong> <span id="info-tolerancia" class="ms-1">-</span> min</div>
+                                <div class="col-4"><strong>Días:</strong> <span id="info-dias" class="ms-1 text-info">-</span></div>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i>Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="HorariosModule.guardarHorario()">
-                        <i class="bi bi-check-circle me-1"></i>Guardar Horario
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="HorariosModule.guardarHorario()">
+                        <i class="bi bi-check-lg me-2"></i>Guardar
                     </button>
                 </div>
             </div>
@@ -316,11 +416,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        //  MÓDULO AISLADO - Gestión de Horarios
+        // MÓDULO HORARIOS - Lógica Preservada
         window.HorariosModule = (function () {
             'use strict';
 
-            // Estado privado del módulo
             const state = {
                 horarios: [],
                 empleados: [],
@@ -328,20 +427,14 @@
                 modalInstance: null
             };
 
-            // API Helper
             async function apiCall(url, options = {}) {
                 try {
-                    const response = await fetch(url, {
-                        credentials: 'include',
-                        ...options
-                    });
-
+                    const response = await fetch(url, { credentials: 'include', ...options });
                     if (!response.ok) {
                         const text = await response.text();
                         console.error(`API Error ${response.status}:`, text);
                         throw new Error(`Error ${response.status}: ${response.statusText}`);
                     }
-
                     return await response.json();
                 } catch (error) {
                     console.error('API Call Error:', error);
@@ -350,283 +443,174 @@
                 }
             }
 
-            // Cargar horarios
             async function cargarHorarios() {
-                console.log(' Cargando horarios...');
                 try {
                     state.horarios = await apiCall('/api/horarios');
-                    console.log(' Horarios cargados:', state.horarios.length);
                     actualizarEstadisticas();
                     renderizarHorarios();
                 } catch (error) {
-                    console.error(' Error al cargar horarios:', error);
-                    document.getElementById('lista-horarios').innerHTML = `
-                            <div class="col-12">
-                                <div class="alert alert-danger">
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                    Error al cargar horarios: ${error.message}
-                                </div>
-                            </div>
-                        `;
+                    document.getElementById('lista-horarios').innerHTML = `<div class="col-12 text-center text-danger">Error al cargar horarios</div>`;
                 }
             }
 
-            // Cargar empleados
             async function cargarEmpleados() {
-                console.log(' Cargando empleados...');
                 try {
                     state.empleados = await apiCall('/api/empleados?incluirInactivos=false');
-                    console.log(' Empleados cargados:', state.empleados.length);
+                } catch (error) { console.error(error); }
+            }
+
+            async function cargarTurnos() {
+                try {
+                    state.turnos = await apiCall('/api/turnos?incluirInactivos=false');
+                    if (state.turnos.length === 0) console.warn('No hay turnos activos');
                 } catch (error) {
-                    console.error(' Error al cargar empleados:', error);
-                    throw error;
+                    try { state.turnos = await apiCall('/api/turnos?incluirInactivos=true'); }
+                    catch (e) { console.error('Error crítico turnos', e); }
                 }
             }
 
-           // Cargar turnos - MEJORADO
-async function cargarTurnos() {
-    console.log(' Cargando turnos...');
-    try {
-        state.turnos = await apiCall('/api/turnos?incluirInactivos=false');
-        console.log(' Turnos cargados:', state.turnos.length);
-        
-        //  Verificar que los turnos se cargaron correctamente
-        if (state.turnos.length === 0) {
-            console.warn(' No se encontraron turnos activos');
-        }
-        
-        return state.turnos;
-    } catch (error) {
-        console.error(' Error al cargar turnos:', error);
-        //  Intentar cargar incluyendo inactivos como fallback
-        try {
-            state.turnos = await apiCall('/api/turnos?incluirInactivos=true');
-            console.log(' Turnos cargados (incluyendo inactivos):', state.turnos.length);
-            return state.turnos;
-        } catch (fallbackError) {
-            console.error(' Error crítico al cargar turnos:', fallbackError);
-            mostrarAlerta('Error crítico al cargar los turnos', 'danger');
-            throw fallbackError;
-        }
-    }
-}
-
-            // Función para llenar el select de empleados
             function llenarSelectEmpleados() {
-                const selectEmpleado = document.getElementById('selEmpleado');
+                const select = document.getElementById('selEmpleado');
                 const contador = document.getElementById('contadorEmpleados');
+                if (!select) return;
 
-                if (!selectEmpleado) return;
-
-                // Guardar la opción seleccionada actualmente
-                const valorSeleccionado = selectEmpleado.value;
-
-                // Limpiar y reconstruir el select
-                selectEmpleado.innerHTML = '<option value="">Seleccione un empleado de la lista...</option>';
-
-                let contadorEmpleados = 0;
-
+                select.innerHTML = '<option value="">Seleccione...</option>';
+                let count = 0;
                 state.empleados.forEach(emp => {
-                    const textoCompleto = `${emp.codigo_empleado} - ${emp.nombre} - ${emp.departamento} - ${emp.email}`;
-                    const opcion = document.createElement('option');
-                    opcion.value = emp.idEmpleado;
-                    opcion.textContent = textoCompleto;
-                    opcion.dataset.nombre = emp.nombre;
-                    opcion.dataset.email = emp.email;
-                    opcion.dataset.departamento = emp.departamento;
-                    opcion.dataset.rol = emp.rol;
-                    opcion.dataset.codigo = emp.codigo_empleado;
-
-                    selectEmpleado.appendChild(opcion);
-                    contadorEmpleados++;
+                    const opt = document.createElement('option');
+                    opt.value = emp.idEmpleado;
+                    opt.textContent = `${emp.codigo_empleado} - ${emp.nombre}`;
+                    opt.dataset.nombre = emp.nombre;
+                    opt.dataset.email = emp.email;
+                    opt.dataset.departamento = emp.departamento;
+                    opt.dataset.rol = emp.rol;
+                    opt.dataset.codigo = emp.codigo_empleado;
+                    select.appendChild(opt);
+                    count++;
                 });
-
-                // Restaurar selección anterior si existe
-                if (valorSeleccionado && selectEmpleado.querySelector(`option[value="${valorSeleccionado}"]`)) {
-                    selectEmpleado.value = valorSeleccionado;
-                }
-
-                // Actualizar contador
-                if (contador) {
-                    contador.textContent = contadorEmpleados;
-                    contador.className = contadorEmpleados > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
-                }
+                if (contador) contador.textContent = count;
             }
 
-            // Función para llenar el select de turnos
             function llenarSelectTurnos() {
-                const selectTurno = document.getElementById('selTurno');
-                if (!selectTurno) return;
-
-                selectTurno.innerHTML = '<option value="">Seleccione un turno...</option>';
-
-                state.turnos.forEach(turno => {
-                    const opcion = document.createElement('option');
-                    opcion.value = turno.idTurno;
-                    opcion.textContent = `${turno.nombre} (${turno.hora_entrada} - ${turno.hora_salida})`;
-                    opcion.dataset.nombre = turno.nombre;
-                    opcion.dataset.horaEntrada = turno.hora_entrada;
-                    opcion.dataset.horaSalida = turno.hora_salida;
-                    opcion.dataset.tolerancia = turno.tolerancia_minutos;
-                    opcion.dataset.dias = obtenerDiasTurno(turno);
-
-                    selectTurno.appendChild(opcion);
+                const select = document.getElementById('selTurno');
+                if (!select) return;
+                select.innerHTML = '<option value="">Seleccione...</option>';
+                state.turnos.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.idTurno;
+                    opt.textContent = `${t.nombre} (${t.hora_entrada} - ${t.hora_salida})`;
+                    opt.dataset.entrada = t.hora_entrada;
+                    opt.dataset.salida = t.hora_salida;
+                    opt.dataset.tol = t.tolerancia_minutos;
+                    opt.dataset.dias = obtenerDiasTurno(t);
+                    select.appendChild(opt);
                 });
 
-                // Configurar evento para mostrar información del turno
-                selectTurno.addEventListener('change', function () {
-                    const selectedOption = this.options[this.selectedIndex];
-                    if (selectedOption.value) {
-                        document.getElementById('info-horario').textContent =
-                            `${selectedOption.dataset.horaEntrada} - ${selectedOption.dataset.horaSalida}`;
-                        document.getElementById('info-tolerancia').textContent = selectedOption.dataset.tolerancia;
-                        document.getElementById('info-dias').textContent = selectedOption.dataset.dias;
+                // Listener Turno Info
+                select.onchange = function () {
+                    const opt = this.options[this.selectedIndex];
+                    if (opt.value) {
+                        document.getElementById('info-horario').textContent = `${opt.dataset.entrada} - ${opt.dataset.salida}`;
+                        document.getElementById('info-tolerancia').textContent = opt.dataset.tol;
+                        document.getElementById('info-dias').textContent = opt.dataset.dias;
                         document.getElementById('info-turno').style.display = 'block';
                     } else {
                         document.getElementById('info-turno').style.display = 'none';
                     }
-                });
+                };
             }
 
-            // Función para obtener los días del turno como texto
-            function obtenerDiasTurno(turno) {
+            function obtenerDiasTurno(t) {
                 const dias = [];
-                if (turno.lunes) dias.push('Lun');
-                if (turno.martes) dias.push('Mar');
-                if (turno.miercoles) dias.push('Mié');
-                if (turno.jueves) dias.push('Jue');
-                if (turno.viernes) dias.push('Vie');
-                if (turno.sabado) dias.push('Sáb');
-                if (turno.domingo) dias.push('Dom');
+                if (t.lunes) dias.push('Lun');
+                if (t.martes) dias.push('Mar');
+                if (t.miercoles) dias.push('Mié');
+                if (t.jueves) dias.push('Jue');
+                if (t.viernes) dias.push('Vie');
+                if (t.sabado) dias.push('Sáb');
+                if (t.domingo) dias.push('Dom');
                 return dias.join(', ');
             }
 
-            // Función para filtrar empleados en tiempo real
             function configurarBusquedaEmpleados() {
-                const inputBuscar = document.getElementById('buscarEmpleado');
-                const selectEmpleado = document.getElementById('selEmpleado');
-                const contador = document.getElementById('contadorEmpleados');
+                const inp = document.getElementById('buscarEmpleado');
+                const sel = document.getElementById('selEmpleado');
+                const cnt = document.getElementById('contadorEmpleados');
 
-                if (!inputBuscar || !selectEmpleado) return;
+                if (!inp) return;
 
-                inputBuscar.addEventListener('input', function (e) {
-                    const textoBusqueda = e.target.value.toLowerCase().trim();
-                    const opciones = selectEmpleado.querySelectorAll('option');
-                    let contadorVisible = 0;
-
-                    opciones.forEach(opcion => {
-                        if (opcion.value === '') return; // Saltar la opción por defecto
-
-                        const textoOpcion = opcion.textContent.toLowerCase();
-                        const coincide = textoBusqueda === '' || textoOpcion.includes(textoBusqueda);
-
-                        opcion.style.display = coincide ? 'block' : 'none';
-                        if (coincide) contadorVisible++;
+                inp.oninput = function () {
+                    const txt = this.value.toLowerCase();
+                    let c = 0;
+                    Array.from(sel.options).forEach(opt => {
+                        if (!opt.value) return;
+                        const match = opt.textContent.toLowerCase().includes(txt);
+                        opt.style.display = match ? '' : 'none';
+                        if (match) c++;
                     });
-
-                    if (contador) {
-                        contador.textContent = contadorVisible;
-                        contador.className = contadorVisible > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
-                    }
-
-                    // Si hay solo un resultado y coincide exactamente, seleccionarlo automáticamente
-                    if (contadorVisible === 1 && textoBusqueda.length > 2) {
-                        const opcionUnica = Array.from(opciones).find(op =>
-                            op.style.display !== 'none' && op.value !== ''
-                        );
-                        if (opcionUnica) {
-                            selectEmpleado.value = opcionUnica.value;
-                            // Disparar el evento change para mostrar la info
-                            const event = new Event('change');
-                            selectEmpleado.dispatchEvent(event);
-                        }
-                    }
-                });
-
-                // Limpiar búsqueda al abrir el modal
-                inputBuscar.value = '';
+                    if (cnt) cnt.textContent = c;
+                };
+                inp.value = '';
             }
 
-            // Actualizar estadísticas
             function actualizarEstadisticas() {
                 const total = state.horarios.length;
                 const activos = state.horarios.filter(h => h.activo).length;
-                const turnosUnicos = [...new Set(state.horarios.map(h => h.turno?.idTurno))].length;
-                const empleadosUnicos = [...new Set(state.horarios.map(h => h.empleado?.idEmpleado))].length;
+                const uTurnos = new Set(state.horarios.map(h => h.turno?.idTurno)).size;
+                const uEmps = new Set(state.horarios.map(h => h.empleado?.idEmpleado)).size;
 
-                document.getElementById('stat-total').textContent = total;
-                document.getElementById('stat-activos').textContent = activos;
-                document.getElementById('stat-turnos').textContent = turnosUnicos;
-                document.getElementById('stat-empleados').textContent = empleadosUnicos;
+                const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setTxt('stat-total', total);
+                setTxt('stat-activos', activos);
+                setTxt('stat-turnos', uTurnos);
+                setTxt('stat-empleados', uEmps);
             }
 
-            // Renderizar horarios
-            function renderizarHorarios() {
+            // --- RENDERIZADO ---
+            function renderizarHorarios(lista = state.horarios) {
                 const container = document.getElementById('lista-horarios');
-
-                if (state.horarios.length === 0) {
-                    container.innerHTML = `
-                            <div class="col-12">
-                                <div class="alert alert-info text-center py-4">
-                                    <i class="bi bi-calendar-week fs-1 d-block mb-3 text-info"></i>
-                                    <h5>No hay horarios registrados</h5>
-                                    <p class="mb-3">Comienza asignando el primer horario del sistema</p>
-                                    <button class="btn btn-primary" onclick="HorariosModule.abrirModalNuevo()">
-                                        <i class="bi bi-plus-lg me-1"></i>Asignar Primer Horario
-                                    </button>
-                                </div>
-                            </div>
-                        `;
+                if (lista.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-5">No se encontraron horarios</div>`;
                     return;
                 }
 
-                container.innerHTML = state.horarios.map(horario => `
+                container.innerHTML = lista.map(h => `
                         <div class="col-md-6 col-lg-4 col-xl-3">
-                            <div class="card card-horario h-100 ${!horario.activo ? 'opacity-75' : ''}">
-                                <div class="card-body">
+                            <div class="card card-horario h-100 ${!h.activo ? 'opacity-50' : ''}">
+                                <div class="card-body d-flex flex-column">
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="${horario.empleado?.foto_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(horario.empleado?.nombre || 'Empleado') + '&size=100&background=0D6EFD&color=fff&bold=true'}"
-                                             class="avatar rounded-circle me-3"
-                                             alt="${horario.empleado?.nombre}"
-                                             onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${horario.empleado?.nombre}')+'&size=100&background=0D6EFD&color=fff&bold=true'">
-                                        <div>
-                                            <h6 class="card-title mb-0 fw-bold">${horario.empleado?.nombre || 'N/A'}</h6>
-                                            <small class="text-muted">${horario.empleado?.codigo_empleado || ''}</small>
+                                        <img src="${h.empleado?.foto_url || ''}" class="avatar rounded-circle me-3"
+                                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(h.empleado?.nombre || 'User')}&background=random&color=fff'">
+                                        <div class="overflow-hidden">
+                                            <h6 class="card-title mb-0 fw-bold text-white text-truncate">${h.empleado?.nombre || 'N/A'}</h6>
+                                            <small class="text-muted text-truncate d-block">${h.empleado?.codigo_empleado || ''}</small>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <span class="badge bg-primary badge-turno">${horario.turno?.nombre || 'N/A'}</span>
-                                        <span class="badge bg-secondary badge-turno">${horario.turno?.hora_entrada || ''} - ${horario.turno?.hora_salida || ''}</span>
-                                    </div>
-
-                                    <div class="small text-muted mb-3">
-                                        <div class="d-flex justify-content-between">
-                                            <span><strong>Inicio:</strong></span>
-                                            <span>${horario.fecha_inicio}</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span><strong>Fin:</strong></span>
-                                            <span>${horario.fecha_fin || 'Indefinido'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="badge ${horario.activo ? 'bg-success' : 'bg-secondary'}">
-                                            <i class="bi ${horario.activo ? 'bi-check-circle' : 'bi-pause-circle'} me-1"></i>
-                                            ${horario.activo ? 'Activo' : 'Inactivo'}
+                                        <span class="badge bg-primary badge-glass text-light d-block mb-1 text-start w-100 text-truncate">
+                                            <i class="bi bi-clock me-2"></i>${h.turno?.nombre || 'N/A'}
                                         </span>
-                                        <small class="text-muted">
-                                            ${horario.empleado?.departamento || 'N/A'}
-                                        </small>
+                                        <span class="badge badge-glass text-light d-block text-start w-100">
+                                            ${h.turno?.hora_entrada || '--'} - ${h.turno?.hora_salida || '--'}
+                                        </span>
                                     </div>
 
-                                    <div class="btn-group w-100">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="HorariosModule.editarHorario(${horario.idHorario})">
-                                            <i class="bi bi-pencil"></i> Editar
+                                    <div class="small text-muted mb-3 border-top border-secondary border-opacity-25 pt-2 flex-grow-1">
+                                        <div class="d-flex justify-content-between mb-1"><span>Inicio:</span> <span class="text-white">${h.fecha_inicio}</span></div>
+                                        <div class="d-flex justify-content-between mb-1"><span>Fin:</span> <span class="text-white">${h.fecha_fin || 'Indefinido'}</span></div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Estado:</span>
+                                            <span class="badge ${h.activo ? 'bg-success' : 'bg-secondary'} bg-opacity-75 py-0">${h.activo ? 'Activo' : 'Inactivo'}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="btn-group w-100 mt-auto shadow-sm">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="HorariosModule.editarHorario(${h.idHorario})">
+                                            <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="HorariosModule.eliminarHorario(${horario.idHorario}, '${horario.empleado?.nombre}')">
-                                            <i class="bi bi-trash"></i> Eliminar
+                                        <button class="btn btn-sm btn-outline-danger" onclick="HorariosModule.eliminarHorario(${h.idHorario}, '${h.empleado?.nombre}')">
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -635,292 +619,151 @@ async function cargarTurnos() {
                     `).join('');
             }
 
-            // Abrir modal para nuevo horario
+            // --- MODALES ---
             async function abrirModalNuevo() {
-                console.log('➕ Abriendo modal para nuevo horario');
-
-                // Cargar datos necesarios
                 await Promise.all([cargarEmpleados(), cargarTurnos()]);
-
                 document.getElementById('formHorario').reset();
                 document.getElementById('horarioId').value = '';
-                document.getElementById('modalTitle').innerHTML = '<i class="bi bi-calendar-plus me-2"></i>Nuevo Horario';
+                document.getElementById('modalTitle').innerHTML = '<i class="bi bi-calendar-plus me-2 text-primary"></i>Nuevo Horario';
                 document.getElementById('chkActivo').checked = true;
                 document.getElementById('info-empleado').style.display = 'none';
                 document.getElementById('info-turno').style.display = 'none';
+                document.getElementById('txtFechaInicio').value = new Date().toISOString().split('T')[0];
 
-                // Establecer fecha de hoy como predeterminada
-                const hoy = new Date().toISOString().split('T')[0];
-                document.getElementById('txtFechaInicio').value = hoy;
-
-                // Llenar y configurar los selects
                 llenarSelectEmpleados();
                 llenarSelectTurnos();
                 configurarBusquedaEmpleados();
 
-                // Configurar evento para mostrar información del empleado
-                const selEmpleado = document.getElementById('selEmpleado');
-                const infoHandler = function () {
-                    const selectedOption = this.options[this.selectedIndex];
-                    if (selectedOption.value) {
-                        document.getElementById('info-nombre').textContent = selectedOption.dataset.nombre;
-                        document.getElementById('info-email').textContent = selectedOption.dataset.email;
-                        document.getElementById('info-departamento').textContent = selectedOption.dataset.departamento;
-                        document.getElementById('info-rol').textContent = selectedOption.dataset.rol;
-                        document.getElementById('info-codigo').textContent = selectedOption.dataset.codigo;
+                const sel = document.getElementById('selEmpleado');
+                sel.disabled = false; // Habilitar selección
+                sel.onchange = function () {
+                    const opt = this.options[this.selectedIndex];
+                    if (opt.value) {
+                        document.getElementById('info-nombre').textContent = opt.dataset.nombre;
+                        document.getElementById('info-email').textContent = opt.dataset.email;
+                        document.getElementById('info-departamento').textContent = opt.dataset.departamento;
+                        document.getElementById('info-rol').textContent = opt.dataset.rol;
+                        document.getElementById('info-codigo').textContent = opt.dataset.codigo;
                         document.getElementById('info-empleado').style.display = 'block';
-
-                        // Auto-completar búsqueda con el nombre seleccionado
-                        document.getElementById('buscarEmpleado').value = selectedOption.dataset.nombre;
+                        document.getElementById('buscarEmpleado').value = opt.dataset.nombre;
                     } else {
                         document.getElementById('info-empleado').style.display = 'none';
                         document.getElementById('buscarEmpleado').value = '';
                     }
                 };
 
-                // Remover evento anterior si existe y agregar nuevo
-                selEmpleado.removeEventListener('change', infoHandler);
-                selEmpleado.addEventListener('change', infoHandler);
-
-                if (!state.modalInstance) {
-                    state.modalInstance = new bootstrap.Modal(document.getElementById('modalHorario'));
-                }
+                if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalHorario'));
                 state.modalInstance.show();
-
-                // Enfocar el campo de búsqueda automáticamente
-                setTimeout(() => {
-                    const buscarInput = document.getElementById('buscarEmpleado');
-                    if (buscarInput) buscarInput.focus();
-                }, 500);
-
-                console.log(' Modal de horario abierto con búsqueda');
+                setTimeout(() => document.getElementById('buscarEmpleado').focus(), 500);
             }
 
-            // Editar horario - CORREGIDO
-async function editarHorario(id) {
-    console.log('✏️ Editando horario ID:', id);
-    try {
-        const horario = await apiCall(`/api/horarios/${id}`);
-        console.log(' Datos del horario cargados:', horario);
+            async function editarHorario(id) {
+                try {
+                    const h = await apiCall(`/api/horarios/${id}`);
+                    await Promise.all([cargarEmpleados(), cargarTurnos()]);
+                    llenarSelectEmpleados();
+                    llenarSelectTurnos();
 
-        //  CORRECCIÓN: Cargar empleados y turnos PRIMERO
-        await Promise.all([cargarEmpleados(), cargarTurnos()]);
+                    document.getElementById('horarioId').value = h.idHorario;
+                    document.getElementById('selTurno').value = h.idTurno;
+                    document.getElementById('selTurno').dispatchEvent(new Event('change')); // Trigger info turno
 
-        //  CORRECCIÓN: Llenar los selects DESPUÉS de cargar los datos
-        llenarSelectEmpleados();
-        llenarSelectTurnos(); // ¡ESTA LÍNEA FALTABA!
+                    document.getElementById('txtFechaInicio').value = h.fecha_inicio;
+                    document.getElementById('txtFechaFin').value = h.fecha_fin || '';
+                    document.getElementById('chkActivo').checked = h.activo;
 
-        // Rellenar formulario
-        document.getElementById('horarioId').value = horario.idHorario;
-        document.getElementById('selTurno').value = horario.idTurno;
-        document.getElementById('txtFechaInicio').value = horario.fecha_inicio;
-        document.getElementById('txtFechaFin').value = horario.fecha_fin || '';
-        document.getElementById('chkActivo').checked = horario.activo;
+                    // Empleado (Solo lectura visual)
+                    const sel = document.getElementById('selEmpleado');
+                    const emp = state.empleados.find(e => e.idEmpleado === h.idHorario_De_Empleado);
+                    if (emp) {
+                        sel.innerHTML = `<option value="${emp.idEmpleado}" selected>${emp.codigo_empleado} - ${emp.nombre}</option>`;
+                        document.getElementById('info-nombre').textContent = emp.nombre;
+                        document.getElementById('info-email').textContent = emp.email;
+                        document.getElementById('info-departamento').textContent = emp.departamento;
+                        document.getElementById('info-rol').textContent = emp.rol;
+                        document.getElementById('info-codigo').textContent = emp.codigo_empleado;
+                        document.getElementById('info-empleado').style.display = 'block';
+                    }
+                    sel.disabled = true; // Bloquear cambio de empleado
 
-        // Mostrar información del empleado (solo lectura)
-        const empleado = state.empleados.find(e => e.idEmpleado === horario.idHorario_De_Empleado);
-        if (empleado) {
-            document.getElementById('info-nombre').textContent = empleado.nombre;
-            document.getElementById('info-email').textContent = empleado.email;
-            document.getElementById('info-departamento').textContent = empleado.departamento;
-            document.getElementById('info-rol').textContent = empleado.rol;
-            document.getElementById('info-codigo').textContent = empleado.codigo_empleado;
-            document.getElementById('info-empleado').style.display = 'block';
+                    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil me-2 text-warning"></i>Editar Horario';
+                    if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalHorario'));
+                    state.modalInstance.show();
+                } catch (e) { }
+            }
 
-            //  Establecer el empleado en el select (solo lectura visual)
-            const select = document.getElementById('selEmpleado');
-            select.innerHTML = `<option value="${empleado.idEmpleado}" selected>${empleado.codigo_empleado} - ${empleado.nombre} - ${empleado.departamento} - ${empleado.email}</option>`;
-            select.disabled = true;
-        }
+            async function guardarHorario() {
+                const form = document.getElementById('formHorario');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
 
-        //  CORRECCIÓN: Mostrar información del turno DESPUÉS de llenar el select
-        const turno = state.turnos.find(t => t.idTurno === horario.idTurno);
-        if (turno) {
-            document.getElementById('info-horario').textContent = `${turno.hora_entrada} - ${turno.hora_salida}`;
-            document.getElementById('info-tolerancia').textContent = turno.tolerancia_minutos;
-            document.getElementById('info-dias').textContent = obtenerDiasTurno(turno);
-            document.getElementById('info-turno').style.display = 'block';
-        }
+                const id = document.getElementById('horarioId').value;
+                // Si esta disabled (editando), usamos el value directo, sino (creando) tambien.
+                const empId = parseInt(document.getElementById('selEmpleado').value);
 
-        document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Horario';
-        
-        if (!state.modalInstance) {
-            state.modalInstance = new bootstrap.Modal(document.getElementById('modalHorario'));
-        }
-        state.modalInstance.show();
-
-        console.log(' Modal de edición abierto correctamente con turnos cargados');
-
-    } catch (error) {
-        console.error(' Error al cargar horario:', error);
-        mostrarAlerta('Error al cargar horario: ' + error.message, 'danger');
-    }
-}
-
-          // Guardar horario - MEJORADO
-async function guardarHorario() {
-    const form = document.getElementById('formHorario');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    const horarioId = document.getElementById('horarioId').value;
-    const empleadoSelect = document.getElementById('selEmpleado');
-    
-    //  CORRECCIÓN: Manejar correctamente el empleado en modo edición
-    const idEmpleado = empleadoSelect.disabled ? 
-        parseInt(empleadoSelect.value) : // En edición, tomar el valor actual
-        parseInt(empleadoSelect.value);  // En creación, tomar el seleccionado
-
-    const data = {
-        IdEmpleado: idEmpleado,
-        IdTurno: parseInt(document.getElementById('selTurno').value),
-        FechaInicio: document.getElementById('txtFechaInicio').value,
-        FechaFin: document.getElementById('txtFechaFin').value || null,
-        Activo: document.getElementById('chkActivo').checked
-    };
-
-    console.log(' Guardando horario:', data);
-
-    try {
-        if (horarioId) {
-            //  Actualizar
-            await apiCall(`/api/horarios/${horarioId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            mostrarAlerta(' Horario actualizado exitosamente', 'success');
-        } else {
-            //  Crear nuevo
-            await apiCall('/api/horarios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            mostrarAlerta(' Horario creado exitosamente', 'success');
-        }
-
-        if (state.modalInstance) {
-            state.modalInstance.hide();
-        }
-        await cargarHorarios();
-    } catch (error) {
-        console.error(' Error al guardar horario:', error);
-        mostrarAlerta(' Error al guardar horario: ' + error.message, 'danger');
-    }
-}
-
-            // Eliminar horario
-            async function eliminarHorario(id, nombreEmpleado) {
-                if (!confirm(`¿Estás seguro de eliminar el horario de "${nombreEmpleado}"?\n\nEsta acción no se puede deshacer.`)) return;
+                const data = {
+                    IdEmpleado: empId,
+                    IdTurno: parseInt(document.getElementById('selTurno').value),
+                    FechaInicio: document.getElementById('txtFechaInicio').value,
+                    FechaFin: document.getElementById('txtFechaFin').value || null,
+                    Activo: document.getElementById('chkActivo').checked
+                };
 
                 try {
-                    await apiCall(`/api/horarios/${id}`, { method: 'DELETE' });
-                    mostrarAlerta('Horario eliminado exitosamente', 'success');
-                    await cargarHorarios();
-                } catch (error) {
-                    mostrarAlerta('Error al eliminar: ' + error.message, 'danger');
-                }
-            }
-
-            // Mostrar alerta
-            function mostrarAlerta(mensaje, tipo = 'info') {
-                // Eliminar alertas anteriores
-                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
-                alertasAnteriores.forEach(alerta => alerta.remove());
-
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
-                alertDiv.style.zIndex = '9999';
-                alertDiv.style.minWidth = '300px';
-                alertDiv.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
-                            <span>${mensaje}</span>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    `;
-                document.body.appendChild(alertDiv);
-
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
+                    if (id) {
+                        await apiCall(`/api/horarios/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                        mostrarAlerta('Horario actualizado', 'success');
+                    } else {
+                        await apiCall('/api/horarios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                        mostrarAlerta('Horario creado', 'success');
                     }
-                }, 4000);
+                    state.modalInstance.hide();
+                    cargarHorarios();
+                } catch (e) { }
             }
 
-            // Inicializar
+            async function eliminarHorario(id, nombre) {
+                if (!confirm(`¿Eliminar horario de ${nombre}?`)) return;
+                try {
+                    await apiCall(`/api/horarios/${id}`, { method: 'DELETE' });
+                    mostrarAlerta('Eliminado', 'success');
+                    cargarHorarios();
+                } catch (e) { }
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.textContent = msg;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            // INIT
             async function init() {
-                console.log('Iniciando módulo de horarios...');
-
-                // Verificar que estamos en la vista correcta
-                if (!document.getElementById('horarios-container')) {
-                    console.log('No estamos en la vista de horarios, saliendo...');
-                    return;
-                }
-
+                if (!document.getElementById('horarios-container')) return;
                 await cargarHorarios();
 
-                // Configurar búsqueda global
-                const inputBuscar = document.getElementById('input-buscar');
-                if (inputBuscar) {
-                    inputBuscar.addEventListener('input', (e) => {
-                        const texto = e.target.value.toLowerCase();
-                        const filtrados = state.horarios.filter(horario =>
-                            (horario.empleado?.nombre || '').toLowerCase().includes(texto) ||
-                            (horario.turno?.nombre || '').toLowerCase().includes(texto) ||
-                            (horario.empleado?.departamento || '').toLowerCase().includes(texto) ||
-                            (horario.empleado?.codigo_empleado || '').toLowerCase().includes(texto)
-                        );
-                        const temp = state.horarios;
-                        state.horarios = filtrados;
-                        renderizarHorarios();
-                        actualizarEstadisticas();
-                        state.horarios = temp;
+                // Filtros UI
+                const search = document.getElementById('input-buscar');
+                const filter = document.getElementById('select-estado');
+                const run = () => {
+                    const txt = search.value.toLowerCase();
+                    const st = filter.value;
+                    const res = state.horarios.filter(h => {
+                        const tMatch = (h.empleado?.nombre || '').toLowerCase().includes(txt) || (h.turno?.nombre || '').toLowerCase().includes(txt) || (h.empleado?.departamento || '').toLowerCase().includes(txt);
+                        const sMatch = st === '' ? true : (st === 'activo' ? h.activo : !h.activo);
+                        return tMatch && sMatch;
                     });
-                }
-
-                // Configurar filtro de estado
-                const selectEstado = document.getElementById('select-estado');
-                if (selectEstado) {
-                    selectEstado.addEventListener('change', (e) => {
-                        const estado = e.target.value;
-                        let filtrados = state.horarios;
-
-                        if (estado === 'activo') {
-                            filtrados = state.horarios.filter(h => h.activo);
-                        } else if (estado === 'inactivo') {
-                            filtrados = state.horarios.filter(h => !h.activo);
-                        }
-
-                        const temp = state.horarios;
-                        state.horarios = filtrados;
-                        renderizarHorarios();
-                        actualizarEstadisticas();
-                        state.horarios = temp;
-                    });
-                }
-
-                console.log('Módulo de horarios iniciado');
+                    renderizarHorarios(res);
+                };
+                if (search) search.oninput = run;
+                if (filter) filter.onchange = run;
             }
 
-            // Iniciar cuando el DOM esté listo
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
 
-            // API pública del módulo
-            return {
-                init,
-                abrirModalNuevo,
-                editarHorario,
-                guardarHorario,
-                eliminarHorario
-            };
+            return { init, abrirModalNuevo, editarHorario, guardarHorario, eliminarHorario };
         })();
     </script>
 </body>

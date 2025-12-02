@@ -1,5 +1,10 @@
+wwwroot\img\altansukh-e-0hSCUJN86To-unsplash.jpg
 wwwroot\img\background-login.jpg
 wwwroot\img\background-panel.jpg
+wwwroot\img\image.jpg
+wwwroot\img\image.webp
+wwwroot\img\timelab-MZZG2zfEZCc-unsplash.jpg
+wwwroot\index.html
 wwwroot\login.html
 wwwroot\panel-empleado.html
 wwwroot\views\configuracion.html
@@ -8,7 +13,6 @@ wwwroot\views\estadisticas-personales.html
 wwwroot\views\estadisticas.html
 wwwroot\views\fichajes.html
 wwwroot\views\horarios.html
-wwwroot\views\inicio-empleado.html
 wwwroot\views\inicio.html
 wwwroot\views\notificaciones-admin.html
 wwwroot\views\notificaciones-empleado.html
@@ -17,4 +21,4 @@ wwwroot\views\permisos-empleado.html
 wwwroot\views\permisos.html
 wwwroot\views\rfid.html
 wwwroot\views\usuarios.html
-wwwroot\index.html
+wwwroot\views\inicio-empleado.html

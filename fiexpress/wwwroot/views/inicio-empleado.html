@@ -7,75 +7,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* ✅ Pantalla de carga */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+            --bg-body: #0f172a;
         }
 
-            .loading-overlay.hidden {
-                opacity: 0;
-                visibility: hidden;
-            }
-
-        .loading-logo {
-            font-size: 3rem;
+        body {
             color: white;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
+            background-color: var(--bg-body);
         }
 
-        .loading-text {
-            color: white;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .loading-progress {
-            width: 300px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        .loading-steps {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            text-align: center;
-            min-height: 24px;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
+        /* Animaciones */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -88,128 +34,296 @@
             }
         }
 
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        /* Pantalla de Carga */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Cards Glass */
+        .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes de Color */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .border-secondary-glass {
+            border-left: 4px solid #95a5a6 !important;
+        }
+
+        /* Avatar Profile */
+        .avatar-profile {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Fichaje Card */
+        .fichaje-card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid var(--border-light) !important;
+            border-left: 4px solid transparent !important;
+        }
+
+        .fichaje-entrada {
+            border-left-color: #198754 !important;
+        }
+
+        .fichaje-salida {
+            border-left-color: #dc3545 !important;
+        }
+
+        /* Días Turno Blocks */
+        .dia-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+            .dia-block.active {
+                background: rgba(52, 152, 219, 0.2);
+                border-color: var(--accent-color);
+                color: white;
+            }
+
+            .dia-block.inactive {
+                opacity: 0.4;
+            }
+
+        /* Alertas Custom */
+        .alert-glass-info {
+            background: rgba(13, 202, 240, 0.15);
+            border: 1px solid rgba(13, 202, 240, 0.3);
+            color: #0dcaf0;
+        }
+
+        .alert-glass-success {
+            background: rgba(25, 135, 84, 0.15);
+            border: 1px solid rgba(25, 135, 84, 0.3);
+            color: #198754;
+        }
+
+        .alert-glass-warning {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+
+        /* Progress Bars */
+        .progress {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Botones Acciones */
+        .btn-quick {
+            border: 1px solid var(--border-light);
+            color: white;
+            background: rgba(255,255,255,0.03);
+            text-align: left;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+            .btn-quick:hover {
+                background: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+
+        /* Botón Refresh Personalizado */
+        .btn-refresh-header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+            .btn-refresh-header:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                transform: rotate(180deg);
+            }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
         .content-hidden {
             opacity: 0;
-            transition: opacity 0.5s ease;
+            visibility: hidden;
         }
 
         .content-visible {
             opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease;
         }
 
-        /* Estilos existentes */
-        .stat-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            animation: fadeInUp 0.6s ease;
-        }
-
-            .stat-card:hover {
-                transform: translateY(-3px);
-            }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border: 3px solid #e9ecef;
-        }
-
-        .badge-status {
-            font-size: 0.7rem;
-            padding: 0.35em 0.65em;
-        }
-
-        .fichaje-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .fichaje-entrada {
-            border-left-color: #198754;
-        }
-
-        .fichaje-salida {
-            border-left-color: #dc3545;
-        }
-
-        .progress {
-            height: 8px;
-            border-radius: 4px;
-        }
-
-        .turno-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Stats Text */
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
             color: white;
-            border: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .quick-action-btn {
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-            .quick-action-btn:hover {
-                transform: translateY(-2px);
-            }
-
-        .dia-activo {
-            color: #198754;
-            font-weight: bold;
-        }
-
-        .dia-inactivo {
-            color: #6c757d;
-            opacity: 0.6;
-        }
-
-        /* Animaciones para elementos individuales */
-        .animate-delay-1 {
-            animation-delay: 0.1s;
-        }
-
-        .animate-delay-2 {
-            animation-delay: 0.2s;
-        }
-
-        .animate-delay-3 {
-            animation-delay: 0.3s;
-        }
-
-        .animate-delay-4 {
-            animation-delay: 0.4s;
-        }
-
-        .animate-delay-5 {
-            animation-delay: 0.5s;
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
-    <!-- ✅ Pantalla de carga -->
+    <!-- Pantalla de carga -->
     <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-logo">
-            <i class="bi bi-clock-history"></i>
-        </div>
-        <div class="loading-text">Cargando tu dashboard...</div>
+        <div class="loading-logo"><i class="bi bi-clock-history"></i></div>
+        <div class="text-white mb-3">Cargando tu dashboard...</div>
         <div class="loading-progress">
             <div id="loading-progress-bar" class="loading-progress-bar"></div>
         </div>
-        <div id="loading-steps" class="loading-steps">
-            Iniciando sistema...
-        </div>
+        <div id="loading-steps" class="small text-muted">Iniciando sistema...</div>
     </div>
 
     <!-- Dashboard Empleado -->
-    <div class="container-fluid py-4 content-hidden" id="dashboard-empleado-container">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2 class="mb-3">
-                    <i class="bi bi-speedometer2 text-primary"></i>
-                    Mi Dashboard
-                </h2>
-                <p class="text-muted">Resumen de tu actividad y asistencia</p>
+    <div class="container-fluid py-2 content-hidden" id="dashboard-empleado-container">
+
+        <!-- Header con Botón Refresh -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1 text-white">
+                        <i class="bi bi-speedometer2 me-2" style="color: var(--accent-color);"></i>Mi Dashboard
+                    </h2>
+                    <p class="mb-0 text-muted">Resumen de tu actividad y asistencia.</p>
+                </div>
+                <button class="btn btn-refresh-header rounded-circle p-2" onclick="DashboardEmpleado.recargarDashboard()" title="Actualizar datos">
+                    <i class="bi bi-arrow-clockwise fs-4"></i>
+                </button>
             </div>
         </div>
 
@@ -219,31 +333,23 @@
                 <div class="card animate-delay-1">
                     <div class="card-body">
                         <div class="row align-items-center">
-                            <div class="col-md-2 text-center">
-                                <img id="empleado-avatar"
-                                     class="avatar rounded-circle"
-                                     alt="Avatar"
-                                     onerror="this.src='https://ui-avatars.com/api/?name=U&size=100&background=0D6EFD&color=fff&bold=true'">
+                            <div class="col-md-auto text-center mb-3 mb-md-0">
+                                <img id="empleado-avatar" class="avatar-profile rounded-circle" alt="Avatar" src="">
                             </div>
-                            <div class="col-md-6">
-                                <h4 class="mb-1" id="empleado-nombre">Cargando...</h4>
-                                <p class="text-muted mb-1">
-                                    <i class="bi bi-person-badge me-1"></i>
-                                    <span id="empleado-codigo">-</span> |
-                                    <span id="empleado-departamento">-</span>
-                                </p>
-                                <p class="text-muted mb-0">
-                                    <i class="bi bi-calendar me-1"></i>
-                                    <span id="fecha-actual">-</span>
-                                </p>
+                            <div class="col-md">
+                                <h4 class="mb-1 fw-bold text-white" id="empleado-nombre">Cargando...</h4>
+                                <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                                    <span><i class="bi bi-person-badge me-1"></i><span id="empleado-codigo">-</span></span>
+                                    <span><i class="bi bi-building me-1"></i><span id="empleado-departamento">-</span></span>
+                                </div>
+                                <div class="d-inline-block bg-dark bg-opacity-50 rounded px-3 py-1 border border-light border-opacity-10">
+                                    <i class="bi bi-calendar3 me-2 text-info"></i><span id="fecha-actual" class="text-light">-</span>
+                                </div>
                             </div>
-                            <div class="col-md-4 text-end">
+                            <div class="col-md-auto text-end mt-3 mt-md-0">
                                 <div class="d-flex gap-2 justify-content-end">
-                                    <button class="btn btn-outline-primary" onclick="DashboardEmpleado.recargarDashboard()">
-                                        <i class="bi bi-arrow-clockwise"></i> Actualizar
-                                    </button>
-                                    <button class="btn btn-primary" onclick="DashboardEmpleado.verEstadisticasCompletas()">
-                                        <i class="bi bi-graph-up me-1"></i>Estadísticas
+                                    <button class="btn btn-primary px-4 fw-bold" onclick="DashboardEmpleado.verEstadisticasCompletas()">
+                                        <i class="bi bi-graph-up me-2"></i>Ver Estadísticas
                                     </button>
                                 </div>
                             </div>
@@ -256,11 +362,11 @@
         <!-- Estado Actual -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="alert alert-info d-flex align-items-center animate-delay-2">
-                    <i class="bi bi-info-circle fs-4 me-3"></i>
+                <div id="alert-estado" class="alert alert-glass-info d-flex align-items-center animate-delay-2 p-3 rounded-3 shadow-sm">
+                    <i class="bi bi-info-circle-fill fs-3 me-3"></i>
                     <div>
-                        <h5 class="alert-heading mb-1" id="estado-actual-text">Cargando estado...</h5>
-                        <p class="mb-0" id="estado-detalle">Obteniendo información actual</p>
+                        <h5 class="alert-heading mb-1 fw-bold" id="estado-actual-text">Cargando estado...</h5>
+                        <p class="mb-0 opacity-75 small" id="estado-detalle">Obteniendo información actual</p>
                     </div>
                 </div>
             </div>
@@ -268,62 +374,54 @@
 
         <!-- Estadísticas Rápidas -->
         <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-primary border-4 animate-delay-1">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-1">Asistencia Mes</h6>
-                                <h3 class="mb-0" id="stat-asistencia">0%</h3>
-                            </div>
-                            <i class="bi bi-person-check fs-1 text-primary opacity-25"></i>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100 animate-delay-1">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Asistencia Mes</div>
+                            <i class="bi bi-person-check fs-4 text-primary"></i>
                         </div>
-                        <div class="progress mt-2">
+                        <h3 class="stat-value mb-2" id="stat-asistencia">0%</h3>
+                        <div class="progress" style="height: 4px;">
                             <div class="progress-bar bg-primary" id="barra-asistencia" style="width: 0%"></div>
                         </div>
-                        <small class="text-muted" id="stat-dias-asistencia">0/0 días</small>
+                        <small class="text-muted mt-2 d-block" id="stat-dias-asistencia">0/0 días</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-success border-4 animate-delay-2">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-1">Horas Trabajadas</h6>
-                                <h3 class="text-success mb-0" id="stat-horas-trabajadas">0h</h3>
-                            </div>
-                            <i class="bi bi-clock-history fs-1 text-success opacity-25"></i>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100 animate-delay-2">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Horas Trabajadas</div>
+                            <i class="bi bi-clock-history fs-4 text-success"></i>
                         </div>
-                        <small class="text-muted" id="stat-minutos-trabajados">0 minutos</small>
+                        <h3 class="stat-value mb-0 text-success" id="stat-horas-trabajadas">0h</h3>
+                        <small class="text-muted mt-1 d-block" id="stat-minutos-trabajados">0 min</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-warning border-4 animate-delay-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-1">Tiempo Retraso</h6>
-                                <h3 class="text-warning mb-0" id="stat-retraso">0m</h3>
-                            </div>
-                            <i class="bi bi-alarm fs-1 text-warning opacity-25"></i>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100 animate-delay-3">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Retraso Acumulado</div>
+                            <i class="bi bi-alarm fs-4 text-warning"></i>
                         </div>
-                        <small class="text-muted">Acumulado mes</small>
+                        <h3 class="stat-value mb-0 text-warning" id="stat-retraso">0m</h3>
+                        <small class="text-muted mt-1 d-block">Este mes</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card border-start border-info border-4 animate-delay-4">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-1">Horas Extra</h6>
-                                <h3 class="text-info mb-0" id="stat-extra">0m</h3>
-                            </div>
-                            <i class="bi bi-plus-circle fs-1 text-info opacity-25"></i>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100 animate-delay-4">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Horas Extra</div>
+                            <i class="bi bi-plus-circle fs-4 text-info"></i>
                         </div>
-                        <small class="text-muted">Tiempo adicional</small>
+                        <h3 class="stat-value mb-0 text-info" id="stat-extra">0m</h3>
+                        <small class="text-muted mt-1 d-block">Tiempo adicional</small>
                     </div>
                 </div>
             </div>
@@ -334,40 +432,32 @@
             <!-- Columna Izquierda -->
             <div class="col-lg-8">
                 <div class="row">
-                    <!-- Turno Activo -->
+                    <!-- Turno Activo (CORREGIDO) -->
                     <div class="col-md-6 mb-4">
                         <div class="card h-100 animate-delay-3">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-clock text-primary me-2"></i>
-                                    Mi Turno
-                                </h5>
-                                <span class="badge bg-primary" id="badge-turno-activo">Activo</span>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 text-white"><i class="bi bi-clock text-primary me-2"></i>Mi Turno</h6>
+                                <span class="badge bg-secondary" id="badge-turno-activo">Inactivo</span>
                             </div>
-                            <div class="card-body">
-                                <div id="turno-activo-container">
-                                    <div class="text-center py-4">
-                                        <div class="spinner-border text-primary" role="status"></div>
-                                        <p class="text-muted mt-2 mb-0">Cargando turno...</p>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <div id="turno-activo-container" class="w-100">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Días del Turno -->
+                    <!-- Días Laborales (CORREGIDO) -->
                     <div class="col-md-6 mb-4">
                         <div class="card h-100 animate-delay-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-calendar-week text-success me-2"></i>
-                                    Días Laborales
-                                </h5>
+                            <div class="card-header">
+                                <h6 class="mb-0 text-white"><i class="bi bi-calendar-week text-success me-2"></i>Días Laborales</h6>
                             </div>
                             <div class="card-body">
                                 <div id="dias-turno-container" class="text-center">
                                     <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-                                    <p class="text-muted mt-2 mb-0">Cargando días...</p>
                                 </div>
                             </div>
                         </div>
@@ -376,25 +466,18 @@
 
                 <!-- Fichajes de Hoy -->
                 <div class="card mb-4 animate-delay-5">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bi bi-clock-history text-primary me-2"></i>
-                            Mis Fichajes de Hoy
-                            <span class="badge bg-primary ms-2" id="contador-fichajes">0</span>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white">
+                            <i class="bi bi-list-check text-info me-2"></i>Fichajes de Hoy
+                            <span class="badge bg-primary bg-opacity-50 ms-2 rounded-pill" id="contador-fichajes">0</span>
+                        </h6>
                         <div>
                             <span class="text-muted small me-2" id="timestamp-fichajes"></span>
-                            <button class="btn btn-sm btn-outline-primary" onclick="DashboardEmpleado.recargarFichajes()">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-3">
                         <div id="fichajes-hoy-container">
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status"></div>
-                                <p class="text-muted mt-2 mb-0">Cargando fichajes...</p>
-                            </div>
+                            <div class="text-center py-4 text-muted">Cargando...</div>
                         </div>
                     </div>
                 </div>
@@ -404,25 +487,31 @@
             <div class="col-lg-4">
                 <!-- Acciones Rápidas -->
                 <div class="card mb-4 animate-delay-3">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-lightning-charge text-warning me-2"></i>
-                            Acciones Rápidas
-                        </h5>
+                    <div class="card-header">
+                        <h6 class="mb-0 text-white"><i class="bi bi-lightning-charge text-warning me-2"></i>Acciones</h6>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary quick-action-btn" onclick="DashboardEmpleado.verMisFichajes()">
-                                <i class="bi bi-clock-history me-2"></i>Historial Fichajes
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.verMisFichajes()">
+                                <div class="bg-primary bg-opacity-25 p-2 rounded me-3"><i class="bi bi-clock-history text-primary"></i></div>
+                                <div>
+                                    <div class="fw-bold">Historial Fichajes</div>
+                                    <div class="small text-muted">Ver registros pasados</div>
+                                </div>
                             </button>
-                            <button class="btn btn-outline-success quick-action-btn" onclick="DashboardEmpleado.solicitarPermiso()">
-                                <i class="bi bi-file-text me-2"></i>Solicitar Permiso
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.solicitarPermiso()">
+                                <div class="bg-success bg-opacity-25 p-2 rounded me-3"><i class="bi bi-file-text text-success"></i></div>
+                                <div>
+                                    <div class="fw-bold">Solicitar Permiso</div>
+                                    <div class="small text-muted">Ausencias o vacaciones</div>
+                                </div>
                             </button>
-                            <button class="btn btn-outline-info quick-action-btn" onclick="DashboardEmpleado.verNotificaciones()">
-                                <i class="bi bi-bell me-2"></i>Notificaciones
-                            </button>
-                            <button class="btn btn-outline-warning quick-action-btn" onclick="DashboardEmpleado.verHorario()">
-                                <i class="bi bi-calendar-week me-2"></i>Mi Horario Completo
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.verNotificaciones()">
+                                <div class="bg-info bg-opacity-25 p-2 rounded me-3"><i class="bi bi-bell text-info"></i></div>
+                                <div>
+                                    <div class="fw-bold">Notificaciones</div>
+                                    <div class="small text-muted">Mensajes del sistema</div>
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -430,57 +519,30 @@
 
                 <!-- Progreso del Mes -->
                 <div class="card mb-4 animate-delay-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-graph-up text-info me-2"></i>
-                            Progreso del Mes
-                        </h5>
+                    <div class="card-header">
+                        <h6 class="mb-0 text-white"><i class="bi bi-graph-up text-info me-2"></i>Progreso Mensual</h6>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <div class="d-flex justify-content-between mb-1">
                                 <small class="text-muted">Días transcurridos</small>
-                                <small class="text-muted" id="progreso-mes-text">0%</small>
+                                <small class="text-white fw-bold" id="progreso-mes-text">0%</small>
                             </div>
                             <div class="progress">
                                 <div class="progress-bar bg-primary" id="barra-mes" style="width: 0%"></div>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <div class="d-flex justify-content-between mb-1">
                                 <small class="text-muted">Objetivo asistencia</small>
-                                <small class="text-muted" id="objetivo-asistencia-text">0%</small>
+                                <small class="text-white fw-bold" id="objetivo-asistencia-text">0%</small>
                             </div>
                             <div class="progress">
                                 <div class="progress-bar bg-success" id="barra-objetivo" style="width: 0%"></div>
                             </div>
                         </div>
-                        <div class="text-center">
-                            <small class="text-muted" id="dias-restantes">0 días restantes</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rendimiento -->
-                <div class="card animate-delay-5">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-award text-warning me-2"></i>
-                            Mi Rendimiento
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span>Promedio diario:</span>
-                            <span class="badge bg-info" id="promedio-diario">0h</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span>Días consecutivos:</span>
-                            <span class="badge bg-success" id="dias-consecutivos">0</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span>Próximo objetivo:</span>
-                            <span class="badge bg-warning" id="proximo-objetivo">+5%</span>
+                        <div class="text-center mt-3">
+                            <small class="badge bg-dark border border-secondary border-opacity-25 text-muted fw-normal" id="dias-restantes">0 días restantes</small>
                         </div>
                     </div>
                 </div>
@@ -488,205 +550,116 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // ✅ DASHBOARD EMPLEADO - CON PERSISTENCIA DE DATOS Y BOTÓN DE REFRESH
+        // MÓDULO DASHBOARD EMPLEADO - Lógica Refinada
         window.DashboardEmpleado = (function () {
             'use strict';
 
             const state = {
                 datos: null,
                 intervalos: [],
-                pasosCarga: [
-                    "Iniciando sistema...",
-                    "Cargando información personal...",
-                    "Obteniendo estadísticas...",
-                    "Consultando turno activo...",
-                    "Cargando fichajes del día...",
-                    "Calculando progreso del mes...",
-                    "Preparando interfaz...",
-                    "¡Listo!"
-                ],
+                pasosCarga: ["Iniciando...", "Datos personales...", "Estadísticas...", "Turnos...", "Fichajes...", "Métricas...", "Interfaz...", "Listo!"],
                 pasoActual: 0
             };
 
-            // Clave para guardar en sessionStorage
             const STORAGE_KEY = 'fiExpress_dashboard_data';
 
-            // ✅ NUEVO: Control de pantalla de carga
-            function actualizarProgresoCarga(paso, mensajePersonalizado = null) {
-                const progressBar = document.getElementById('loading-progress-bar');
-                const stepsText = document.getElementById('loading-steps');
-
-                const progreso = ((paso + 1) / state.pasosCarga.length) * 100;
-                progressBar.style.width = `${progreso}%`;
-
-                const mensaje = mensajePersonalizado || state.pasosCarga[paso];
-                stepsText.textContent = mensaje;
-
+            // --- PANTALLA CARGA ---
+            function actualizarProgresoCarga(paso, msg = null) {
+                const bar = document.getElementById('loading-progress-bar');
+                const txt = document.getElementById('loading-steps');
+                const prog = ((paso + 1) / state.pasosCarga.length) * 100;
+                if (bar) bar.style.width = `${prog}%`;
+                if (txt) txt.textContent = msg || state.pasosCarga[paso];
                 state.pasoActual = paso;
             }
 
             function mostrarPantallaCarga() {
                 const overlay = document.getElementById('loading-overlay');
-                const contenido = document.getElementById('dashboard-empleado-container');
-
-                overlay.classList.remove('hidden');
-                contenido.classList.add('content-hidden');
-                contenido.classList.remove('content-visible');
-
-                // Reiniciar progreso
-                actualizarProgresoCarga(0);
+                if (overlay.classList.contains('hidden')) {
+                    overlay.classList.remove('hidden');
+                    document.getElementById('dashboard-empleado-container').classList.add('content-hidden');
+                    actualizarProgresoCarga(0);
+                }
             }
 
             function ocultarPantallaCarga() {
                 const overlay = document.getElementById('loading-overlay');
-                const contenido = document.getElementById('dashboard-empleado-container');
-
-                // Último paso de progreso
-                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Dashboard listo!");
-
+                const content = document.getElementById('dashboard-empleado-container');
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Bienvenido!");
                 setTimeout(() => {
                     overlay.classList.add('hidden');
-                    contenido.classList.remove('content-hidden');
-                    contenido.classList.add('content-visible');
-                }, 800);
+                    content.classList.remove('content-hidden');
+                    content.classList.add('content-visible');
+                }, 600);
             }
 
-            // ✅ NUEVO: Guardar datos en sessionStorage
+            // --- STORAGE ---
             function guardarDatosEnStorage(datos) {
                 try {
-                    const datosConTimestamp = {
-                        ...datos,
-                        timestamp: Date.now()
-                    };
-                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(datosConTimestamp));
-                } catch (error) {
-                    console.warn('No se pudo guardar en sessionStorage:', error);
-                }
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...datos, timestamp: Date.now() }));
+                } catch (e) { }
             }
 
-            // ✅ NUEVO: Cargar datos desde sessionStorage
             function cargarDatosDesdeStorage() {
                 try {
-                    const datosGuardados = sessionStorage.getItem(STORAGE_KEY);
-                    if (!datosGuardados) return null;
-
-                    const datos = JSON.parse(datosGuardados);
-                    // Verificar que los datos no sean demasiado viejos (por ejemplo, 5 minutos)
-                    const cincoMinutos = 5 * 60 * 1000;
-                    if (Date.now() - datos.timestamp > cincoMinutos) {
-                        sessionStorage.removeItem(STORAGE_KEY);
-                        return null;
+                    const raw = sessionStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    const data = JSON.parse(raw);
+                    if (Date.now() - data.timestamp > 300000) { // 5 minutos
+                        sessionStorage.removeItem(STORAGE_KEY); return null;
                     }
-
-                    return datos;
-                } catch (error) {
-                    console.warn('Error al cargar datos desde sessionStorage:', error);
-                    return null;
-                }
+                    return data;
+                } catch (e) { return null; }
             }
 
-            // API Helper MEJORADO
+            // --- API ---
             async function apiCall(url, options = {}) {
                 try {
-                    console.log(`🔍 Llamando API: ${url}`);
-                    const response = await fetch(url, {
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...options.headers
-                        },
-                        ...options
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error(`❌ Error ${response.status}:`, errorText);
-
-                        if (response.status === 404) {
-                            throw new Error(`Endpoint no encontrado: ${url}`);
-                        }
-
-                        throw new Error(`Error ${response.status}: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    console.log(`✅ Respuesta API ${url}:`, data);
-                    return data;
-
-                } catch (error) {
-                    console.error('❌ API Call Error:', error);
-                    mostrarNotificacion(`Error: ${error.message}`, 'danger');
+                    const res = await fetch(url, { credentials: 'include', headers: { 'Content-Type': 'application/json', ...options.headers }, ...options });
+                    if (!res.ok) throw new Error(`Error ${res.status}`);
+                    return await res.json();
+                } catch (e) {
+                    console.error('API Error:', e);
                     return null;
                 }
             }
 
-            // Cargar dashboard completo
+            // --- CARGAR ---
             async function cargarDashboard(forceRefresh = false) {
-                console.log('📊 Cargando dashboard empleado...');
-
-                // ✅ NUEVO: Si no es forzado, intentar cargar desde sessionStorage
                 if (!forceRefresh) {
-                    const datosGuardados = cargarDatosDesdeStorage();
-                    if (datosGuardados) {
-                        console.log('✅ Usando datos guardados en sessionStorage');
-                        state.datos = datosGuardados;
+                    const cached = cargarDatosDesdeStorage();
+                    if (cached) {
+                        state.datos = cached;
                         actualizarVistaCompleta();
                         ocultarPantallaCarga();
                         return;
                     }
                 }
 
-                // Si no hay datos guardados o es un refresh forzado, cargar desde API
-                mostrarPantallaCarga();
+                actualizarProgresoCarga(1, "Consultando servidor...");
+                const data = await apiCall('/api/estadisticas/dashboard-empleado');
 
-                try {
-                    actualizarProgresoCarga(1, "Cargando información personal...");
-
-                    const dashboardData = await apiCall('/api/estadisticas/dashboard-empleado');
-
-                    if (!dashboardData) {
-                        mostrarNotificacion('No se pudieron cargar los datos del dashboard', 'warning');
-                        ocultarPantallaCarga();
-                        return;
+                if (!data) {
+                    if (!document.getElementById('loading-overlay').classList.contains('hidden')) {
+                        document.getElementById('loading-steps').textContent = "Error de conexión. Reintentando...";
+                        setTimeout(() => cargarDashboard(forceRefresh), 3000);
                     }
-
-                    state.datos = dashboardData;
-
-                    // ✅ NUEVO: Guardar los datos en sessionStorage
-                    guardarDatosEnStorage(dashboardData);
-
-                    actualizarProgresoCarga(2, "Procesando estadísticas...");
-                    actualizarEstadisticas();
-
-                    actualizarProgresoCarga(3, "Configurando turno activo...");
-                    actualizarTurnoActivo();
-
-                    actualizarProgresoCarga(4, "Cargando fichajes del día...");
-                    actualizarFichajesHoy();
-
-                    actualizarProgresoCarga(5, "Actualizando información...");
-                    actualizarInfoEmpleado();
-                    actualizarEstadoActual();
-                    actualizarDiasTurno();
-                    actualizarProgresoMes();
-                    actualizarRendimiento();
-                    actualizarFechas();
-
-                    actualizarProgresoCarga(6, "Finalizando carga...");
-                    mostrarNotificacion('Dashboard actualizado correctamente', 'success');
-
-                    // Pequeño delay para que se vea el último paso
-                    setTimeout(ocultarPantallaCarga, 500);
-
-                } catch (error) {
-                    console.error('Error crítico al cargar dashboard:', error);
-                    mostrarNotificacion('Error crítico al cargar el dashboard', 'danger');
-                    ocultarPantallaCarga();
+                    return;
                 }
+
+                state.datos = data;
+                guardarDatosEnStorage(data);
+
+                actualizarProgresoCarga(4, "Procesando datos...");
+                actualizarVistaCompleta();
+
+                ocultarPantallaCarga();
+                if (forceRefresh) mostrarNotificacion('Datos actualizados', 'success');
             }
 
-            // Actualizar toda la vista (para recargas)
             function actualizarVistaCompleta() {
                 actualizarInfoEmpleado();
                 actualizarEstadoActual();
@@ -695,343 +668,199 @@
                 actualizarDiasTurno();
                 actualizarFichajesHoy();
                 actualizarProgresoMes();
-                actualizarRendimiento();
                 actualizarFechas();
             }
 
-            // Resto de las funciones permanecen igual...
+            // --- UI UPDATES ---
             function actualizarInfoEmpleado() {
                 const emp = state.datos.empleado;
                 if (!emp) return;
-
-                document.getElementById('empleado-nombre').textContent = emp.nombre || 'Usuario';
+                document.getElementById('empleado-nombre').textContent = emp.nombre || 'Empleado';
                 document.getElementById('empleado-codigo').textContent = emp.codigo_empleado || '-';
                 document.getElementById('empleado-departamento').textContent = emp.departamento || '-';
-
-                const avatarImg = document.getElementById('empleado-avatar');
-                if (emp.foto_url) {
-                    avatarImg.src = emp.foto_url;
-                } else {
-                    const nombre = emp.nombre || 'Usuario';
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&size=100&background=0D6EFD&color=fff&bold=true`;
-                    avatarImg.src = avatarUrl;
-                }
+                const img = document.getElementById('empleado-avatar');
+                img.src = emp.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.nombre || 'U')}&size=100&background=0D6EFD&color=fff`;
             }
 
             function actualizarEstadoActual() {
-                const estado = state.datos.estadoActual || 'Sin información';
-                const ultimoFichaje = state.datos.ultimoFichaje;
-
+                const estado = state.datos.estadoActual || 'Desconocido';
+                const last = state.datos.ultimoFichaje;
                 document.getElementById('estado-actual-text').textContent = estado;
-
-                let detalle = 'Actualizado: ' + new Date().toLocaleTimeString();
-                if (ultimoFichaje) {
-                    detalle = `Último fichaje: ${ultimoFichaje.tipo} a las ${ultimoFichaje.hora}`;
-                }
-                document.getElementById('estado-detalle').textContent = detalle;
-
-                const alert = document.querySelector('.alert-info');
-                if (estado.includes('trabajo')) {
-                    alert.className = 'alert alert-success d-flex align-items-center animate-delay-2';
-                } else if (estado.includes('Fuera')) {
-                    alert.className = 'alert alert-warning d-flex align-items-center animate-delay-2';
+                document.getElementById('estado-detalle').textContent = last ?
+                    `Último: ${last.tipo} a las ${last.hora}` : 'Sin registros hoy';
+                const alert = document.getElementById('alert-estado');
+                alert.className = 'alert d-flex align-items-center animate-delay-2 p-3 rounded-3 shadow-sm ';
+                if (estado.toLowerCase().includes('trabajando') || estado.toLowerCase().includes('dentro')) {
+                    alert.classList.add('alert-glass-success');
+                    alert.querySelector('i').className = 'bi bi-check-circle-fill fs-3 me-3';
+                } else if (estado.toLowerCase().includes('fuera')) {
+                    alert.classList.add('alert-glass-warning');
+                    alert.querySelector('i').className = 'bi bi-pause-circle-fill fs-3 me-3';
                 } else {
-                    alert.className = 'alert alert-info d-flex align-items-center animate-delay-2';
+                    alert.classList.add('alert-glass-info');
+                    alert.querySelector('i').className = 'bi bi-info-circle-fill fs-3 me-3';
                 }
             }
 
             function actualizarEstadisticas() {
-                const resumen = state.datos.resumenMes;
-                if (!resumen) return;
+                const r = state.datos.resumenMes || {};
+                document.getElementById('stat-asistencia').textContent = (r.porcentajeAsistencia || 0) + '%';
+                document.getElementById('barra-asistencia').style.width = (r.porcentajeAsistencia || 0) + '%';
+                document.getElementById('stat-dias-asistencia').textContent = `${r.diasTrabajados || 0}/${r.totalDias || 0} días`;
 
-                const porcentajeAsistencia = resumen.porcentajeAsistencia || 0;
-                document.getElementById('stat-asistencia').textContent = porcentajeAsistencia + '%';
-                document.getElementById('barra-asistencia').style.width = porcentajeAsistencia + '%';
-                document.getElementById('stat-dias-asistencia').textContent =
-                    `${resumen.diasTrabajados || 0}/${resumen.totalDias || 0} días`;
+                const h = Math.floor((r.totalMinutosTrabajados || 0) / 60);
+                const m = (r.totalMinutosTrabajados || 0) % 60;
+                document.getElementById('stat-horas-trabajadas').textContent = h + 'h';
+                document.getElementById('stat-minutos-trabajados').textContent = m + ' min';
 
-                const horas = Math.floor((resumen.totalMinutosTrabajados || 0) / 60);
-                const minutos = (resumen.totalMinutosTrabajados || 0) % 60;
-                document.getElementById('stat-horas-trabajadas').textContent = horas + 'h';
-                document.getElementById('stat-minutos-trabajados').textContent =
-                    `${resumen.totalMinutosTrabajados || 0} minutos`;
-
-                document.getElementById('stat-retraso').textContent = (resumen.totalMinutosRetraso || 0) + 'm';
-                document.getElementById('stat-extra').textContent = (resumen.totalMinutosExtra || 0) + 'm';
+                document.getElementById('stat-retraso').textContent = (r.totalMinutosRetraso || 0) + 'm';
+                document.getElementById('stat-extra').textContent = (r.totalMinutosExtra || 0) + 'm';
             }
 
+            // ✅ FIX: Lógica robusta para turno activo
             function actualizarTurnoActivo() {
-                const container = document.getElementById('turno-activo-container');
-                const turno = state.datos.horarioActivo;
+                const t = state.datos.horarioActivo;
+                const c = document.getElementById('turno-activo-container');
+                const b = document.getElementById('badge-turno-activo');
 
-                if (!turno) {
-                    container.innerHTML = `
-                                    <div class="text-center text-muted py-3">
-                                        <i class="bi bi-clock fs-1 d-block mb-2 opacity-50"></i>
-                                        <p class="mb-2">No tienes un turno activo asignado</p>
-                                        <small class="text-muted">Contacta con tu supervisor para asignarte un horario</small>
+                if (!t) {
+                    c.innerHTML = `<div class="text-center text-muted py-3"><i class="bi bi-calendar-x fs-1 mb-2 d-block opacity-50"></i><small>Sin turno asignado</small></div>`;
+                    b.textContent = 'Inactivo'; b.className = 'badge bg-secondary';
+                    return;
+                }
+
+                // Soporte para diferentes formatos de propiedad
+                const nombre = t.nombre || t.nombreTurno || 'Turno';
+                const entrada = t.hora_entrada || t.horaEntrada || '--:--';
+                const salida = t.hora_salida || t.horaSalida || '--:--';
+                const tolerancia = t.tolerancia_minutos || t.toleranciaMinutos || 0;
+
+                c.innerHTML = `
+                        <div class="text-center">
+                            <h5 class="text-white mb-1">${nombre}</h5>
+                            <div class="fs-4 fw-bold text-primary">${entrada} - ${salida}</div>
+                            <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-25 mt-2">Tol: ${tolerancia}m</span>
+                        </div>
+                    `;
+                b.textContent = 'Activo'; b.className = 'badge bg-success';
+            }
+
+            // ✅ FIX: Lógica robusta para días
+            function actualizarDiasTurno() {
+                const t = state.datos.horarioActivo;
+                const c = document.getElementById('dias-turno-container');
+                if (!t) { c.innerHTML = '<small class="text-muted">Sin datos</small>'; return; }
+
+                const days = [
+                    { k: 'lunes', l: 'L' }, { k: 'martes', l: 'M' }, { k: 'miercoles', l: 'X' },
+                    { k: 'jueves', l: 'J' }, { k: 'viernes', l: 'V' }, { k: 'sabado', l: 'S' }, { k: 'domingo', l: 'D' }
+                ];
+                const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+                // Verificar si las propiedades vienen directas (admin style) o en objeto anidado
+                const getDiaActivo = (key) => {
+                    if (t[key] !== undefined) return t[key]; // Propiedad directa
+                    if (t.diasActivos && t.diasActivos[key] !== undefined) return t.diasActivos[key]; // Objeto anidado
+                    return false;
+                };
+
+                c.innerHTML = `
+                        <div class="d-flex justify-content-between">
+                            ${days.map((d, i) => {
+                    const activo = getDiaActivo(d.k);
+                    return `
+                                    <div class="dia-block rounded p-2 text-center ${activo ? (i === todayIdx ? 'active' : '') : 'inactive'}">
+                                        <div class="fw-bold small">${d.l}</div>
+                                        <i class="bi ${activo ? 'bi-check' : 'bi-dash'} small"></i>
                                     </div>
                                 `;
-                    document.getElementById('badge-turno-activo').textContent = 'Sin turno';
-                    document.getElementById('badge-turno-activo').className = 'badge bg-secondary';
-                    return;
-                }
-
-                container.innerHTML = `
-                                <div class="text-center">
-                                    <h4 class="text-primary mb-3">${turno.nombreTurno || 'Turno'}</h4>
-                                    <div class="mb-3">
-                                        <div class="fs-5 fw-bold text-dark">${turno.horaEntrada || '--:--'} - ${turno.horaSalida || '--:--'}</div>
-                                        <small class="text-muted">Horario de trabajo</small>
-                                    </div>
-                                    <div class="mb-3">
-                                        <span class="badge bg-info">Tolerancia: ${turno.toleranciaMinutos || 0} min</span>
-                                    </div>
-                                </div>
-                            `;
-
-                document.getElementById('badge-turno-activo').textContent = 'Activo';
-                document.getElementById('badge-turno-activo').className = 'badge bg-success';
-            }
-
-            function actualizarDiasTurno() {
-                const container = document.getElementById('dias-turno-container');
-                const turno = state.datos.horarioActivo;
-
-                if (!turno || !turno.diasActivos) {
-                    container.innerHTML = '<p class="text-muted">No hay información de días</p>';
-                    return;
-                }
-
-                const dias = [
-                    { nombre: 'Lun', key: 'lunes' },
-                    { nombre: 'Mar', key: 'martes' },
-                    { nombre: 'Mié', key: 'miercoles' },
-                    { nombre: 'Jue', key: 'jueves' },
-                    { nombre: 'Vie', key: 'viernes' },
-                    { nombre: 'Sáb', key: 'sabado' },
-                    { nombre: 'Dom', key: 'domingo' }
-                ];
-
-                const hoy = new Date().getDay();
-                const diaActual = hoy === 0 ? 6 : hoy - 1;
-
-                container.innerHTML = `
-                                <div class="row g-1">
-                                    ${dias.map((dia, index) => `
-                                        <div class="col">
-                                            <div class="text-center p-2 rounded ${turno.diasActivos[dia.key] ?
-                        (index === diaActual ? 'bg-primary text-white' : 'bg-light') :
-                        'bg-secondary text-white opacity-50'}">
-                                                <div class="fw-bold">${dia.nombre}</div>
-                                                <small>${turno.diasActivos[dia.key] ? '✓' : '✗'}</small>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                                <small class="text-muted mt-2 d-block">Hoy: ${dias[diaActual].nombre}</small>
-                            `;
+                }).join('')}
+                        </div>
+                    `;
             }
 
             function actualizarFichajesHoy() {
-                const container = document.getElementById('fichajes-hoy-container');
-                const fichajes = state.datos.fichajesHoy || [];
+                const f = state.datos.fichajesHoy || [];
+                const c = document.getElementById('fichajes-hoy-container');
+                document.getElementById('contador-fichajes').textContent = f.length;
 
-                document.getElementById('contador-fichajes').textContent = fichajes.length;
-                document.getElementById('timestamp-fichajes').textContent =
-                    'Actualizado: ' + new Date().toLocaleTimeString();
-
-                if (fichajes.length === 0) {
-                    container.innerHTML = `
-                                    <div class="text-center text-muted py-4">
-                                        <i class="bi bi-clock fs-1 d-block mb-2"></i>
-                                        <p class="mb-2">No hay fichajes registrados hoy</p>
-                                        <small class="text-muted">Recuerda fichar tu entrada y salida</small>
-                                    </div>
-                                `;
+                if (f.length === 0) {
+                    c.innerHTML = `<div class="text-center text-muted py-3"><small>Sin registros hoy</small></div>`;
                     return;
                 }
 
-                container.innerHTML = fichajes.map(fichaje => `
-                                <div class="card fichaje-card mb-2 ${fichaje.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
-                                    <div class="card-body py-3">
-                                        <div class="row align-items-center">
-                                            <div class="col-1 text-center">
-                                                <i class="bi ${fichaje.tipo === 'Entrada' ? 'bi-box-arrow-in-right text-success' : 'bi-box-arrow-right text-danger'} fs-5"></i>
-                                            </div>
-                                            <div class="col-7">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="badge ${fichaje.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">
-                                                        ${fichaje.tipo}
-                                                    </span>
-                                                    <strong class="fs-6">${fichaje.hora}</strong>
-                                                </div>
-                                            </div>
-                                            <div class="col-4 text-end">
-                                                <small class="text-muted">${fichaje.fecha}</small>
-                                            </div>
-                                        </div>
-                                    </div>
+                c.innerHTML = f.map(x => `
+                        <div class="card fichaje-card mb-2 ${x.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
+                            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge ${x.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">${x.tipo}</span>
+                                    <span class="fw-bold text-white">${x.hora}</span>
                                 </div>
-                            `).join('');
+                                <small class="text-muted">${x.fecha}</small>
+                            </div>
+                        </div>
+                    `).join('');
             }
 
             function actualizarProgresoMes() {
-                const hoy = new Date();
-                const totalDiasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
-                const progresoMes = (hoy.getDate() / totalDiasMes) * 100;
+                const now = new Date();
+                const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const prog = (now.getDate() / totalDays) * 100;
 
-                document.getElementById('progreso-mes-text').textContent = Math.round(progresoMes) + '%';
-                document.getElementById('barra-mes').style.width = progresoMes + '%';
+                document.getElementById('progreso-mes-text').textContent = Math.round(prog) + '%';
+                document.getElementById('barra-mes').style.width = prog + '%';
 
-                const resumen = state.datos.resumenMes;
-                const objetivoAsistencia = resumen?.porcentajeAsistencia || 0;
-                document.getElementById('objetivo-asistencia-text').textContent = Math.round(objetivoAsistencia) + '%';
-                document.getElementById('barra-objetivo').style.width = objetivoAsistencia + '%';
+                const target = state.datos.resumenMes?.porcentajeAsistencia || 0;
+                document.getElementById('objetivo-asistencia-text').textContent = target + '%';
+                document.getElementById('barra-objetivo').style.width = target + '%';
 
-                const diasRestantes = totalDiasMes - hoy.getDate();
-                document.getElementById('dias-restantes').textContent = `${diasRestantes} días restantes`;
-            }
-
-            function actualizarRendimiento() {
-                const resumen = state.datos.resumenMes;
-                if (!resumen) return;
-
-                const promedioDiario = resumen.totalDias > 0 ?
-                    Math.round(resumen.totalMinutosTrabajados / resumen.totalDias / 60) : 0;
-                document.getElementById('promedio-diario').textContent = promedioDiario + 'h';
-
-                const diasConsecutivos = Math.min(resumen.diasTrabajados || 0, 5);
-                document.getElementById('dias-consecutivos').textContent = diasConsecutivos;
-
-                const asistenciaActual = resumen.porcentajeAsistencia || 0;
-                const proximoObjetivo = Math.min(asistenciaActual + 5, 100);
-                document.getElementById('proximo-objetivo').textContent = `+${proximoObjetivo - asistenciaActual}%`;
+                document.getElementById('dias-restantes').textContent = `${totalDays - now.getDate()} días restantes`;
             }
 
             function actualizarFechas() {
-                const ahora = new Date();
-                const opciones = {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                };
-                document.getElementById('fecha-actual').textContent =
-                    ahora.toLocaleDateString('es-ES', opciones);
+                const d = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('fecha-actual').textContent = d.toLocaleDateString('es-ES', options);
+                document.getElementById('timestamp-fichajes').textContent = d.toLocaleTimeString();
             }
 
-            // Funciones públicas
-            async function recargarDashboard() {
-                // ✅ NUEVO: Forzar recarga desde API
-                await cargarDashboard(true);
+            // --- UTILS ---
+            function recargarDashboard() { cargarDashboard(true); }
+            async function recargarFichajes() { await cargarDashboard(true); }
+            function verEstadisticasCompletas() { navegar('estadisticas-personales', 'Mis Estadísticas'); }
+            function verMisFichajes() { navegar('fichajes-personales', 'Mis Fichajes'); }
+            function solicitarPermiso() { navegar('permisos-empleado', 'Solicitar Permiso'); }
+            function verNotificaciones() { navegar('notificaciones-empleado', 'Notificaciones'); }
+            function verHorario() { navegar('horario-personal', 'Mi Horario'); }
+
+            function navegar(vista, titulo) {
+                if (window.cargarVista) window.cargarVista(vista, titulo);
+                else mostrarNotificacion('Navegación no disponible', 'warning');
             }
 
-            async function recargarFichajes() {
-                await recargarDashboard();
-            }
-
-            function verEstadisticasCompletas() {
-                if (window.cargarVista) {
-                    window.cargarVista('estadisticas-personales', 'Mis Estadísticas');
-                } else {
-                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
-                }
-            }
-
-            function verMisFichajes() {
-                if (window.cargarVista) {
-                    window.cargarVista('fichajes-personales', 'Mis Fichajes');
-                } else {
-                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
-                }
-            }
-
-            function solicitarPermiso() {
-                if (window.cargarVista) {
-                    window.cargarVista('permisos-empleado', 'Solicitar Permiso');
-                } else {
-                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
-                }
-            }
-
-            function verNotificaciones() {
-                if (window.cargarVista) {
-                    window.cargarVista('notificaciones-empleado', 'Notificaciones');
-                } else {
-                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
-                }
-            }
-
-            function verHorario() {
-                if (window.cargarVista) {
-                    window.cargarVista('horario-personal', 'Mi Horario');
-                } else {
-                    mostrarNotificacion('Navegación no disponible en este momento', 'warning');
-                }
-            }
-
-            function mostrarNotificacion(mensaje, tipo = 'info') {
-                const alertasAnteriores = document.querySelectorAll('.alert-fixed');
-                alertasAnteriores.forEach(alerta => alerta.remove());
-
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-fixed`;
-                alertDiv.style.zIndex = '9999';
-                alertDiv.style.minWidth = '300px';
-                alertDiv.innerHTML = `
-                                <div class="d-flex align-items-center">
-                                    <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'warning' ? 'bi-exclamation-triangle' : 'bi-info-circle'} me-2"></i>
-                                    <span>${mensaje}</span>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            `;
-                document.body.appendChild(alertDiv);
-
-                setTimeout(() => {
-                    if (alertDiv.parentNode) alertDiv.remove();
-                }, 4000);
+            function mostrarNotificacion(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3 shadow`;
+                div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${msg}`;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
             }
 
             function configurarAutoRefresh() {
-                const intervalo = setInterval(() => {
-                    if (!document.hidden) {
-                        console.log('🔄 Auto-refresh del dashboard');
-                        cargarDashboard(true); // Forzar recarga en auto-refresh
-                    }
-                }, 120000);
-                state.intervalos.push(intervalo);
+                state.intervalos.push(setInterval(() => { if (!document.hidden) cargarDashboard(false); }, 300000));
             }
 
             async function init() {
-                if (!document.getElementById('dashboard-empleado-container')) {
-                    console.log('❌ No se encontró el contenedor del dashboard');
-                    return;
-                }
-
-                console.log('🚀 Iniciando dashboard empleado...');
-                // ✅ NUEVO: Cargar sin forzar, para usar datos guardados si existen
+                if (!document.getElementById('dashboard-empleado-container')) return;
+                mostrarPantallaCarga();
                 await cargarDashboard(false);
                 configurarAutoRefresh();
-                console.log('✅ Dashboard empleado iniciado correctamente');
             }
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
 
-            return {
-                init,
-                recargarDashboard,
-                recargarFichajes,
-                verEstadisticasCompletas,
-                verMisFichajes,
-                solicitarPermiso,
-                verNotificaciones,
-                verHorario
-            };
+            return { init, recargarDashboard, recargarFichajes, verEstadisticasCompletas, verMisFichajes, solicitarPermiso, verNotificaciones, verHorario };
         })();
     </script>
 </body>

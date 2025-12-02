@@ -18,11 +18,13 @@
             --accent-color: #3498db;
             --hover-color: #3a506b;
             --text-light: #ecf0f1;
-    
             --text-muted: #bdc3c7;
             --transition-speed: 0.3s;
             --border-radius: 12px;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            /* VARIABLES NUEVAS PARA EL DISEÑO OSCURO */
+            --glass-bg: rgba(16, 26, 43, 0.85); /* Fondo oscuro semitransparente */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         * {
@@ -31,35 +33,53 @@
             box-sizing: border-box;
         }
 
-        /*         background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);*/
-
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* IMAGEN DE FONDO */
             background: url(img/image.jpg);
             background-position: center;
             background-size: cover;
             background-attachment: fixed;
             min-height: 100vh;
             overflow-x: hidden;
-
+            color: var(--text-light); /* TEXTO BLANCO POR DEFECTO */
         }
 
-        /* ===== SIDEBAR MEJORADO ===== */
+        /* ===== ESTILOS GLOBALES PARA FORZAR MODO OSCURO ===== */
+        /* Esto asegura que las vistas cargadas se vean bien automáticamente */
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .text-muted {
+            color: #aeb6bf !important;
+        }
+
+        .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            border: var(--glass-border) !important;
+            color: white !important;
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== SIDEBAR ===== */
         #sidebar {
             position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background: rgba(15, 23, 42, 0.9); /* Sidebar oscuro */
+            backdrop-filter: blur(15px);
+            border-right: var(--glass-border);
             color: var(--text-light);
             display: flex;
             flex-direction: column;
             z-index: 1000;
             transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-collapsed {
@@ -69,8 +89,8 @@
         /* Header del sidebar */
         .sidebar-header {
             padding: 25px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.1);
+            border-bottom: var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
             position: relative;
         }
 
@@ -84,18 +104,15 @@
 
         .logo-icon {
             font-size: 2rem;
-            color: white;
-            filter: drop-shadow(0 2px 4px rgba(52, 152, 219, 0.3));
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 10px rgba(52, 152, 219, 0.5));
             transition: transform 0.3s ease;
         }
 
         .logo-text {
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
             white-space: nowrap;
             overflow: hidden;
         }
@@ -104,32 +121,6 @@
             opacity: 0;
             width: 0;
         }
-
-        /* Toggle button */
-        .sidebar-toggle {
-            position: absolute;
-            top: 50%;
-            right: -12px;
-            transform: translateY(-50%);
-            background: var(--accent-color);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
-        }
-
-            .sidebar-toggle:hover {
-                transform: translateY(-50%) scale(1.1);
-                background: #2980b9;
-            }
 
         /* Menú de navegación */
         .sidebar-menu {
@@ -147,7 +138,7 @@
             padding: 8px 20px;
             font-size: 0.75rem;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: #94a3b8;
             letter-spacing: 1px;
             transition: all var(--transition-speed);
             white-space: nowrap;
@@ -164,7 +155,7 @@
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            color: var(--text-light);
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
             transition: all 0.3s ease;
             position: relative;
@@ -173,9 +164,10 @@
         }
 
             .menu-item:hover {
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(255, 255, 255, 0.1);
                 border-left-color: var(--accent-color);
                 padding-left: 25px;
+                color: white;
             }
 
             .menu-item.active {
@@ -205,6 +197,7 @@
 
         .menu-item:hover .menu-icon {
             transform: scale(1.1);
+            color: var(--accent-color);
         }
 
         .menu-text {
@@ -238,8 +231,8 @@
         /* Sección de usuario */
         .user-section {
             padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.1);
+            border-top: var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .user-info {
@@ -260,6 +253,7 @@
             color: white;
             font-size: 1.2rem;
             flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
         }
 
         .user-details {
@@ -282,13 +276,13 @@
 
         .user-role {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: #94a3b8;
         }
 
         .logout-btn {
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 1.1rem;
             cursor: pointer;
             padding: 8px;
@@ -315,13 +309,15 @@
             margin-left: var(--sidebar-collapsed);
         }
 
-        /* Breadcrumb mejorado */
+        /* Breadcrumb mejorado (Glass) */
         .breadcrumb-container {
-            background: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             margin-bottom: 30px;
+            border: var(--glass-border);
             border-left: 4px solid var(--accent-color);
         }
 
@@ -341,6 +337,14 @@
                 color: #2980b9;
             }
 
+        .breadcrumb-item.active {
+            color: #ecf0f1;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: #94a3b8;
+        }
+
         /* Overlay para móviles */
         #overlay {
             display: none;
@@ -349,9 +353,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 999;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
         }
 
         /* Botón hamburguesa móvil */
@@ -506,97 +510,97 @@
                 <span class="logo-text">FiExpress</span>
             </div>
             <!--  <button class="sidebar-toggle" id="sidebar-toggle">
-            <i class="bi bi-chevron-left"></i> 
-        </button>-->
-    </div>
+                <i class="bi bi-chevron-left"></i>
+            </button>-->
+        </div>
 
-    <!-- Menú de navegación -->
-            <div class="sidebar-menu">
-                <!-- Sección Principal -->
-                <div class="menu-section">
-                    <div class="menu-label">Principal</div>
-                    <a href="#" class="menu-item active" data-form="inicio" data-title="Inicio" data-tooltip="Inicio">
-                        <i class="bi bi-house-door menu-icon"></i>
-                        <span class="menu-text">Inicio</span>
-                    </a>
-                    <a href="#" class="menu-item" data-form="empleados" data-title="Empleados" data-tooltip="Empleados">
-                        <i class="bi bi-people menu-icon"></i>
-                        <span class="menu-text">Empleados</span>
-                    </a>
-                    <a href="#" class="menu-item" data-form="fichajes" data-title="Fichajes" data-tooltip="Fichajes">
-                        <i class="bi bi-clock-history menu-icon"></i>
-                        <span class="menu-text">Fichajes</span>
-                    </a>
-                </div>
-
-                <div class="menu-divider"></div>
-
-                <!-- Sección Gestión -->
-                <div class="menu-section">
-                    <div class="menu-label">Gestión</div>
-                    <a href="#" class="menu-item" data-form="Rfid" data-title="RFID" data-tooltip="Tarjetas RFID">
-                        <i class="bi bi-credit-card menu-icon"></i>
-                        <span class="menu-text">Tarjetas RFID</span>
-                    </a>
-                    <a href="#" class="menu-item" data-form="horarios" data-title="Horarios" data-tooltip="Horarios">
-                        <i class="bi bi-calendar-week menu-icon"></i>
-                        <span class="menu-text">Horarios</span>
-                    </a>
-                    <a href="#" class="menu-item" data-form="permisos" data-title="Permisos" data-tooltip="Permisos">
-                        <i class="bi bi-clipboard-check menu-icon"></i>
-                        <span class="menu-text">Permisos</span>
-                    </a>
-                </div>
-
-                <div class="menu-divider"></div>
-
-                <!-- Sección Reportes -->
-                <div class="menu-section">
-                    <div class="menu-label">Reportes</div>
-                    <a href="#" class="menu-item" data-form="estadisticas" data-title="Estadísticas" data-tooltip="Estadísticas">
-                        <i class="bi bi-graph-up menu-icon"></i>
-                        <span class="menu-text">Estadísticas</span>
-                       
-                    </a>
-                    <a href="#" class="menu-item" data-form="notificaciones-admin" data-title="Notificaciones" data-tooltip="Notificaciones">
-                        <i class="bi bi-bell menu-icon"></i>
-                        <span class="menu-text">Notificaciones</span>
-                       
-                    </a>
-                </div>
-
-                <div class="menu-divider"></div>
-
-                <!-- Sección Administración -->
-                <div class="menu-section">
-                    <div class="menu-label">Administración</div>
-                    <a href="#" class="menu-item admin-only" data-form="usuarios" data-title="Usuarios" data-tooltip="Usuarios">
-                        <i class="bi bi-person-gear menu-icon"></i>
-                        <span class="menu-text">Usuarios</span>
-                    </a>
-                    <a href="#" class="menu-item admin-only" data-form="configuracion" data-title="Configuración" data-tooltip="Configuración">
-                        <i class="bi bi-sliders menu-icon"></i>
-                        <span class="menu-text">Configuración</span>
-                    </a>
-                </div>
+        <!-- Menú de navegación -->
+        <div class="sidebar-menu">
+            <!-- Sección Principal -->
+            <div class="menu-section">
+                <div class="menu-label">Principal</div>
+                <a href="#" class="menu-item active" data-form="inicio" data-title="Inicio" data-tooltip="Inicio">
+                    <i class="bi bi-house-door menu-icon"></i>
+                    <span class="menu-text">Inicio</span>
+                </a>
+                <a href="#" class="menu-item" data-form="empleados" data-title="Empleados" data-tooltip="Empleados">
+                    <i class="bi bi-people menu-icon"></i>
+                    <span class="menu-text">Empleados</span>
+                </a>
+                <a href="#" class="menu-item" data-form="fichajes" data-title="Fichajes" data-tooltip="Fichajes">
+                    <i class="bi bi-clock-history menu-icon"></i>
+                    <span class="menu-text">Fichajes</span>
+                </a>
             </div>
 
-            <!-- Sección de usuario -->
-            <div class="user-section">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="bi bi-person-fill"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name" id="username">Cargando...</div>
-                        <div class="user-role" id="user-role">...</div>
-                    </div>
-                    <button class="logout-btn" id="logout" title="Cerrar sesión">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </button>
-                </div>
+            <div class="menu-divider"></div>
+
+            <!-- Sección Gestión -->
+            <div class="menu-section">
+                <div class="menu-label">Gestión</div>
+                <a href="#" class="menu-item" data-form="Rfid" data-title="RFID" data-tooltip="Tarjetas RFID">
+                    <i class="bi bi-credit-card menu-icon"></i>
+                    <span class="menu-text">Tarjetas RFID</span>
+                </a>
+                <a href="#" class="menu-item" data-form="horarios" data-title="Horarios" data-tooltip="Horarios">
+                    <i class="bi bi-calendar-week menu-icon"></i>
+                    <span class="menu-text">Horarios</span>
+                </a>
+                <a href="#" class="menu-item" data-form="permisos" data-title="Permisos" data-tooltip="Permisos">
+                    <i class="bi bi-clipboard-check menu-icon"></i>
+                    <span class="menu-text">Permisos</span>
+                </a>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <!-- Sección Reportes -->
+            <div class="menu-section">
+                <div class="menu-label">Reportes</div>
+                <a href="#" class="menu-item" data-form="estadisticas" data-title="Estadísticas" data-tooltip="Estadísticas">
+                    <i class="bi bi-graph-up menu-icon"></i>
+                    <span class="menu-text">Estadísticas</span>
+
+                </a>
+                <a href="#" class="menu-item" data-form="notificaciones-admin" data-title="Notificaciones" data-tooltip="Notificaciones">
+                    <i class="bi bi-bell menu-icon"></i>
+                    <span class="menu-text">Notificaciones</span>
+
+                </a>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <!-- Sección Administración -->
+            <div class="menu-section">
+                <div class="menu-label">Administración</div>
+                <a href="#" class="menu-item admin-only" data-form="usuarios" data-title="Usuarios" data-tooltip="Usuarios">
+                    <i class="bi bi-person-gear menu-icon"></i>
+                    <span class="menu-text">Usuarios</span>
+                </a>
+                <a href="#" class="menu-item admin-only" data-form="configuracion" data-title="Configuración" data-tooltip="Configuración">
+                    <i class="bi bi-sliders menu-icon"></i>
+                    <span class="menu-text">Configuración</span>
+                </a>
             </div>
         </div>
+
+        <!-- Sección de usuario -->
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="username">Cargando...</div>
+                    <div class="user-role" id="user-role">...</div>
+                </div>
+                <button class="logout-btn" id="logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Contenido principal -->
     <div id="main">
@@ -641,7 +645,7 @@
             inicializarMenu();
 
             // Inicializar sidebar toggle
-         //   inicializarSidebarToggle();
+            //   inicializarSidebarToggle();
 
             // Inicializar menú móvil
             inicializarMenuMovil();
@@ -750,25 +754,25 @@
         }
 
         // Inicializar toggle del sidebar
-     //   function inicializarSidebarToggle() {
-       //     const toggle = document.getElementById('sidebar-toggle');
-         //   const sidebar = document.getElementById('sidebar');
-        //    const main = document.getElementById('main');
+        //   function inicializarSidebarToggle() {
+        //       const toggle = document.getElementById('sidebar-toggle');
+        //     const sidebar = document.getElementById('sidebar');
+        //   const main = document.getElementById('main');
 
-          //  toggle.addEventListener('click', () => {
-           //     app.sidebarCollapsed = !app.sidebarCollapsed;
+        //   toggle.addEventListener('click', () => {
+        //       app.sidebarCollapsed = !app.sidebarCollapsed;
 
-//                if (app.sidebarCollapsed) {
-  //                  sidebar.classList.add('sidebar-collapsed');
-    //                main.classList.add('main-expanded');
-      //              toggle.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        //              if (app.sidebarCollapsed) {
+        //                  sidebar.classList.add('sidebar-collapsed');
+        //                main.classList.add('main-expanded');
+        //              toggle.innerHTML = '<i class="bi bi-chevron-right"></i>';
         //        } else {
-          //          sidebar.classList.remove('sidebar-collapsed');
-            //        main.classList.remove('main-expanded');
-              //      toggle.innerHTML = '<i class="bi bi-chevron-left"></i>';
-           //     }
-         //   });
-     //   }
+        //          sidebar.classList.remove('sidebar-collapsed');
+        //        main.classList.remove('main-expanded');
+        //      toggle.innerHTML = '<i class="bi bi-chevron-left"></i>';
+        //     }
+        //  });
+        //  }
 
         // Inicializar menú móvil
         function inicializarMenuMovil() {
@@ -800,13 +804,13 @@
 
             // Mostrar loader con animación
             contenedor.innerHTML = `
-                    <div class="loader" style="animation: fadeIn 0.5s ease;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                        <p class="mt-3 text-muted">Cargando ${titulo}...</p>
-                    </div>
-                `;
+                                <div class="loader" style="animation: fadeIn 0.5s ease;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">Cargando ${titulo}...</p>
+                                </div>
+                            `;
 
             // Cargar contenido
             fetch(`/views/${vista}.html`)
@@ -827,14 +831,14 @@
                 })
                 .catch(err => {
                     contenedor.innerHTML = `
-                            <div class="alert alert-danger d-flex align-items-center" style="animation: fadeIn 0.5s ease;">
-                                <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
-                                <div>
-                                    <strong>Error al cargar la vista</strong><br>
-                                    ${err.message}
-                                </div>
-                            </div>
-                        `;
+                                        <div class="alert alert-danger d-flex align-items-center" style="animation: fadeIn 0.5s ease;">
+                                            <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
+                                            <div>
+                                                <strong>Error al cargar la vista</strong><br>
+                                                ${err.message}
+                                            </div>
+                                        </div>
+                                    `;
                 });
         }
 

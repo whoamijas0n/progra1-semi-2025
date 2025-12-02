@@ -1,0 +1,691 @@
+﻿<style>
+    /* ===== ESTILOS VISUALES (Glassmorphism Dark) ===== */
+    /* Extraídos de horarios.txt e inicio.txt para consistencia exacta */
+
+    /* Contenedor Glass Principal */
+    .glass-panel, .card {
+        background: var(--glass-bg, rgba(16, 26, 43, 0.85)) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        border-radius: 12px;
+        color: white !important;
+    }
+
+    /* Headers de Cards */
+    .card-header {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Pestañas (Tabs) Personalizadas */
+    .nav-tabs {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .nav-tabs .nav-link {
+            color: #bdc3c7;
+            border: 1px solid transparent;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
+        }
+
+            .nav-tabs .nav-link:hover {
+                color: white;
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-tabs .nav-link.active {
+                color: white !important;
+                background: rgba(52, 152, 219, 0.15) !important;
+                border-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.1) transparent !important;
+                font-weight: 600;
+            }
+
+    /* Tablas Glass */
+    .table-glass {
+        color: #ecf0f1;
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+        .table-glass thead th {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--accent-color, #3498db);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 1rem;
+            border-top: none;
+        }
+
+        .table-glass tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            background: transparent !important; /* Importante para que no se vea blanco */
+            color: #ecf0f1;
+        }
+
+        .table-glass tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+    /* Inputs y Formularios (Modals) */
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: var(--accent-color, #3498db) !important;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+        }
+
+    .form-label {
+        color: #ecf0f1;
+        font-size: 0.9rem;
+    }
+
+    /* Modales */
+    .modal-content {
+        background: rgba(16, 26, 43, 0.95) !important;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header, .modal-footer {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .btn-close {
+        filter: invert(1) grayscale(100%);
+    }
+
+    /* Botones y Badges */
+    .btn-primary {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .text-muted {
+        color: #95a5a6 !important;
+    }
+
+    /* Utilidad para filas inactivas en tablas */
+    .row-inactive td {
+        opacity: 0.6;
+        background: rgba(0,0,0,0.2) !important;
+    }
+</style>
+
+<div class="container-fluid py-2">
+    <div class="row mb-4 animate__animated animate__fadeIn">
+        <div class="col-12">
+            <h2 class="mb-1 text-white">
+                <i class="bi bi-gear me-2" style="color: var(--accent-color);"></i>Configuración del Sistema
+            </h2>
+            <p class="mb-0" style="color: #bdc3c7;">Gestiona roles, turnos y departamentos del sistema.</p>
+        </div>
+    </div>
+
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="configTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="roles-tab" data-bs-toggle="tab"
+                            data-bs-target="#roles" type="button" role="tab">
+                        <i class="bi bi-person-badge me-2"></i>Roles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="turnos-tab" data-bs-toggle="tab"
+                            data-bs-target="#turnos" type="button" role="tab">
+                        <i class="bi bi-clock me-2"></i>Turnos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="departamentos-tab" data-bs-toggle="tab"
+                            data-bs-target="#departamentos" type="button" role="tab">
+                        <i class="bi bi-building me-2"></i>Departamentos
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="tab-content" id="configTabsContent">
+
+                <div class="tab-pane fade show active" id="roles" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-person-badge text-primary me-2"></i>Gestión de Roles
+                        </h5>
+                        <button class="btn btn-primary" onclick="ConfiguracionModule.abrirModalRol()">
+                            <i class="bi bi-plus-lg me-1"></i>Nuevo Rol
+                        </button>
+                    </div>
+
+                    <div class="table-responsive rounded border border-secondary border-opacity-25">
+                        <table class="table table-glass">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-roles">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-5">
+                                        <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                                        Cargando roles...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="turnos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-clock text-warning me-2"></i>Gestión de Turnos
+                        </h5>
+                        <button class="btn btn-warning text-dark fw-bold" onclick="ConfiguracionModule.abrirModalTurno()">
+                            <i class="bi bi-plus-lg me-1"></i>Nuevo Turno
+                        </button>
+                    </div>
+
+                    <div class="table-responsive rounded border border-secondary border-opacity-25">
+                        <table class="table table-glass">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Horario</th>
+                                    <th>Tolerancia</th>
+                                    <th>Días Activos</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-turnos">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-5">
+                                        <div class="spinner-border text-warning spinner-border-sm me-2" role="status"></div>
+                                        Cargando turnos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="departamentos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-building text-success me-2"></i>Gestión de Departamentos
+                        </h5>
+                        <button class="btn btn-success fw-bold" onclick="ConfiguracionModule.abrirModalDepartamento()">
+                            <i class="bi bi-plus-lg me-1"></i>Nuevo Depto
+                        </button>
+                    </div>
+
+                    <div class="table-responsive rounded border border-secondary border-opacity-25">
+                        <table class="table table-glass">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Empleados</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-departamentos">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-5">
+                                        <div class="spinner-border text-success spinner-border-sm me-2" role="status"></div>
+                                        Cargando departamentos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalRol" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRolTitle">Nuevo Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRol">
+                    <input type="hidden" id="rolId">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Rol *</label>
+                        <input type="text" class="form-control" id="rolNombre" required maxlength="50" placeholder="Ej. Supervisor">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción *</label>
+                        <textarea class="form-control" id="rolDescripcion" rows="3" required maxlength="100" placeholder="Breve descripción de funciones"></textarea>
+                    </div>
+                    <div class="form-check form-switch p-2 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="rolActivo" checked>
+                        <label class="form-check-label" for="rolActivo">Rol activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary px-4" onclick="ConfiguracionModule.guardarRol()">
+                    <i class="bi bi-check-lg me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTurno" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTurnoTitle">Nuevo Turno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formTurno">
+                    <input type="hidden" id="turnoId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre del Turno *</label>
+                            <input type="text" class="form-control" id="turnoNombre" required maxlength="50" placeholder="Ej. Matutino A">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tolerancia (minutos) *</label>
+                            <input type="number" class="form-control" id="turnoTolerancia" value="15" min="0" max="60" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hora de Entrada *</label>
+                            <input type="time" class="form-control" id="turnoEntrada" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hora de Salida *</label>
+                            <input type="time" class="form-control" id="turnoSalida" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-warning small text-uppercase ls-1">Días Laborales *</label>
+                        <div class="row g-2 p-3 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoLunes" checked><label class="form-check-label" for="turnoLunes">Lunes</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoMartes" checked><label class="form-check-label" for="turnoMartes">Martes</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoMiercoles" checked><label class="form-check-label" for="turnoMiercoles">Miércoles</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoJueves" checked><label class="form-check-label" for="turnoJueves">Jueves</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoViernes" checked><label class="form-check-label" for="turnoViernes">Viernes</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoSabado"><label class="form-check-label" for="turnoSabado">Sábado</label></div></div>
+                            <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="turnoDomingo"><label class="form-check-label" for="turnoDomingo">Domingo</label></div></div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch p-2 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="turnoActivo" checked>
+                        <label class="form-check-label" for="turnoActivo">Turno activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning text-dark fw-bold px-4" onclick="ConfiguracionModule.guardarTurno()">
+                    <i class="bi bi-check-lg me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDepartamento" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDepartamentoTitle">Nuevo Departamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDepartamento">
+                    <input type="hidden" id="departamentoId">
+                    <div class="mb-3">
+                        <label class="form-label">Código *</label>
+                        <input type="text" class="form-control" id="departamentoCodigo" required maxlength="50" placeholder="Ej. RRHH-01">
+                        <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Código único identificador</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" class="form-control" id="departamentoNombre" required maxlength="70" placeholder="Ej. Recursos Humanos">
+                    </div>
+                    <div class="form-check form-switch p-2 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="departamentoActivo" checked>
+                        <label class="form-check-label" for="departamentoActivo">Departamento activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success fw-bold px-4" onclick="ConfiguracionModule.guardarDepartamento()">
+                    <i class="bi bi-check-lg me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ✅ MÓDULO CONFIGURACIÓN (Lógica Original con Ajustes Visuales en el Renderizado)
+    window.ConfiguracionModule = (function () {
+        'use strict';
+
+        const state = {
+            modalRol: null,
+            modalTurno: null,
+            modalDepartamento: null
+        };
+
+        // ========== FUNCIONES GENERALES ==========
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, { credentials: 'include', ...options });
+                if (!response.ok) {
+                    let errorMessage = `Error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.errores) errorMessage += ` - ${errorData.errores.join(', ')}`;
+                        else if (errorData.mensaje) errorMessage += ` - ${errorData.mensaje}`;
+                    } catch (e) { }
+                    throw new Error(errorMessage);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                mostrarAlerta(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        function mostrarAlerta(mensaje, tipo = 'info') {
+            const div = document.createElement('div');
+            div.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 z-3 shadow`;
+            div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${mensaje}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ========== GESTIÓN DE ROLES ==========
+        async function cargarRoles() {
+            try {
+                const roles = await apiCall('/api/roles?incluirInactivos=true');
+                mostrarRoles(roles);
+            } catch (error) {
+                document.getElementById('tabla-roles').innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error al cargar datos</td></tr>`;
+            }
+        }
+
+        function mostrarRoles(roles) {
+            const tbody = document.getElementById('tabla-roles');
+            if (roles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">No hay roles registrados</td></tr>`;
+                return;
+            }
+            // MODIFICADO: Uso de clases glass (row-inactive) en lugar de table-secondary
+            tbody.innerHTML = roles.map(rol => `
+                <tr class="${!rol.activo ? 'row-inactive' : ''}">
+                    <td class="fw-bold text-white">${rol.nombre}</td>
+                    <td>${rol.descripcion}</td>
+                    <td><span class="badge ${rol.activo ? 'bg-success' : 'bg-secondary'} bg-opacity-75">${rol.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="ConfiguracionModule.editarRol(${rol.idRol})"><i class="bi bi-pencil"></i></button>
+                        ${rol.activo ?
+                    `<button class="btn btn-sm btn-outline-danger" onclick="ConfiguracionModule.desactivarRol(${rol.idRol}, '${rol.nombre}')"><i class="bi bi-x-lg"></i></button>` :
+                    `<button class="btn btn-sm btn-outline-success" onclick="ConfiguracionModule.activarRol(${rol.idRol})"><i class="bi bi-check-lg"></i></button>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== GESTIÓN DE TURNOS ==========
+        async function cargarTurnos() {
+            try {
+                const turnos = await apiCall('/api/turnos?incluirInactivos=true');
+                mostrarTurnos(turnos);
+            } catch (error) { document.getElementById('tabla-turnos').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error</td></tr>`; }
+        }
+
+        function mostrarTurnos(turnos) {
+            const tbody = document.getElementById('tabla-turnos');
+            if (turnos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-5">No hay turnos</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = turnos.map(t => `
+                <tr class="${!t.activo ? 'row-inactive' : ''}">
+                    <td class="fw-bold text-white">${t.nombre}</td>
+                    <td><span class="badge bg-dark border border-secondary">${t.hora_entrada} - ${t.hora_salida}</span></td>
+                    <td><span class="badge bg-secondary bg-opacity-25">${t.tolerancia_minutos} min</span></td>
+                    <td class="small text-muted">${obtenerDiasActivos(t)}</td>
+                    <td><span class="badge ${t.activo ? 'bg-success' : 'bg-secondary'} bg-opacity-75">${t.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="ConfiguracionModule.editarTurno(${t.idTurno})"><i class="bi bi-pencil"></i></button>
+                        ${t.activo ?
+                    `<button class="btn btn-sm btn-outline-danger" onclick="ConfiguracionModule.desactivarTurno(${t.idTurno}, '${t.nombre}')"><i class="bi bi-x-lg"></i></button>` :
+                    `<button class="btn btn-sm btn-outline-success" onclick="ConfiguracionModule.activarTurno(${t.idTurno})"><i class="bi bi-check-lg"></i></button>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== GESTIÓN DE DEPARTAMENTOS ==========
+        async function cargarDepartamentos() {
+            try {
+                const deptos = await apiCall('/api/departamentos?incluirInactivos=true');
+                mostrarDepartamentos(deptos);
+            } catch (error) { document.getElementById('tabla-departamentos').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error</td></tr>`; }
+        }
+
+        function mostrarDepartamentos(departamentos) {
+            const tbody = document.getElementById('tabla-departamentos');
+            if (departamentos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-5">No hay departamentos</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = departamentos.map(d => `
+                <tr class="${!d.activo ? 'row-inactive' : ''}">
+                    <td class="font-monospace text-info small">${d.codigo}</td>
+                    <td class="fw-bold text-white">${d.nombre}</td>
+                    <td><span class="badge bg-primary bg-opacity-50">${d.totalEmpleados || 0}</span></td>
+                    <td class="small text-muted">${new Date(d.fecha_creacion).toLocaleDateString('es-ES')}</td>
+                    <td><span class="badge ${d.activo ? 'bg-success' : 'bg-secondary'} bg-opacity-75">${d.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="ConfiguracionModule.editarDepartamento(${d.idDepartamento})"><i class="bi bi-pencil"></i></button>
+                        ${d.activo ?
+                    `<button class="btn btn-sm btn-outline-danger" onclick="ConfiguracionModule.desactivarDepartamento(${d.idDepartamento}, '${d.nombre}')"><i class="bi bi-x-lg"></i></button>` :
+                    `<button class="btn btn-sm btn-outline-success" onclick="ConfiguracionModule.activarDepartamento(${d.idDepartamento})"><i class="bi bi-check-lg"></i></button>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Funciones auxiliares sin cambios en logica
+        function obtenerDiasActivos(t) {
+            const dias = [];
+            if (t.lunes) dias.push('L'); if (t.martes) dias.push('M'); if (t.miercoles) dias.push('X');
+            if (t.jueves) dias.push('J'); if (t.viernes) dias.push('V'); if (t.sabado) dias.push('S'); if (t.domingo) dias.push('D');
+            return dias.join(', ');
+        }
+
+        // Modales y CRUD (Logica intacta, solo referencias DOM)
+        function abrirModalRol() {
+            document.getElementById('formRol').reset();
+            document.getElementById('rolId').value = '';
+            document.getElementById('modalRolTitle').textContent = 'Nuevo Rol';
+            document.getElementById('rolActivo').checked = true;
+            if (!state.modalRol) state.modalRol = new bootstrap.Modal(document.getElementById('modalRol'));
+            state.modalRol.show();
+        }
+
+        async function editarRol(id) {
+            try {
+                const rol = await apiCall(`/api/roles/${id}`);
+                document.getElementById('rolId').value = rol.idRol;
+                document.getElementById('rolNombre').value = rol.nombre;
+                document.getElementById('rolDescripcion').value = rol.descripcion;
+                document.getElementById('rolActivo').checked = rol.activo;
+                document.getElementById('modalRolTitle').textContent = 'Editar Rol';
+                if (!state.modalRol) state.modalRol = new bootstrap.Modal(document.getElementById('modalRol'));
+                state.modalRol.show();
+            } catch (e) { }
+        }
+
+        async function guardarRol() {
+            const form = document.getElementById('formRol');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+            const data = { Nombre: document.getElementById('rolNombre').value.trim(), Descripcion: document.getElementById('rolDescripcion').value.trim() };
+            const id = document.getElementById('rolId').value;
+            try {
+                if (id) await apiCall(`/api/roles/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                else await apiCall('/api/roles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                mostrarAlerta(`Rol ${id ? 'actualizado' : 'creado'} exitosamente`, 'success');
+                state.modalRol.hide(); cargarRoles();
+            } catch (e) { }
+        }
+
+        async function desactivarRol(id, nombre) {
+            if (!confirm(`¿Desactivar "${nombre}"?`)) return;
+            try { await apiCall(`/api/roles/${id}`, { method: 'DELETE' }); mostrarAlerta('Rol desactivado', 'success'); cargarRoles(); } catch (e) { }
+        }
+        async function activarRol(id) {
+            try { await apiCall(`/api/roles/${id}/activar`, { method: 'PUT' }); mostrarAlerta('Rol activado', 'success'); cargarRoles(); } catch (e) { }
+        }
+
+        // --- Turnos y Departamentos (Patrón Idéntico) ---
+        function abrirModalTurno() {
+            document.getElementById('formTurno').reset();
+            document.getElementById('turnoId').value = '';
+            document.getElementById('turnoTolerancia').value = '15';
+            document.getElementById('turnoEntrada').value = '08:00'; document.getElementById('turnoSalida').value = '16:00';
+            ['turnoLunes', 'turnoMartes', 'turnoMiercoles', 'turnoJueves', 'turnoViernes'].forEach(id => document.getElementById(id).checked = true);
+            document.getElementById('turnoActivo').checked = true;
+            if (!state.modalTurno) state.modalTurno = new bootstrap.Modal(document.getElementById('modalTurno'));
+            state.modalTurno.show();
+        }
+
+        async function editarTurno(id) {
+            try {
+                const t = await apiCall(`/api/turnos/${id}`);
+                document.getElementById('turnoId').value = t.idTurno;
+                document.getElementById('turnoNombre').value = t.nombre;
+                document.getElementById('turnoTolerancia').value = t.tolerancia_minutos;
+                document.getElementById('turnoEntrada').value = t.hora_entrada;
+                document.getElementById('turnoSalida').value = t.hora_salida;
+                document.getElementById('turnoActivo').checked = t.activo;
+                document.getElementById('turnoLunes').checked = t.lunes; document.getElementById('turnoMartes').checked = t.martes;
+                document.getElementById('turnoMiercoles').checked = t.miercoles; document.getElementById('turnoJueves').checked = t.jueves;
+                document.getElementById('turnoViernes').checked = t.viernes; document.getElementById('turnoSabado').checked = t.sabado;
+                document.getElementById('turnoDomingo').checked = t.domingo;
+                if (!state.modalTurno) state.modalTurno = new bootstrap.Modal(document.getElementById('modalTurno'));
+                state.modalTurno.show();
+            } catch (e) { }
+        }
+
+        async function guardarTurno() {
+            const form = document.getElementById('formTurno');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+            if (document.getElementById('turnoSalida').value <= document.getElementById('turnoEntrada').value) { mostrarAlerta('Hora salida debe ser mayor a entrada', 'warning'); return; }
+
+            const data = {
+                nombre: document.getElementById('turnoNombre').value.trim(),
+                hora_entrada: document.getElementById('turnoEntrada').value,
+                hora_salida: document.getElementById('turnoSalida').value,
+                tolerancia_minutos: parseInt(document.getElementById('turnoTolerancia').value),
+                lunes: document.getElementById('turnoLunes').checked, martes: document.getElementById('turnoMartes').checked,
+                miercoles: document.getElementById('turnoMiercoles').checked, jueves: document.getElementById('turnoJueves').checked,
+                viernes: document.getElementById('turnoViernes').checked, sabado: document.getElementById('turnoSabado').checked,
+                domingo: document.getElementById('turnoDomingo').checked, activo: document.getElementById('turnoActivo').checked
+            };
+            const id = document.getElementById('turnoId').value;
+            try {
+                if (id) await apiCall(`/api/turnos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                else await apiCall('/api/turnos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                mostrarAlerta(`Turno ${id ? 'actualizado' : 'creado'}`, 'success');
+                state.modalTurno.hide(); cargarTurnos();
+            } catch (e) { }
+        }
+
+        async function desactivarTurno(id, n) { if (confirm(`¿Desactivar ${n}?`)) { try { await apiCall(`/api/turnos/${id}`, { method: 'DELETE' }); mostrarAlerta('Desactivado', 'success'); cargarTurnos(); } catch (e) { } } }
+        async function activarTurno(id) { try { await apiCall(`/api/turnos/${id}/activar`, { method: 'PUT' }); mostrarAlerta('Activado', 'success'); cargarTurnos(); } catch (e) { } }
+
+        function abrirModalDepartamento() {
+            document.getElementById('formDepartamento').reset();
+            document.getElementById('departamentoId').value = '';
+            document.getElementById('departamentoActivo').checked = true;
+            if (!state.modalDepartamento) state.modalDepartamento = new bootstrap.Modal(document.getElementById('modalDepartamento'));
+            state.modalDepartamento.show();
+        }
+
+        async function editarDepartamento(id) {
+            try {
+                const d = await apiCall(`/api/departamentos/${id}`);
+                document.getElementById('departamentoId').value = d.idDepartamento;
+                document.getElementById('departamentoCodigo').value = d.codigo;
+                document.getElementById('departamentoNombre').value = d.nombre;
+                document.getElementById('departamentoActivo').checked = d.activo;
+                if (!state.modalDepartamento) state.modalDepartamento = new bootstrap.Modal(document.getElementById('modalDepartamento'));
+                state.modalDepartamento.show();
+            } catch (e) { }
+        }
+
+        async function guardarDepartamento() {
+            const form = document.getElementById('formDepartamento');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+            const data = { Nombre: document.getElementById('departamentoNombre').value.trim(), Codigo: document.getElementById('departamentoCodigo').value.trim() };
+            const id = document.getElementById('departamentoId').value;
+            try {
+                if (id) await apiCall(`/api/departamentos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                else await apiCall('/api/departamentos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                mostrarAlerta(`Departamento ${id ? 'actualizado' : 'creado'}`, 'success');
+                state.modalDepartamento.hide(); cargarDepartamentos();
+            } catch (e) { }
+        }
+
+        async function desactivarDepartamento(id, n) { if (confirm(`¿Desactivar ${n}?`)) { try { await apiCall(`/api/departamentos/${id}`, { method: 'DELETE' }); mostrarAlerta('Desactivado', 'success'); cargarDepartamentos(); } catch (e) { } } }
+        async function activarDepartamento(id) { try { await apiCall(`/api/departamentos/${id}/activar`, { method: 'PUT' }); mostrarAlerta('Activado', 'success'); cargarDepartamentos(); } catch (e) { } }
+
+        // Inicialización
+        async function init() {
+            await Promise.all([cargarRoles(), cargarTurnos(), cargarDepartamentos()]);
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+        else init();
+
+        return {
+            abrirModalRol, editarRol, guardarRol, desactivarRol, activarRol,
+            abrirModalTurno, editarTurno, guardarTurno, desactivarTurno, activarTurno,
+            abrirModalDepartamento, editarDepartamento, guardarDepartamento, desactivarDepartamento, activarDepartamento
+        };
+    })();
+</script>

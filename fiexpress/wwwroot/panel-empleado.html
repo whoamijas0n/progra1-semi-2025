@@ -1,0 +1,679 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiExpress - Panel Empleado</title>
+
+    <!-- Bootstrap y Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* ===== VARIABLES Y ESTILOS BASE (Idéntico a Admin) ===== */
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-light: #ecf0f1;
+            --text-muted: #bdc3c7;
+            --transition-speed: 0.3s;
+            --border-radius: 12px;
+            /* Variables Glassmorphism Dark */
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Fondo idéntico al admin */
+            background: url(img/image.jpg); /* Asegúrate de que la ruta de la imagen sea correcta o usa un color de fondo similar */
+            background-color: #0f172a; /* Fallback color */
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-light);
+        }
+
+        /* Estilos globales para vistas cargadas */
+        h1, h2, h3, h4, h5, h6 {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .text-muted {
+            color: #aeb6bf !important;
+        }
+
+        .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            border: var(--glass-border) !important;
+            color: white !important;
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== SIDEBAR (Diseño Admin) ===== */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.9); /* Sidebar oscuro semi-transparente */
+            backdrop-filter: blur(15px);
+            border-right: var(--glass-border);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-collapsed {
+            transform: translateX(calc(var(--sidebar-collapsed) - var(--sidebar-width)));
+        }
+
+        /* Header del sidebar */
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 10px rgba(52, 152, 219, 0.5));
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* Menú */
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .menu-section {
+            margin-bottom: 10px;
+        }
+
+        .menu-label {
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 3px solid transparent;
+            gap: 15px;
+        }
+
+            .menu-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-left-color: var(--accent-color);
+                padding-left: 25px;
+                color: white;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, transparent 100%);
+                border-left-color: var(--accent-color);
+                color: white;
+            }
+
+                .menu-item.active::before {
+                    content: '';
+                    position: absolute;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    background: var(--accent-color);
+                    border-radius: 2px;
+                }
+
+        .menu-icon {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item:hover .menu-icon {
+            transform: scale(1.1);
+            color: var(--accent-color);
+        }
+
+        .menu-text {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            margin: 15px 20px;
+        }
+
+        /* Usuario */
+        .user-section {
+            padding: 20px;
+            border-top: var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-color), #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+            .logout-btn:hover {
+                color: #e74c3c;
+                background: rgba(231, 76, 60, 0.1);
+                transform: scale(1.1);
+            }
+
+        /* Contenido Principal */
+        #main {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            min-height: 100vh;
+            transition: margin-left var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: var(--glass-border);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: transparent;
+        }
+
+        .breadcrumb-item a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active {
+            color: #ecf0f1;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: #94a3b8;
+        }
+
+        /* Mobile Overlay & Toggle */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        #mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        /* Scrollbar */
+        .sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        /* Loader */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar-mobile-open {
+                transform: translateX(0);
+            }
+
+            #main {
+                margin-left: 0 !important;
+            }
+
+            #mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #overlay.show {
+                display: block;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-item {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+            .menu-item:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+
+            .menu-item:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .menu-item:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+
+            .menu-item:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+    </style>
+</head>
+<body>
+    <!-- Botón hamburguesa móvil -->
+    <button id="mobile-toggle" class="btn">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Overlay móvil -->
+    <div id="overlay"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <!-- Header -->
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <i class="bi bi-clock-history logo-icon"></i>
+                <span class="logo-text">FiExpress</span>
+            </div>
+        </div>
+
+        <!-- Menú de navegación -->
+        <div class="sidebar-menu">
+            <!-- Sección Principal -->
+            <div class="menu-section">
+                <div class="menu-label">Principal</div>
+                <a href="#" class="menu-item active" data-form="inicio-empleado" data-title="Inicio" data-tooltip="Inicio">
+                    <i class="bi bi-house-door menu-icon"></i>
+                    <span class="menu-text">Inicio</span>
+                </a>
+                <a href="#" class="menu-item" data-form="estadisticas-personales" data-title="Estadísticas" data-tooltip="Estadísticas">
+                    <i class="bi bi-graph-up menu-icon"></i>
+                    <span class="menu-text">Mis Estadísticas</span>
+                </a>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <!-- Sección Comunicación -->
+            <div class="menu-section">
+                <div class="menu-label">Comunicación</div>
+                <a href="#" class="menu-item" data-form="notificaciones-empleado" data-title="Notificaciones" data-tooltip="Notificaciones">
+                    <i class="bi bi-bell menu-icon"></i>
+                    <span class="menu-text">Notificaciones</span>
+                </a>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <!-- Sección Gestión -->
+            <div class="menu-section">
+                <div class="menu-label">Gestión Personal</div>
+                <a href="#" class="menu-item" data-form="permisos-empleado" data-title="Permisos" data-tooltip="Permisos">
+                    <i class="bi bi-file-text menu-icon"></i>
+                    <span class="menu-text">Permisos</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Sección de usuario -->
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="username">Cargando...</div>
+                    <div class="user-role" id="user-role">Empleado</div>
+                </div>
+                <button class="logout-btn" id="logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div id="main">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#" id="link-inicio-crumb">
+                            <i class="bi bi-house-door me-1"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" id="breadcrumb-actual">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Contenido dinámico -->
+        <div id="contenido"></div>
+    </div>
+
+    <script>
+        // Estado de la aplicación
+        const app = {
+            usuario: null,
+            vistaActual: 'inicio-empleado',
+            sidebarCollapsed: false
+        };
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const autenticado = await verificarAutenticacion();
+            if (!autenticado) return;
+            await cargarUsuario();
+            inicializarMenu();
+            inicializarMenuMovil();
+            configurarLogout();
+            cargarVista('inicio-empleado', 'Dashboard');
+        });
+
+        async function verificarAutenticacion() {
+            try {
+                const res = await fetch('/api/auth/verificar', { method: 'GET', credentials: 'include' });
+                if (!res.ok) { window.location.href = '/login.html'; return false; }
+                return true;
+            } catch (error) {
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
+        async function cargarUsuario() {
+            try {
+                const res = await fetch('/api/auth/usuario-actual', { credentials: 'include' });
+                if (!res.ok) throw new Error('Error al cargar usuario');
+                app.usuario = await res.json();
+                document.getElementById('username').textContent = app.usuario.nombre;
+                document.getElementById('user-role').textContent = app.usuario.rol || 'Empleado';
+            } catch (error) {
+                document.getElementById('username').textContent = 'Usuario';
+            }
+        }
+
+        function inicializarMenu() {
+            const menuItems = document.querySelectorAll(".menu-item");
+            const linkInicio = document.getElementById('link-inicio-crumb');
+
+            const navegar = (vista, titulo, item) => {
+                menuItems.forEach(i => i.classList.remove("active"));
+                if (item) item.classList.add("active");
+                cargarVista(vista, titulo);
+                cerrarMenuMovil();
+            };
+
+            menuItems.forEach(item => {
+                item.addEventListener("click", e => {
+                    e.preventDefault();
+                    navegar(item.dataset.form, item.dataset.title || item.dataset.form, item);
+                });
+            });
+
+            linkInicio.addEventListener('click', e => {
+                e.preventDefault();
+                const itemInicio = document.querySelector('[data-form="inicio-empleado"]');
+                navegar('inicio-empleado', 'Dashboard', itemInicio);
+            });
+        }
+
+        function inicializarMenuMovil() {
+            const mobileToggle = document.getElementById('mobile-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.add('sidebar-mobile-open');
+                overlay.classList.add('show');
+            });
+            overlay.addEventListener('click', cerrarMenuMovil);
+        }
+
+        function cerrarMenuMovil() {
+            document.getElementById('sidebar').classList.remove('sidebar-mobile-open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function cargarVista(vista, titulo) {
+            const contenedor = document.getElementById("contenido");
+            const breadcrumb = document.getElementById("breadcrumb-actual");
+            app.vistaActual = vista;
+            breadcrumb.textContent = titulo;
+
+            contenedor.innerHTML = `
+                    <div class="loader" style="animation: fadeIn 0.5s ease;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Cargando ${titulo}...</p>
+                    </div>`;
+
+            fetch(`/views/${vista}.html`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`Vista '${vista}' no encontrada`);
+                    return res.text();
+                })
+                .then(html => {
+                    contenedor.style.opacity = '0';
+                    setTimeout(() => {
+                        contenedor.innerHTML = html;
+                        contenedor.style.opacity = '1';
+                        contenedor.style.transition = 'opacity 0.3s ease';
+                        ejecutarScriptsVista(contenedor);
+                    }, 200);
+                })
+                .catch(err => {
+                    contenedor.innerHTML = `
+                            <div class="alert alert-danger d-flex align-items-center" style="animation: fadeIn 0.5s ease;">
+                                <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
+                                <div><strong>Error al cargar la vista</strong><br>${err.message}</div>
+                            </div>`;
+                });
+        }
+
+        function ejecutarScriptsVista(contenedor) {
+            const scripts = contenedor.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr =>
+                    newScript.setAttribute(attr.name, attr.value)
+                );
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
+
+        function configurarLogout() {
+            document.getElementById("logout").addEventListener("click", async e => {
+                e.preventDefault();
+                const logoutBtn = e.currentTarget;
+                logoutBtn.style.background = 'rgba(231, 76, 60, 0.2)';
+                if (!confirm("¿Estás seguro de cerrar sesión?")) {
+                    logoutBtn.style.background = '';
+                    return;
+                }
+                try {
+                    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                    localStorage.clear(); sessionStorage.clear();
+                    window.location.href = '/login.html';
+                } catch (error) {
+                    alert('Error al cerrar sesión');
+                    logoutBtn.style.background = '';
+                }
+            });
+        }
+
+        // Función auxiliar para fetch con autenticación (para uso global en módulos)
+        window.fetchAuth = async function (url, options = {}) {
+            const response = await fetch(url, {
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', ...options.headers },
+                ...options
+            });
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+                throw new Error('No autenticado');
+            }
+            return response;
+        };
+
+        // Exponer funciones globales
+        window.app = app;
+        window.cargarVista = cargarVista;
+    </script>
+</body>
+</html>

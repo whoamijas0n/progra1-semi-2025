@@ -1,0 +1,700 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Permisos - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark Consistente) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-header, .modal-header, .modal-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+        }
+
+        /* Stats Cards (Estilo Sólido Dashboard) */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes Estadísticas */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-danger-glass {
+            border-left: 4px solid #e74c3c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs y Selects Oscuros */
+        .form-control, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        /* Fix Select */
+        .form-select {
+            background-color: rgba(16, 26, 43, 0.95) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white !important;
+                padding: 10px;
+            }
+
+        /* Card Permiso */
+        .card-permiso {
+            transition: transform 0.3s ease;
+            background: var(--glass-bg) !important;
+        }
+
+            .card-permiso:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+
+        /* Bordes de estado para las cards */
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-success-glass-left {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-danger-glass-left {
+            border-left: 4px solid #e74c3c !important;
+        }
+
+        /* Icono Permiso */
+        .permiso-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            color: white;
+            font-size: 1.3rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Modales */
+        .modal-content {
+            background: rgba(16, 26, 43, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%);
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        /* Badges */
+        .badge-glass {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            font-weight: normal;
+        }
+
+        /* Botones Filtro */
+        .btn-outline-primary:not(:hover):not(.active) {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-outline-warning:not(:hover):not(.active) {
+            color: #f1c40f;
+            border-color: #f1c40f;
+        }
+
+        .btn-outline-success:not(:hover):not(.active) {
+            color: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .btn-outline-danger:not(:hover):not(.active) {
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        /* Info Card Interna */
+        .info-card-glass {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px dashed var(--border-light);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Permisos del Empleado -->
+    <div class="container-fluid py-2" id="permisos-empleado-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12">
+                <h2 class="mb-1 text-white">
+                    <i class="bi bi-file-text-fill me-2" style="color: var(--accent-color);"></i>Mis Solicitudes de Permiso
+                </h2>
+                <p class="mb-0 text-muted">Gestiona y realiza un seguimiento de tus solicitudes de permisos.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Total Solicitudes</div>
+                                <div class="stat-value" id="stat-total-permisos">0</div>
+                            </div>
+                            <i class="bi bi-file-text fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Pendientes</div>
+                                <div class="stat-value text-warning" id="stat-pendientes-permisos">0</div>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Aprobados</div>
+                                <div class="stat-value text-success" id="stat-aprobados-permisos">0</div>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-danger-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Rechazados</div>
+                                <div class="stat-value text-danger" id="stat-rechazados-permisos">0</div>
+                            </div>
+                            <i class="bi bi-x-circle fs-1 text-danger opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Acciones y Filtros -->
+        <div class="card mb-4 animate-entry delay-2">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary w-100 w-md-auto fw-bold shadow-sm" onclick="PermisosEmpleadoModule.abrirModalNuevo()">
+                            <i class="bi bi-plus-circle me-2"></i>Nueva Solicitud
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button class="btn btn-outline-primary active" id="btn-todos-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('todos')">
+                                <i class="bi bi-grid me-1"></i>Todos
+                            </button>
+                            <button class="btn btn-outline-warning" id="btn-pendientes-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('pendientes')">
+                                <i class="bi bi-clock me-1"></i>Pendientes
+                            </button>
+                            <button class="btn btn-outline-success" id="btn-aprobados-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('aprobados')">
+                                <i class="bi bi-check-circle me-1"></i>Aprobados
+                            </button>
+                            <button class="btn btn-outline-danger" id="btn-rechazados-permisos" onclick="PermisosEmpleadoModule.filtrarPermisos('rechazados')">
+                                <i class="bi bi-x-circle me-1"></i>Rechazados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="input-buscar-permisos" placeholder="Buscar por tipo o motivo...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="select-tipo-permisos">
+                            <option value="">Todos los tipos</option>
+                            <option value="Ausencia">Ausencia</option>
+                            <option value="Vacaciones">Vacaciones</option>
+                            <option value="Enfermedad">Enfermedad</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="select-orden-permisos">
+                            <option value="recientes">Más recientes primero</option>
+                            <option value="antiguas">Más antiguas primero</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-outline-light w-100" onclick="PermisosEmpleadoModule.limpiarFiltros()" title="Limpiar filtros">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Permisos -->
+        <div class="row g-3 animate-entry delay-3" id="lista-permisos-empleado">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="text-muted mt-2">Cargando tus solicitudes...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Solicitud -->
+    <div class="modal fade" id="modalPermiso" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Nueva Solicitud
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPermiso">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-white small">Tipo de Permiso *</label>
+                                <select class="form-select" id="tipo" required>
+                                    <option value="">Selecciona un tipo...</option>
+                                    <option value="Ausencia">Ausencia</option>
+                                    <option value="Vacaciones">Vacaciones</option>
+                                    <option value="Enfermedad">Enfermedad</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-white small">Duración estimada</label>
+                                <div class="info-card-glass p-2 text-center">
+                                    <small class="text-info">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        <span id="info-duracion">Selecciona fechas</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-white small">Fecha Inicio *</label>
+                                <input type="date" class="form-control" id="fechaInicio" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-white small">Fecha Fin *</label>
+                                <input type="date" class="form-control" id="fechaFin" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white small">Motivo *</label>
+                            <textarea class="form-control" id="motivo" rows="4" maxlength="200" placeholder="Describe el motivo..." required></textarea>
+                            <div class="d-flex justify-content-end mt-1">
+                                <small class="text-muted"><span id="contador-caracteres">0</span>/200</small>
+                            </div>
+                        </div>
+
+                        <!-- Resumen -->
+                        <div class="info-card-glass p-3" id="resumen-solicitud" style="display: none;">
+                            <h6 class="text-primary mb-2 small text-uppercase fw-bold"><i class="bi bi-check2-circle me-2"></i>Resumen</h6>
+                            <div class="row g-2 small text-white">
+                                <div class="col-4">Tipo: <span id="resumen-tipo" class="fw-bold">-</span></div>
+                                <div class="col-4">Duración: <span id="resumen-duracion" class="fw-bold">-</span></div>
+                                <div class="col-4">Estado: <span class="badge bg-warning text-dark">Pendiente</span></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="PermisosEmpleadoModule.solicitar()">
+                        <i class="bi bi-send me-2"></i>Enviar Solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO PERMISOS EMPLEADO - Lógica Preservada
+        window.PermisosEmpleadoModule = (function () {
+            'use strict';
+
+            const state = {
+                permisos: [],
+                permisosFiltrados: [],
+                filtroActual: 'todos',
+                modalInstance: null
+            };
+
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, { credentials: 'include', ...options });
+                    if (!response.ok) throw new Error(`Error ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Error:', error);
+                    mostrarAlerta(error.message, 'danger');
+                    throw error;
+                }
+            }
+
+            async function cargarPermisos() {
+                try {
+                    state.permisos = await apiCall('/api/permisos/mis-permisos');
+                    state.permisosFiltrados = [...state.permisos];
+                    actualizarEstadisticas();
+                    renderizarPermisos();
+                    aplicarFiltroActual();
+                } catch (error) {
+                    document.getElementById('lista-permisos-empleado').innerHTML = `<div class="col-12 text-center text-danger">Error al cargar permisos</div>`;
+                }
+            }
+
+            function actualizarEstadisticas() {
+                const total = state.permisos.length;
+                const pendientes = state.permisos.filter(p => p.estado === 'Pendiente').length;
+                const aprobados = state.permisos.filter(p => p.estado === 'Aprobado').length;
+                const rechazados = state.permisos.filter(p => p.estado === 'Rechazado').length;
+
+                const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setTxt('stat-total-permisos', total);
+                setTxt('stat-pendientes-permisos', pendientes);
+                setTxt('stat-aprobados-permisos', aprobados);
+                setTxt('stat-rechazados-permisos', rechazados);
+            }
+
+            // --- RENDERIZADO ---
+            function renderizarPermisos() {
+                const container = document.getElementById('lista-permisos-empleado');
+                if (state.permisosFiltrados.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-5">No hay solicitudes encontradas</div>`;
+                    return;
+                }
+
+                container.innerHTML = state.permisosFiltrados.map(p => {
+                    let borderClass = 'border-warning-glass';
+                    let badgeClass = 'bg-warning text-dark';
+                    let iconClass = 'bi-clock';
+
+                    if (p.estado === 'Aprobado') { borderClass = 'border-success-glass-left'; badgeClass = 'bg-success'; iconClass = 'bi-check-circle'; }
+                    if (p.estado === 'Rechazado') { borderClass = 'border-danger-glass-left'; badgeClass = 'bg-danger'; iconClass = 'bi-x-circle'; }
+
+                    const dias = calcularDiasPermiso(p.fecha_inicio, p.fecha_fin);
+
+                    return `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card card-permiso h-100 ${borderClass}">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="permiso-icon me-3">
+                                                <i class="bi ${obtenerIconoPorTipo(p.tipo)}"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h6 class="card-title mb-1 fw-bold text-white">${p.tipo}</h6>
+                                                    <span class="badge ${badgeClass} bg-opacity-75"><i class="bi ${iconClass} me-1"></i>${p.estado}</span>
+                                                </div>
+                                                <small class="text-muted">${new Date(p.fecha_solicitud).toLocaleDateString()}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 p-2 rounded bg-black bg-opacity-25 border border-secondary border-opacity-10 small text-muted fst-italic">
+                                            "${p.motivo || 'Sin motivo'}"
+                                        </div>
+
+                                        <div class="mt-auto border-top border-secondary border-opacity-25 pt-2 small text-white">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Fechas:</span>
+                                                <span>${p.fecha_inicio} <i class="bi bi-arrow-right mx-1 text-muted"></i> ${p.fecha_fin}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">Duración:</span>
+                                                <span>${dias} día${dias !== 1 ? 's' : ''}</span>
+                                            </div>
+                                            ${p.supervisor ? `
+                                            <div class="d-flex justify-content-between mt-2 pt-2 border-top border-secondary border-opacity-10">
+                                                <span class="text-muted">Supervisor:</span>
+                                                <span>${p.supervisor}</span>
+                                            </div>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }).join('');
+            }
+
+            function obtenerIconoPorTipo(t) {
+                if (t === 'Vacaciones') return 'bi-sun';
+                if (t === 'Enfermedad') return 'bi-heart-pulse';
+                if (t === 'Ausencia') return 'bi-person-x';
+                return 'bi-file-text';
+            }
+
+            function calcularDiasPermiso(i, f) {
+                return Math.ceil(Math.abs(new Date(f) - new Date(i)) / (86400000)) + 1;
+            }
+
+            // --- FILTROS ---
+            function filtrarPermisos(tipo) {
+                state.filtroActual = tipo;
+                ['todos', 'pendientes', 'aprobados', 'rechazados'].forEach(t => {
+                    const btn = document.getElementById(`btn-${t}-permisos`);
+                    if (btn) {
+                        if (t === tipo) btn.classList.add('active');
+                        else btn.classList.remove('active');
+                    }
+                });
+                aplicarFiltroActual();
+            }
+
+            function aplicarFiltroActual() {
+                let res = state.permisos;
+                if (state.filtroActual === 'pendientes') res = res.filter(p => p.estado === 'Pendiente');
+                if (state.filtroActual === 'aprobados') res = res.filter(p => p.estado === 'Aprobado');
+                if (state.filtroActual === 'rechazados') res = res.filter(p => p.estado === 'Rechazado');
+
+                const txt = document.getElementById('input-buscar-permisos').value.toLowerCase();
+                if (txt) res = res.filter(p => p.tipo.toLowerCase().includes(txt) || (p.motivo || '').toLowerCase().includes(txt));
+
+                const tipo = document.getElementById('select-tipo-permisos').value;
+                if (tipo) res = res.filter(p => p.tipo === tipo);
+
+                const ord = document.getElementById('select-orden-permisos').value;
+                res.sort((a, b) => {
+                    const da = new Date(a.fecha_solicitud), db = new Date(b.fecha_solicitud);
+                    return ord === 'antiguas' ? da - db : db - da;
+                });
+
+                state.permisosFiltrados = res;
+                renderizarPermisos();
+            }
+
+            function limpiarFiltros() {
+                document.getElementById('input-buscar-permisos').value = '';
+                document.getElementById('select-tipo-permisos').value = '';
+                document.getElementById('select-orden-permisos').value = 'recientes';
+                filtrarPermisos('todos');
+            }
+
+            // --- MODAL ---
+            function abrirModalNuevo() {
+                document.getElementById('formPermiso').reset();
+                document.getElementById('resumen-solicitud').style.display = 'none';
+                const hoy = new Date().toISOString().split('T')[0];
+                document.getElementById('fechaInicio').min = hoy;
+                document.getElementById('fechaFin').min = hoy;
+
+                ['fechaInicio', 'fechaFin', 'tipo', 'motivo'].forEach(id => {
+                    document.getElementById(id).addEventListener(id === 'motivo' ? 'input' : 'change', actualizarResumen);
+                });
+
+                if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalPermiso'));
+                state.modalInstance.show();
+            }
+
+            function actualizarResumen() {
+                const t = document.getElementById('tipo').value;
+                const i = document.getElementById('fechaInicio').value;
+                const f = document.getElementById('fechaFin').value;
+
+                if (t && i && f) {
+                    const d = calcularDiasPermiso(i, f);
+                    document.getElementById('resumen-tipo').textContent = t;
+                    document.getElementById('resumen-duracion').textContent = `${d} días`;
+                    document.getElementById('info-duracion').textContent = `${d} días`;
+                    document.getElementById('resumen-solicitud').style.display = 'block';
+                } else {
+                    document.getElementById('resumen-solicitud').style.display = 'none';
+                }
+                document.getElementById('contador-caracteres').textContent = document.getElementById('motivo').value.length;
+            }
+
+            async function solicitar() {
+                const form = document.getElementById('formPermiso');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                const d = {
+                    Tipo: document.getElementById('tipo').value,
+                    FechaInicio: document.getElementById('fechaInicio').value,
+                    FechaFin: document.getElementById('fechaFin').value,
+                    Motivo: document.getElementById('motivo').value.trim()
+                };
+
+                if (new Date(d.FechaFin) < new Date(d.FechaInicio)) { mostrarAlerta('Fecha fin inválida', 'warning'); return; }
+
+                const btn = document.querySelector('#modalPermiso .btn-primary');
+                const org = btn.innerHTML;
+                btn.disabled = true; btn.innerHTML = 'Enviando...';
+
+                try {
+                    await apiCall('/api/permisos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+                    mostrarAlerta('Solicitud enviada', 'success');
+                    state.modalInstance.hide();
+                    cargarPermisos();
+                } catch (e) { } finally { btn.disabled = false; btn.innerHTML = org; }
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.textContent = msg;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            // INIT
+            async function init() {
+                if (!document.getElementById('permisos-empleado-container')) return;
+                await cargarPermisos();
+
+                const inp = document.getElementById('input-buscar-permisos');
+                if (inp) {
+                    let t;
+                    inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(aplicarFiltroActual, 300); });
+                }
+                ['select-tipo-permisos', 'select-orden-permisos'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('change', aplicarFiltroActual);
+                });
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, abrirModalNuevo, solicitar, filtrarPermisos, limpiarFiltros };
+        })();
+    </script>
+</body>
+</html>

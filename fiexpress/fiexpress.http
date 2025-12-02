@@ -1,0 +1,6 @@
+@fiexpress_HostAddress = http://localhost:5181
+
+GET {{fiexpress_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

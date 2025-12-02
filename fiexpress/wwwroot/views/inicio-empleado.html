@@ -1,0 +1,867 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empleado - FiExpress</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+            --bg-body: #0f172a;
+        }
+
+        body {
+            color: white;
+            background-color: var(--bg-body);
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        /* Pantalla de Carga */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Cards Glass */
+        .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes de Color */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .border-secondary-glass {
+            border-left: 4px solid #95a5a6 !important;
+        }
+
+        /* Avatar Profile */
+        .avatar-profile {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Fichaje Card */
+        .fichaje-card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid var(--border-light) !important;
+            border-left: 4px solid transparent !important;
+        }
+
+        .fichaje-entrada {
+            border-left-color: #198754 !important;
+        }
+
+        .fichaje-salida {
+            border-left-color: #dc3545 !important;
+        }
+
+        /* Días Turno Blocks */
+        .dia-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+            .dia-block.active {
+                background: rgba(52, 152, 219, 0.2);
+                border-color: var(--accent-color);
+                color: white;
+            }
+
+            .dia-block.inactive {
+                opacity: 0.4;
+            }
+
+        /* Alertas Custom */
+        .alert-glass-info {
+            background: rgba(13, 202, 240, 0.15);
+            border: 1px solid rgba(13, 202, 240, 0.3);
+            color: #0dcaf0;
+        }
+
+        .alert-glass-success {
+            background: rgba(25, 135, 84, 0.15);
+            border: 1px solid rgba(25, 135, 84, 0.3);
+            color: #198754;
+        }
+
+        .alert-glass-warning {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+
+        /* Progress Bars */
+        .progress {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Botones Acciones */
+        .btn-quick {
+            border: 1px solid var(--border-light);
+            color: white;
+            background: rgba(255,255,255,0.03);
+            text-align: left;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+            .btn-quick:hover {
+                background: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+
+        /* Botón Refresh Personalizado */
+        .btn-refresh-header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+            .btn-refresh-header:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                transform: rotate(180deg);
+            }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        .content-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .content-visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease;
+        }
+
+        /* Stats Text */
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-logo"><i class="bi bi-clock-history"></i></div>
+        <div class="text-white mb-3">Cargando tu dashboard...</div>
+        <div class="loading-progress">
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+        </div>
+        <div id="loading-steps" class="small text-muted">Iniciando sistema...</div>
+    </div>
+
+    <!-- Dashboard Empleado -->
+    <div class="container-fluid py-2 content-hidden" id="dashboard-empleado-container">
+
+        <!-- Header con Botón Refresh -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1 text-white">
+                        <i class="bi bi-speedometer2 me-2" style="color: var(--accent-color);"></i>Mi Dashboard
+                    </h2>
+                    <p class="mb-0 text-muted">Resumen de tu actividad y asistencia.</p>
+                </div>
+                <button class="btn btn-refresh-header rounded-circle p-2" onclick="DashboardEmpleado.recargarDashboard()" title="Actualizar datos">
+                    <i class="bi bi-arrow-clockwise fs-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Información del Empleado -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card animate-delay-1">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-auto text-center mb-3 mb-md-0">
+                                <img id="empleado-avatar" class="avatar-profile rounded-circle" alt="Avatar" src="">
+                            </div>
+                            <div class="col-md">
+                                <h4 class="mb-1 fw-bold text-white" id="empleado-nombre">Cargando...</h4>
+                                <div class="d-flex flex-wrap gap-3 text-muted small mb-2">
+                                    <span><i class="bi bi-person-badge me-1"></i><span id="empleado-codigo">-</span></span>
+                                    <span><i class="bi bi-building me-1"></i><span id="empleado-departamento">-</span></span>
+                                </div>
+                                <div class="d-inline-block bg-dark bg-opacity-50 rounded px-3 py-1 border border-light border-opacity-10">
+                                    <i class="bi bi-calendar3 me-2 text-info"></i><span id="fecha-actual" class="text-light">-</span>
+                                </div>
+                            </div>
+                            <div class="col-md-auto text-end mt-3 mt-md-0">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-primary px-4 fw-bold" onclick="DashboardEmpleado.verEstadisticasCompletas()">
+                                        <i class="bi bi-graph-up me-2"></i>Ver Estadísticas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Actual -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="alert-estado" class="alert alert-glass-info d-flex align-items-center animate-delay-2 p-3 rounded-3 shadow-sm">
+                    <i class="bi bi-info-circle-fill fs-3 me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1 fw-bold" id="estado-actual-text">Cargando estado...</h5>
+                        <p class="mb-0 opacity-75 small" id="estado-detalle">Obteniendo información actual</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100 animate-delay-1">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Asistencia Mes</div>
+                            <i class="bi bi-person-check fs-4 text-primary"></i>
+                        </div>
+                        <h3 class="stat-value mb-2" id="stat-asistencia">0%</h3>
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-primary" id="barra-asistencia" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted mt-2 d-block" id="stat-dias-asistencia">0/0 días</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100 animate-delay-2">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Horas Trabajadas</div>
+                            <i class="bi bi-clock-history fs-4 text-success"></i>
+                        </div>
+                        <h3 class="stat-value mb-0 text-success" id="stat-horas-trabajadas">0h</h3>
+                        <small class="text-muted mt-1 d-block" id="stat-minutos-trabajados">0 min</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100 animate-delay-3">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Retraso Acumulado</div>
+                            <i class="bi bi-alarm fs-4 text-warning"></i>
+                        </div>
+                        <h3 class="stat-value mb-0 text-warning" id="stat-retraso">0m</h3>
+                        <small class="text-muted mt-1 d-block">Este mes</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100 animate-delay-4">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="stat-label">Horas Extra</div>
+                            <i class="bi bi-plus-circle fs-4 text-info"></i>
+                        </div>
+                        <h3 class="stat-value mb-0 text-info" id="stat-extra">0m</h3>
+                        <small class="text-muted mt-1 d-block">Tiempo adicional</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div class="row">
+            <!-- Columna Izquierda -->
+            <div class="col-lg-8">
+                <div class="row">
+                    <!-- Turno Activo (CORREGIDO) -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 animate-delay-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 text-white"><i class="bi bi-clock text-primary me-2"></i>Mi Turno</h6>
+                                <span class="badge bg-secondary" id="badge-turno-activo">Inactivo</span>
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <div id="turno-activo-container" class="w-100">
+                                    <div class="text-center py-3">
+                                        <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Días Laborales (CORREGIDO) -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 animate-delay-4">
+                            <div class="card-header">
+                                <h6 class="mb-0 text-white"><i class="bi bi-calendar-week text-success me-2"></i>Días Laborales</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="dias-turno-container" class="text-center">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fichajes de Hoy -->
+                <div class="card mb-4 animate-delay-5">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white">
+                            <i class="bi bi-list-check text-info me-2"></i>Fichajes de Hoy
+                            <span class="badge bg-primary bg-opacity-50 ms-2 rounded-pill" id="contador-fichajes">0</span>
+                        </h6>
+                        <div>
+                            <span class="text-muted small me-2" id="timestamp-fichajes"></span>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div id="fichajes-hoy-container">
+                            <div class="text-center py-4 text-muted">Cargando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha -->
+            <div class="col-lg-4">
+                <!-- Acciones Rápidas -->
+                <div class="card mb-4 animate-delay-3">
+                    <div class="card-header">
+                        <h6 class="mb-0 text-white"><i class="bi bi-lightning-charge text-warning me-2"></i>Acciones</h6>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.verMisFichajes()">
+                                <div class="bg-primary bg-opacity-25 p-2 rounded me-3"><i class="bi bi-clock-history text-primary"></i></div>
+                                <div>
+                                    <div class="fw-bold">Historial Fichajes</div>
+                                    <div class="small text-muted">Ver registros pasados</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.solicitarPermiso()">
+                                <div class="bg-success bg-opacity-25 p-2 rounded me-3"><i class="bi bi-file-text text-success"></i></div>
+                                <div>
+                                    <div class="fw-bold">Solicitar Permiso</div>
+                                    <div class="small text-muted">Ausencias o vacaciones</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-quick d-flex align-items-center" onclick="DashboardEmpleado.verNotificaciones()">
+                                <div class="bg-info bg-opacity-25 p-2 rounded me-3"><i class="bi bi-bell text-info"></i></div>
+                                <div>
+                                    <div class="fw-bold">Notificaciones</div>
+                                    <div class="small text-muted">Mensajes del sistema</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progreso del Mes -->
+                <div class="card mb-4 animate-delay-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 text-white"><i class="bi bi-graph-up text-info me-2"></i>Progreso Mensual</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Días transcurridos</small>
+                                <small class="text-white fw-bold" id="progreso-mes-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" id="barra-mes" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Objetivo asistencia</small>
+                                <small class="text-white fw-bold" id="objetivo-asistencia-text">0%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="barra-objetivo" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <small class="badge bg-dark border border-secondary border-opacity-25 text-muted fw-normal" id="dias-restantes">0 días restantes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO DASHBOARD EMPLEADO - Lógica Refinada
+        window.DashboardEmpleado = (function () {
+            'use strict';
+
+            const state = {
+                datos: null,
+                intervalos: [],
+                pasosCarga: ["Iniciando...", "Datos personales...", "Estadísticas...", "Turnos...", "Fichajes...", "Métricas...", "Interfaz...", "Listo!"],
+                pasoActual: 0
+            };
+
+            const STORAGE_KEY = 'fiExpress_dashboard_data';
+
+            // --- PANTALLA CARGA ---
+            function actualizarProgresoCarga(paso, msg = null) {
+                const bar = document.getElementById('loading-progress-bar');
+                const txt = document.getElementById('loading-steps');
+                const prog = ((paso + 1) / state.pasosCarga.length) * 100;
+                if (bar) bar.style.width = `${prog}%`;
+                if (txt) txt.textContent = msg || state.pasosCarga[paso];
+                state.pasoActual = paso;
+            }
+
+            function mostrarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay.classList.contains('hidden')) {
+                    overlay.classList.remove('hidden');
+                    document.getElementById('dashboard-empleado-container').classList.add('content-hidden');
+                    actualizarProgresoCarga(0);
+                }
+            }
+
+            function ocultarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const content = document.getElementById('dashboard-empleado-container');
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Bienvenido!");
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    content.classList.remove('content-hidden');
+                    content.classList.add('content-visible');
+                }, 600);
+            }
+
+            // --- STORAGE ---
+            function guardarDatosEnStorage(datos) {
+                try {
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...datos, timestamp: Date.now() }));
+                } catch (e) { }
+            }
+
+            function cargarDatosDesdeStorage() {
+                try {
+                    const raw = sessionStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    const data = JSON.parse(raw);
+                    if (Date.now() - data.timestamp > 300000) { // 5 minutos
+                        sessionStorage.removeItem(STORAGE_KEY); return null;
+                    }
+                    return data;
+                } catch (e) { return null; }
+            }
+
+            // --- API ---
+            async function apiCall(url, options = {}) {
+                try {
+                    const res = await fetch(url, { credentials: 'include', headers: { 'Content-Type': 'application/json', ...options.headers }, ...options });
+                    if (!res.ok) throw new Error(`Error ${res.status}`);
+                    return await res.json();
+                } catch (e) {
+                    console.error('API Error:', e);
+                    return null;
+                }
+            }
+
+            // --- CARGAR ---
+            async function cargarDashboard(forceRefresh = false) {
+                if (!forceRefresh) {
+                    const cached = cargarDatosDesdeStorage();
+                    if (cached) {
+                        state.datos = cached;
+                        actualizarVistaCompleta();
+                        ocultarPantallaCarga();
+                        return;
+                    }
+                }
+
+                actualizarProgresoCarga(1, "Consultando servidor...");
+                const data = await apiCall('/api/estadisticas/dashboard-empleado');
+
+                if (!data) {
+                    if (!document.getElementById('loading-overlay').classList.contains('hidden')) {
+                        document.getElementById('loading-steps').textContent = "Error de conexión. Reintentando...";
+                        setTimeout(() => cargarDashboard(forceRefresh), 3000);
+                    }
+                    return;
+                }
+
+                state.datos = data;
+                guardarDatosEnStorage(data);
+
+                actualizarProgresoCarga(4, "Procesando datos...");
+                actualizarVistaCompleta();
+
+                ocultarPantallaCarga();
+                if (forceRefresh) mostrarNotificacion('Datos actualizados', 'success');
+            }
+
+            function actualizarVistaCompleta() {
+                actualizarInfoEmpleado();
+                actualizarEstadoActual();
+                actualizarEstadisticas();
+                actualizarTurnoActivo();
+                actualizarDiasTurno();
+                actualizarFichajesHoy();
+                actualizarProgresoMes();
+                actualizarFechas();
+            }
+
+            // --- UI UPDATES ---
+            function actualizarInfoEmpleado() {
+                const emp = state.datos.empleado;
+                if (!emp) return;
+                document.getElementById('empleado-nombre').textContent = emp.nombre || 'Empleado';
+                document.getElementById('empleado-codigo').textContent = emp.codigo_empleado || '-';
+                document.getElementById('empleado-departamento').textContent = emp.departamento || '-';
+                const img = document.getElementById('empleado-avatar');
+                img.src = emp.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.nombre || 'U')}&size=100&background=0D6EFD&color=fff`;
+            }
+
+            function actualizarEstadoActual() {
+                const estado = state.datos.estadoActual || 'Desconocido';
+                const last = state.datos.ultimoFichaje;
+                document.getElementById('estado-actual-text').textContent = estado;
+                document.getElementById('estado-detalle').textContent = last ?
+                    `Último: ${last.tipo} a las ${last.hora}` : 'Sin registros hoy';
+                const alert = document.getElementById('alert-estado');
+                alert.className = 'alert d-flex align-items-center animate-delay-2 p-3 rounded-3 shadow-sm ';
+                if (estado.toLowerCase().includes('trabajando') || estado.toLowerCase().includes('dentro')) {
+                    alert.classList.add('alert-glass-success');
+                    alert.querySelector('i').className = 'bi bi-check-circle-fill fs-3 me-3';
+                } else if (estado.toLowerCase().includes('fuera')) {
+                    alert.classList.add('alert-glass-warning');
+                    alert.querySelector('i').className = 'bi bi-pause-circle-fill fs-3 me-3';
+                } else {
+                    alert.classList.add('alert-glass-info');
+                    alert.querySelector('i').className = 'bi bi-info-circle-fill fs-3 me-3';
+                }
+            }
+
+            function actualizarEstadisticas() {
+                const r = state.datos.resumenMes || {};
+                document.getElementById('stat-asistencia').textContent = (r.porcentajeAsistencia || 0) + '%';
+                document.getElementById('barra-asistencia').style.width = (r.porcentajeAsistencia || 0) + '%';
+                document.getElementById('stat-dias-asistencia').textContent = `${r.diasTrabajados || 0}/${r.totalDias || 0} días`;
+
+                const h = Math.floor((r.totalMinutosTrabajados || 0) / 60);
+                const m = (r.totalMinutosTrabajados || 0) % 60;
+                document.getElementById('stat-horas-trabajadas').textContent = h + 'h';
+                document.getElementById('stat-minutos-trabajados').textContent = m + ' min';
+
+                document.getElementById('stat-retraso').textContent = (r.totalMinutosRetraso || 0) + 'm';
+                document.getElementById('stat-extra').textContent = (r.totalMinutosExtra || 0) + 'm';
+            }
+
+            // ✅ FIX: Lógica robusta para turno activo
+            function actualizarTurnoActivo() {
+                const t = state.datos.horarioActivo;
+                const c = document.getElementById('turno-activo-container');
+                const b = document.getElementById('badge-turno-activo');
+
+                if (!t) {
+                    c.innerHTML = `<div class="text-center text-muted py-3"><i class="bi bi-calendar-x fs-1 mb-2 d-block opacity-50"></i><small>Sin turno asignado</small></div>`;
+                    b.textContent = 'Inactivo'; b.className = 'badge bg-secondary';
+                    return;
+                }
+
+                // Soporte para diferentes formatos de propiedad
+                const nombre = t.nombre || t.nombreTurno || 'Turno';
+                const entrada = t.hora_entrada || t.horaEntrada || '--:--';
+                const salida = t.hora_salida || t.horaSalida || '--:--';
+                const tolerancia = t.tolerancia_minutos || t.toleranciaMinutos || 0;
+
+                c.innerHTML = `
+                        <div class="text-center">
+                            <h5 class="text-white mb-1">${nombre}</h5>
+                            <div class="fs-4 fw-bold text-primary">${entrada} - ${salida}</div>
+                            <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-25 mt-2">Tol: ${tolerancia}m</span>
+                        </div>
+                    `;
+                b.textContent = 'Activo'; b.className = 'badge bg-success';
+            }
+
+            // ✅ FIX: Lógica robusta para días
+            function actualizarDiasTurno() {
+                const t = state.datos.horarioActivo;
+                const c = document.getElementById('dias-turno-container');
+                if (!t) { c.innerHTML = '<small class="text-muted">Sin datos</small>'; return; }
+
+                const days = [
+                    { k: 'lunes', l: 'L' }, { k: 'martes', l: 'M' }, { k: 'miercoles', l: 'X' },
+                    { k: 'jueves', l: 'J' }, { k: 'viernes', l: 'V' }, { k: 'sabado', l: 'S' }, { k: 'domingo', l: 'D' }
+                ];
+                const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+                // Verificar si las propiedades vienen directas (admin style) o en objeto anidado
+                const getDiaActivo = (key) => {
+                    if (t[key] !== undefined) return t[key]; // Propiedad directa
+                    if (t.diasActivos && t.diasActivos[key] !== undefined) return t.diasActivos[key]; // Objeto anidado
+                    return false;
+                };
+
+                c.innerHTML = `
+                        <div class="d-flex justify-content-between">
+                            ${days.map((d, i) => {
+                    const activo = getDiaActivo(d.k);
+                    return `
+                                    <div class="dia-block rounded p-2 text-center ${activo ? (i === todayIdx ? 'active' : '') : 'inactive'}">
+                                        <div class="fw-bold small">${d.l}</div>
+                                        <i class="bi ${activo ? 'bi-check' : 'bi-dash'} small"></i>
+                                    </div>
+                                `;
+                }).join('')}
+                        </div>
+                    `;
+            }
+
+            function actualizarFichajesHoy() {
+                const f = state.datos.fichajesHoy || [];
+                const c = document.getElementById('fichajes-hoy-container');
+                document.getElementById('contador-fichajes').textContent = f.length;
+
+                if (f.length === 0) {
+                    c.innerHTML = `<div class="text-center text-muted py-3"><small>Sin registros hoy</small></div>`;
+                    return;
+                }
+
+                c.innerHTML = f.map(x => `
+                        <div class="card fichaje-card mb-2 ${x.tipo === 'Entrada' ? 'fichaje-entrada' : 'fichaje-salida'}">
+                            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge ${x.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'} me-2">${x.tipo}</span>
+                                    <span class="fw-bold text-white">${x.hora}</span>
+                                </div>
+                                <small class="text-muted">${x.fecha}</small>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            function actualizarProgresoMes() {
+                const now = new Date();
+                const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const prog = (now.getDate() / totalDays) * 100;
+
+                document.getElementById('progreso-mes-text').textContent = Math.round(prog) + '%';
+                document.getElementById('barra-mes').style.width = prog + '%';
+
+                const target = state.datos.resumenMes?.porcentajeAsistencia || 0;
+                document.getElementById('objetivo-asistencia-text').textContent = target + '%';
+                document.getElementById('barra-objetivo').style.width = target + '%';
+
+                document.getElementById('dias-restantes').textContent = `${totalDays - now.getDate()} días restantes`;
+            }
+
+            function actualizarFechas() {
+                const d = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('fecha-actual').textContent = d.toLocaleDateString('es-ES', options);
+                document.getElementById('timestamp-fichajes').textContent = d.toLocaleTimeString();
+            }
+
+            // --- UTILS ---
+            function recargarDashboard() { cargarDashboard(true); }
+            async function recargarFichajes() { await cargarDashboard(true); }
+            function verEstadisticasCompletas() { navegar('estadisticas-personales', 'Mis Estadísticas'); }
+            function verMisFichajes() { navegar('fichajes-personales', 'Mis Fichajes'); }
+            function solicitarPermiso() { navegar('permisos-empleado', 'Solicitar Permiso'); }
+            function verNotificaciones() { navegar('notificaciones-empleado', 'Notificaciones'); }
+            function verHorario() { navegar('horario-personal', 'Mi Horario'); }
+
+            function navegar(vista, titulo) {
+                if (window.cargarVista) window.cargarVista(vista, titulo);
+                else mostrarNotificacion('Navegación no disponible', 'warning');
+            }
+
+            function mostrarNotificacion(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3 shadow`;
+                div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${msg}`;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            function configurarAutoRefresh() {
+                state.intervalos.push(setInterval(() => { if (!document.hidden) cargarDashboard(false); }, 300000));
+            }
+
+            async function init() {
+                if (!document.getElementById('dashboard-empleado-container')) return;
+                mostrarPantallaCarga();
+                await cargarDashboard(false);
+                configurarAutoRefresh();
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, recargarDashboard, recargarFichajes, verEstadisticasCompletas, verMisFichajes, solicitarPermiso, verNotificaciones, verHorario };
+        })();
+    </script>
+</body>
+</html>

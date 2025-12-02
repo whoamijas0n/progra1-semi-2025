@@ -1,0 +1,927 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Estadísticas - FiExpress</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+            --bg-body: #0f172a;
+        }
+
+        body {
+            color: white;
+            background-color: var(--bg-body);
+            overflow-y: scroll; /* Evita saltos de layout */
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        /* Pantalla de Carga (CORREGIDA) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            opacity: 1;
+            visibility: visible; /* Visible por defecto */
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes Estadísticas */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .metric-consistencia {
+            border-left: 4px solid #6f42c1 !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            border-left: 4px solid transparent !important;
+            background: var(--glass-bg) !important;
+        }
+
+            .metric-card:hover {
+                transform: translateY(-3px);
+            }
+
+        /* Inputs y Selects */
+        .form-control, .input-group-text, .form-select {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus, .form-select:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white;
+                padding: 10px;
+            }
+
+        /* Contenedor Gráfico */
+        .grafico-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Tabla Detalle Diario (FIX DEFINITIVO) */
+        .table-glass {
+            color: #ecf0f1;
+            margin-bottom: 0;
+            vertical-align: middle;
+            width: 100%;
+        }
+
+            .table-glass thead th {
+                /* Fondo sólido oscuro para que el contenido no se transparente al hacer scroll */
+                background-color: #1e293b !important;
+                border-bottom: 1px solid var(--border-light);
+                color: var(--accent-color);
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                padding: 1rem;
+                position: sticky; /* Fijar arriba */
+                top: 0;
+                z-index: 2;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+
+            .table-glass tbody td {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 1rem;
+                background: transparent !important;
+                color: #ecf0f1;
+            }
+
+            .table-glass tbody tr:hover td {
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+
+        /* Scrollbar personalizada para la tabla */
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) rgba(255,255,255,0.05);
+        }
+
+            .custom-scroll::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scroll::-webkit-scrollbar-track {
+                background: rgba(255,255,255,0.05);
+            }
+
+            .custom-scroll::-webkit-scrollbar-thumb {
+                background: var(--accent-color);
+                border-radius: 10px;
+            }
+
+        /* Progress Bars */
+        .progress {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 6px;
+        }
+
+        /* Texto Tendencia */
+        .tendencia-mejorando {
+            color: #2ecc71 !important;
+        }
+
+        .tendencia-disminuyendo {
+            color: #e74c3c !important;
+        }
+
+        .tendencia-estable {
+            color: #bdc3c7 !important;
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        /* Control de visibilidad contenido */
+        .content-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .content-visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease;
+        }
+
+        /* Botones */
+        .btn-outline-primary:not(:hover):not(.active) {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-logo"><i class="bi bi-graph-up-arrow"></i></div>
+        <div class="text-white mb-3" id="loading-text">Cargando estadísticas...</div>
+        <div class="loading-progress">
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+        </div>
+        <div id="loading-steps" class="small text-muted">Iniciando sistema...</div>
+    </div>
+
+    <!-- Vista de Estadísticas Personales -->
+    <div class="container-fluid py-2 content-hidden" id="estadisticas-personales-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12 d-flex justify-content-between align-items-end">
+                <div>
+                    <h2 class="mb-1 text-white">
+                        <i class="bi bi-graph-up-arrow me-2" style="color: var(--accent-color);"></i>Mis Estadísticas
+                    </h2>
+                    <p class="mb-0 text-muted">Analiza tu rendimiento y seguimiento de asistencia.</p>
+                </div>
+                <button class="btn btn-sm btn-outline-light" id="btn-refresh" onclick="EstadisticasPersonales.recargarEstadisticas()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4 animate-entry delay-1">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Fecha Inicio</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                            <input type="date" class="form-control" id="filtro-inicio">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Fecha Fin</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                            <input type="date" class="form-control" id="filtro-fin">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Tipo de Reporte</label>
+                        <select class="form-select" id="filtro-tipo">
+                            <option value="detallado">Detalle Completo</option>
+                            <option value="solo-graficos">Solo Gráficos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100 fw-bold" id="btn-aplicar" onclick="EstadisticasPersonales.cargarEstadisticas(true)">
+                            <i class="bi bi-filter me-1"></i> Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen General -->
+        <div class="row mb-4 animate-entry delay-2">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <div class="stat-label">Asistencia</div>
+                                <div class="stat-value" id="stat-asistencia-total">0%</div>
+                            </div>
+                            <i class="bi bi-person-check fs-1 text-primary opacity-50"></i>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-primary" id="barra-asistencia" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted" id="stat-dias-asistencia">0/0 días</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label">Horas Totales</div>
+                                <div class="stat-value text-success" id="stat-horas-totales">0h</div>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-success opacity-50"></i>
+                        </div>
+                        <small class="text-muted" id="stat-promedio-diario">0h/día</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label">Retraso Total</div>
+                                <div class="stat-value text-warning" id="stat-retraso-total">0m</div>
+                            </div>
+                            <i class="bi bi-alarm fs-1 text-warning opacity-50"></i>
+                        </div>
+                        <small class="text-muted" id="stat-promedio-retraso">0m/día</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label">Horas Extra</div>
+                                <div class="stat-value text-info" id="stat-extra-total">0m</div>
+                            </div>
+                            <i class="bi bi-plus-circle fs-1 text-info opacity-50"></i>
+                        </div>
+                        <small class="text-muted" id="stat-promedio-extra">0m/día</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Avanzadas -->
+        <div class="row mb-4 animate-entry delay-3">
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card metric-card metric-total h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-clock text-primary fs-3 mb-2 d-block"></i>
+                        <h5 class="mb-0 text-white" id="metric-jornada-promedio">0h 0m</h5>
+                        <small class="text-muted" style="font-size: 0.7rem;">JORNADA PROM.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card metric-card metric-eficiencia h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-speedometer2 text-success fs-3 mb-2 d-block"></i>
+                        <h5 class="mb-0 text-white" id="metric-eficiencia">0%</h5>
+                        <small class="text-muted" style="font-size: 0.7rem;">EFICIENCIA</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card metric-card metric-consistencia h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-graph-up text-white fs-3 mb-2 d-block" style="opacity: 0.7;"></i>
+                        <h5 class="mb-0 text-white" id="metric-consistencia">0%</h5>
+                        <small class="text-muted" style="font-size: 0.7rem;">CONSISTENCIA</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card metric-card border-info-glass h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-activity text-info fs-3 mb-2 d-block"></i>
+                        <h5 id="metric-tendencia" class="mb-0 tendencia-estable">Estable</h5>
+                        <small class="text-muted" style="font-size: 0.7rem;">TENDENCIA</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos y Tablas -->
+        <div class="row animate-entry delay-4">
+            <!-- Columna Izquierda - Gráficos -->
+            <div class="col-lg-8 mb-4">
+                <!-- Tendencias Semanales -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white"><i class="bi bi-bar-chart-line text-primary me-2"></i>Tendencias Semanales</h6>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary active" onclick="EstadisticasPersonales.cambiarMetricaGrafico('horas')">Horas</button>
+                            <button class="btn btn-outline-primary" onclick="EstadisticasPersonales.cambiarMetricaGrafico('retraso')">Retraso</button>
+                            <button class="btn btn-outline-primary" onclick="EstadisticasPersonales.cambiarMetricaGrafico('extra')">Extra</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="grafico-container">
+                            <canvas id="grafico-tendencias" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <!-- Progreso Diario -->
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0 text-white"><i class="bi bi-calendar-week text-success me-2"></i>Progreso Diario</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="grafico-container">
+                                    <canvas id="grafico-progreso" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <!-- Distribución -->
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0 text-white"><i class="bi bi-pie-chart text-warning me-2"></i>Distribución</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="grafico-container">
+                                    <canvas id="grafico-distribucion" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha - Detalle Diario (CORREGIDO) -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white">
+                            <i class="bi bi-calendar-day text-info me-2"></i>Detalle Diario
+                            <span class="badge bg-secondary bg-opacity-25 ms-1" id="contador-dias">0</span>
+                        </h6>
+                        <span class="text-muted small" id="timestamp-estadisticas"></span>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- FIX: Contenedor con altura fija para scrolling correcto -->
+                        <div class="table-responsive custom-scroll" style="height: 600px; overflow-y: auto;">
+                            <table class="table table-glass table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35%;">Fecha</th>
+                                        <th style="width: 25%;">Horas</th>
+                                        <th style="width: 40%;">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-detalle-diario">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-5">
+                                            <div class="spinner-border spinner-border-sm me-2 text-primary"></div>
+                                            Cargando...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // MÓDULO ESTADÍSTICAS PERSONALES - Lógica Refinada
+        window.EstadisticasPersonales = (function () {
+            'use strict';
+
+            const state = {
+                datos: null,
+                graficos: {},
+                metricaGraficoActual: 'horas',
+                intervalos: [],
+                pasosCarga: ["Iniciando...", "Filtros...", "Cargando...", "Métricas...", "Gráficos...", "Detalle...", "Listo!"],
+                pasoActual: 0
+            };
+
+            const STORAGE_KEY = 'fiExpress_estadisticas_data';
+
+            // --- PANTALLA CARGA (CORREGIDA: Unidireccional) ---
+            function actualizarProgresoCarga(paso, msg = null) {
+                const bar = document.getElementById('loading-progress-bar');
+                const txt = document.getElementById('loading-steps');
+                const prog = ((paso + 1) / state.pasosCarga.length) * 100;
+                if (bar) bar.style.width = `${prog}%`;
+                if (txt) txt.textContent = msg || state.pasosCarga[paso];
+                state.pasoActual = paso;
+            }
+
+            function mostrarPantallaCarga() {
+                // Solo mostrar si está oculta para evitar parpadeos
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay.classList.contains('hidden')) {
+                    overlay.classList.remove('hidden');
+                    document.getElementById('estadisticas-personales-container').classList.remove('content-visible');
+                    document.getElementById('estadisticas-personales-container').classList.add('content-hidden');
+                    actualizarProgresoCarga(0);
+                }
+            }
+
+            function ocultarPantallaCarga() {
+                const overlay = document.getElementById('loading-overlay');
+                const content = document.getElementById('estadisticas-personales-container');
+
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Listo!");
+
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    content.classList.remove('content-hidden');
+                    content.classList.add('content-visible');
+                }, 500);
+            }
+
+            // --- UI HELPERS ---
+            function toggleBotones(loading) {
+                const btnRefresh = document.getElementById('btn-refresh');
+                const btnAplicar = document.getElementById('btn-aplicar');
+
+                if (btnRefresh) btnRefresh.disabled = loading;
+                if (btnAplicar) {
+                    btnAplicar.disabled = loading;
+                    btnAplicar.innerHTML = loading ?
+                        '<span class="spinner-border spinner-border-sm me-1"></span> Cargando...' :
+                        '<i class="bi bi-filter me-1"></i> Aplicar';
+                }
+            }
+
+            // --- STORAGE ---
+            function guardarDatosEnStorage(datos) {
+                try {
+                    const obj = {
+                        ...datos, timestamp: Date.now(),
+                        filtros: {
+                            inicio: document.getElementById('filtro-inicio').value,
+                            fin: document.getElementById('filtro-fin').value
+                        }
+                    };
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+                } catch (e) { }
+            }
+
+            function cargarDatosDesdeStorage() {
+                try {
+                    const raw = sessionStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    const data = JSON.parse(raw);
+
+                    const i = document.getElementById('filtro-inicio').value;
+                    const f = document.getElementById('filtro-fin').value;
+
+                    // 5 minutos de caché y mismos filtros
+                    if (Date.now() - data.timestamp > 300000 ||
+                        (data.filtros && (data.filtros.inicio !== i || data.filtros.fin !== f))) {
+                        sessionStorage.removeItem(STORAGE_KEY); return null;
+                    }
+                    return data;
+                } catch (e) { return null; }
+            }
+
+            // --- API ---
+            async function apiCall(url, options = {}) {
+                try {
+                    const res = await fetch(url, { credentials: 'include', headers: { 'Content-Type': 'application/json', ...options.headers }, ...options });
+                    if (!res.ok) throw new Error(`Error ${res.status}`);
+                    return await res.json();
+                } catch (e) {
+                    console.error('API Error:', e);
+                    mostrarNotificacion(`Error: ${e.message}`, 'danger');
+                    return null;
+                }
+            }
+
+            function inicializarFechas() {
+                const hoy = new Date();
+                const hace30 = new Date();
+                hace30.setDate(hoy.getDate() - 30);
+                document.getElementById('filtro-inicio').value = hace30.toISOString().split('T')[0];
+                document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
+            }
+
+            // --- CARGAR DATOS ---
+            async function cargarEstadisticas(forceRefresh = false) {
+                const ini = document.getElementById('filtro-inicio').value;
+                const fin = document.getElementById('filtro-fin').value;
+
+                if (!ini || !fin) { mostrarNotificacion('Fechas inválidas', 'warning'); return; }
+
+                toggleBotones(true);
+
+                // 1. Intentar caché si no es forzado
+                if (!forceRefresh) {
+                    const cached = cargarDatosDesdeStorage();
+                    if (cached) {
+                        state.datos = cached;
+                        actualizarVistaCompleta();
+                        // Asegurar que el overlay se oculte si estaba visible (arranque)
+                        setTimeout(ocultarPantallaCarga, 300);
+                        toggleBotones(false);
+                        return;
+                    }
+                }
+
+                // 2. Carga desde API (solo aquí mostramos pantalla completa si es inicial)
+                // Si es refresh por botón, usamos el estado de carga del botón, no overlay completo
+                if (document.getElementById('loading-overlay').classList.contains('hidden') && !forceRefresh) {
+                    // Si ya cargó una vez, no bloquear toda la pantalla, solo botones
+                } else {
+                    mostrarPantallaCarga();
+                }
+
+                actualizarProgresoCarga(1, "Consultando...");
+
+                const datos = await apiCall(`/api/estadisticas/mis-estadisticas-detalladas?inicio=${ini}&fin=${fin}`);
+
+                if (!datos) {
+                    ocultarPantallaCarga();
+                    toggleBotones(false);
+                    return;
+                }
+
+                state.datos = datos;
+                guardarDatosEnStorage(datos);
+
+                actualizarProgresoCarga(3, "Procesando...");
+                actualizarVistaCompleta();
+
+                if (forceRefresh) mostrarNotificacion('Estadísticas actualizadas', 'success');
+
+                ocultarPantallaCarga();
+                toggleBotones(false);
+            }
+
+            function actualizarVistaCompleta() {
+                actualizarResumenGeneral();
+                actualizarMetricasAvanzadas();
+                actualizarDetalleDiario();
+                actualizarGraficos();
+                actualizarTimestamp();
+            }
+
+            function actualizarResumenGeneral() {
+                const r = state.datos.resumen;
+                if (!r) return;
+                document.getElementById('stat-asistencia-total').textContent = r.porcentajeAsistencia + '%';
+                document.getElementById('barra-asistencia').style.width = r.porcentajeAsistencia + '%';
+                document.getElementById('stat-dias-asistencia').textContent = `${r.diasTrabajados}/${r.totalDias} días`;
+
+                document.getElementById('stat-horas-totales').textContent = r.totalHorasTrabajadas + 'h';
+                const prom = r.totalDias > 0 ? (r.totalHorasTrabajadas / r.totalDias).toFixed(1) : 0;
+                document.getElementById('stat-promedio-diario').textContent = prom + 'h/día';
+
+                document.getElementById('stat-retraso-total').textContent = r.totalMinutosRetraso + 'm';
+                const promR = r.totalDias > 0 ? (r.totalMinutosRetraso / r.totalDias).toFixed(0) : 0;
+                document.getElementById('stat-promedio-retraso').textContent = promR + 'm/día';
+
+                document.getElementById('stat-extra-total').textContent = r.totalMinutosExtra + 'm';
+                const promE = r.totalDias > 0 ? (r.totalMinutosExtra / r.totalDias).toFixed(0) : 0;
+                document.getElementById('stat-promedio-extra').textContent = promE + 'm/día';
+            }
+
+            function actualizarMetricasAvanzadas() {
+                const m = state.datos.metricasAvanzadas;
+                if (!m) return;
+                document.getElementById('metric-jornada-promedio').textContent = m.jornadaPromedio;
+                document.getElementById('metric-eficiencia').textContent = m.eficiencia + '%';
+                document.getElementById('metric-consistencia').textContent = m.consistencia + '%';
+                const t = document.getElementById('metric-tendencia');
+                t.textContent = m.tendencia;
+                t.className = `mb-0 tendencia-${m.tendencia}`;
+            }
+
+            function actualizarDetalleDiario() {
+                const tbody = document.getElementById('tabla-detalle-diario');
+                const d = state.datos.detallePorDia;
+                document.getElementById('contador-dias').textContent = d ? d.length : 0;
+
+                if (!d || d.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Sin datos para mostrar</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = d.map(dia => {
+                    let cls = 'bg-secondary';
+                    let icon = 'bi-dash-circle';
+                    switch (dia.estado_dia) {
+                        case 'NORMAL': cls = 'bg-success'; icon = 'bi-check-circle'; break;
+                        case 'RETRASO_LEVE': cls = 'bg-warning text-dark'; icon = 'bi-clock-history'; break;
+                        case 'RETRASO_GRAVE': cls = 'bg-danger'; icon = 'bi-exclamation-triangle'; break;
+                        case 'EXTRA_NORMAL': cls = 'bg-info text-dark'; icon = 'bi-plus-circle'; break;
+                        case 'EXTRA_ALTO': cls = 'bg-primary'; icon = 'bi-lightning-charge'; break;
+                    }
+                    return `
+                            <tr>
+                                <td class="align-middle">
+                                    <strong>${new Date(dia.fecha).toLocaleDateString()}</strong>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="fw-bold text-white">${dia.horasTrabajadas}</span>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge ${cls}"><i class="bi ${icon} me-1"></i>${dia.estado_dia}</span>
+                                </td>
+                            </tr>
+                        `;
+                }).join('');
+            }
+
+            function actualizarGraficos() {
+                const g = state.datos.datosGraficos;
+                if (!g) return;
+                crearGraficoTendencias(g.tendenciasSemanales);
+                crearGraficoProgreso(g.progresoDiario);
+                crearGraficoDistribucion(g.distribucionEstados);
+            }
+
+            function crearGraficoTendencias(data) {
+                const ctx = document.getElementById('grafico-tendencias').getContext('2d');
+                if (state.graficos.tendencias) state.graficos.tendencias.destroy();
+
+                state.graficos.tendencias = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(t => t.semana),
+                        datasets: [{
+                            label: state.metricaGraficoActual,
+                            data: data.map(t => t[state.metricaGraficoActual]),
+                            borderColor: '#0d6efd', backgroundColor: 'rgba(13, 110, 253, 0.1)', fill: true, tension: 0.4
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false } } }
+                });
+            }
+
+            function crearGraficoProgreso(data) {
+                const ctx = document.getElementById('grafico-progreso').getContext('2d');
+                if (state.graficos.progreso) state.graficos.progreso.destroy();
+
+                state.graficos.progreso = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(p => p.fecha),
+                        datasets: [{
+                            label: 'Horas',
+                            data: data.map(p => p.horas),
+                            backgroundColor: data.map(p => p.estado === 'NORMAL' ? '#198754' : p.estado.includes('RETRASO') ? '#ffc107' : '#0dcaf0')
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false } } }
+                });
+            }
+
+            function crearGraficoDistribucion(data) {
+                const ctx = document.getElementById('grafico-distribucion').getContext('2d');
+                if (state.graficos.distribucion) state.graficos.distribucion.destroy();
+
+                state.graficos.distribucion = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.map(d => d.estado),
+                        datasets: [{
+                            data: data.map(d => d.cantidad),
+                            backgroundColor: ['#198754', '#ffc107', '#dc3545', '#0dcaf0', '#0d6efd', '#6c757d']
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+
+            function actualizarTimestamp() {
+                document.getElementById('timestamp-estadisticas').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
+            }
+
+            function cambiarMetricaGrafico(m) {
+                state.metricaGraficoActual = m;
+                document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+                event.target.classList.add('active');
+                if (state.datos) crearGraficoTendencias(state.datos.datosGraficos.tendenciasSemanales);
+            }
+
+            async function recargarEstadisticas() { await cargarEstadisticas(true); }
+
+            function mostrarNotificacion(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${msg}`;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            function exportarDatos() { mostrarNotificacion('Función de exportación en desarrollo', 'info'); }
+
+            function configurarAutoRefresh() {
+                state.intervalos.push(setInterval(() => { if (!document.hidden) cargarEstadisticas(false); }, 300000));
+            }
+
+            async function init() {
+                if (!document.getElementById('estadisticas-personales-container')) return;
+
+                inicializarFechas();
+                // Cargamos datos (usará caché si existe, si no, mostrará carga)
+                await cargarEstadisticas(false);
+
+                configurarAutoRefresh();
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, cargarEstadisticas, recargarEstadisticas, cambiarMetricaGrafico, exportarDatos };
+        })();
+    </script>
+</body>
+</html>

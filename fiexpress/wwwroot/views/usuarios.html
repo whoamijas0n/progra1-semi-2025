@@ -1,0 +1,728 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark - Versión Estable) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a; /* Fondo de respaldo */
+        }
+
+        /* === ANIMACIONES === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        /* Retrasos escalonados para las cards */
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* === CARDS Y PANELES === */
+        .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-header, .modal-header, .modal-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-bottom: 1px solid var(--border-light) !important;
+            border-top: 1px solid var(--border-light) !important;
+            color: white !important;
+        }
+
+        /* === ESTADÍSTICAS (Estilo Dashboard Solido) === */
+        .stat-card {
+            /* Fondo sólido oscuro consistente */
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes laterales de color (Igual al Dashboard) */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === CARD DE USUARIO (Hover Effect) === */
+        .card-user:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border-color: var(--accent-color) !important;
+        }
+
+        /* === INPUTS Y ELEMENTOS === */
+        .form-control, .form-select, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+        }
+
+            .form-control:focus, .form-select:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            /* Fix para opciones del select */
+            .form-select option {
+                background-color: #0f172a;
+                color: white;
+                padding: 10px;
+            }
+
+        /* Avatar */
+        .avatar {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        /* Modales */
+        .modal-content {
+            background: rgba(16, 26, 43, 0.98) !important;
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%);
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        /* Badges estilo glass */
+        .badge-glass {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: normal;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-2" id="usuarios-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12">
+                <h2 class="mb-1 text-white">
+                    <i class="bi bi-person-badge me-2" style="color: var(--accent-color);"></i>Gestión de Usuarios
+                </h2>
+                <p class="mb-0 text-muted">Administra los usuarios del sistema y sus permisos de acceso.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas (Estilo Dashboard) -->
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Total Usuarios</div>
+                                <div class="stat-value" id="stat-total">0</div>
+                            </div>
+                            <i class="bi bi-people fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Activos</div>
+                                <div class="stat-value text-success" id="stat-activos">0</div>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Inactivos</div>
+                                <div class="stat-value text-warning" id="stat-inactivos">0</div>
+                            </div>
+                            <i class="bi bi-pause-circle fs-1 text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Sin Usuario</div>
+                                <div class="stat-value text-info" id="stat-sin-usuario">0</div>
+                            </div>
+                            <i class="bi bi-person-plus fs-1 text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de búsqueda y acciones -->
+        <div class="card mb-4 animate-entry delay-2">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="input-buscar" placeholder="Buscar por usuario, nombre o email...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="select-estado">
+                            <option value="">Estado: Todos</option>
+                            <option value="activo">Activos</option>
+                            <option value="inactivo">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100 fw-bold shadow-sm" onclick="UsuariosModule.abrirModalNuevo()">
+                            <i class="bi bi-plus-lg me-1"></i> Nuevo Usuario
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de usuarios -->
+        <div class="row g-3 animate-entry delay-3" id="lista-usuarios">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="text-muted mt-2">Cargando usuarios...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Usuario -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="bi bi-person-plus me-2 text-primary"></i>Nuevo Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formUsuario">
+                        <input type="hidden" id="usuarioId">
+
+                        <!-- Selección de Empleado -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-warning small text-uppercase ls-1">1. Seleccionar Empleado</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="buscarEmpleado" placeholder="Filtrar lista...">
+                            </div>
+                            <select class="form-select" id="selEmpleado" required size="5" style="min-height: 120px;">
+                                <option value="">Seleccione un empleado...</option>
+                            </select>
+                            <div class="mt-2 d-flex justify-content-between small text-muted">
+                                <span><i class="bi bi-info-circle me-1"></i>Empleados activos sin usuario</span>
+                                <span><span id="contadorEmpleados" class="text-info fw-bold">0</span> disponibles</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Empleado -->
+                        <div class="card bg-dark bg-opacity-25 border-secondary border-opacity-25 mb-4" id="info-empleado" style="display: none;">
+                            <div class="card-body py-3">
+                                <div class="row g-2 small">
+                                    <div class="col-md-6"><span class="text-muted">Nombre:</span> <span class="text-white fw-bold ms-1" id="info-nombre">-</span></div>
+                                    <div class="col-md-6"><span class="text-muted">Email:</span> <span class="text-white ms-1" id="info-email">-</span></div>
+                                    <div class="col-md-6"><span class="text-muted">Depto:</span> <span class="text-white ms-1" id="info-departamento">-</span></div>
+                                    <div class="col-md-6"><span class="text-muted">Rol:</span> <span class="text-white ms-1" id="info-rol">-</span></div>
+                                    <div class="col-12"><span class="text-muted">Código:</span> <span class="text-white font-monospace ms-1" id="info-codigo">-</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Credenciales -->
+                        <div class="row mb-3">
+                            <label class="form-label fw-bold text-warning small text-uppercase ls-1 mb-2">2. Credenciales</label>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Usuario *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="txtUsername" required placeholder="Ej: juan.perez" minlength="3" maxlength="50">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contraseña *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                    <input type="password" class="form-control" id="txtPassword" required minlength="6" maxlength="35" placeholder="******">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnTogglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div>
+                            <div class="form-check form-switch p-2 border border-secondary border-opacity-25 rounded bg-dark bg-opacity-25">
+                                <input class="form-check-input ms-0 me-2" type="checkbox" id="chkActivo" checked>
+                                <label class="form-check-label" for="chkActivo">Usuario Activo</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="UsuariosModule.guardarUsuario()">
+                        <i class="bi bi-check-lg me-2"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Password -->
+    <div class="modal fade" id="modalPassword" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="bi bi-shield-lock me-2 text-warning"></i>Cambiar Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formPassword">
+                        <input type="hidden" id="passwordUsuarioId">
+                        <div class="mb-3">
+                            <label class="form-label">Nueva Contraseña *</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="txtNewPassword" required minlength="6" maxlength="35">
+                                <button class="btn btn-outline-secondary" type="button" id="btnToggleNewPassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Mínimo 6 caracteres</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark fw-bold px-4" onclick="UsuariosModule.cambiarPassword()">
+                        <i class="bi bi-check-lg me-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO USUARIOS - Funcionalidad Original Restaurada
+        window.UsuariosModule = (function () {
+            'use strict';
+
+            const state = {
+                usuarios: [],
+                empleadosSinUsuario: [],
+                modalInstance: null,
+                modalPasswordInstance: null
+            };
+
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, { credentials: 'include', ...options });
+                    if (!response.ok) throw new Error(`Error ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Error:', error);
+                    mostrarAlerta(error.message, 'danger');
+                    throw error;
+                }
+            }
+
+            async function init() {
+                if (!document.getElementById('usuarios-container')) return;
+
+                // Listeners Toggles
+                document.querySelectorAll('[id^=btnToggle]').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const inp = this.previousElementSibling;
+                        const icon = this.querySelector('i');
+                        inp.type = inp.type === 'password' ? 'text' : 'password';
+                        icon.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+                    });
+                });
+
+                await Promise.all([cargarUsuarios(), cargarEmpleadosSinUsuario()]);
+
+                // Listeners Filtros
+                const search = document.getElementById('input-buscar');
+                const filter = document.getElementById('select-estado');
+                const runFilter = () => {
+                    const txt = search.value.toLowerCase();
+                    const st = filter.value;
+                    const list = state.usuarios.filter(u => {
+                        const txtMatch = u.username.toLowerCase().includes(txt) || (u.empleado?.nombre || '').toLowerCase().includes(txt);
+                        const stMatch = st === '' ? true : (st === 'activo' ? u.activo : !u.activo);
+                        return txtMatch && stMatch;
+                    });
+                    renderizarUsuarios(list);
+                };
+                if (search) search.addEventListener('input', runFilter);
+                if (filter) filter.addEventListener('change', runFilter);
+            }
+
+            async function cargarUsuarios() {
+                try {
+                    state.usuarios = await apiCall('/api/usuarios?incluirInactivos=true');
+                    actualizarEstadisticas();
+                    renderizarUsuarios();
+                } catch (e) {
+                    document.getElementById('lista-usuarios').innerHTML = '<div class="col-12 text-danger text-center">Error al cargar usuarios</div>';
+                }
+            }
+
+            async function cargarEmpleadosSinUsuario() {
+                try {
+                    state.empleadosSinUsuario = await apiCall('/api/usuarios/empleados-sin-usuario');
+                } catch (e) { state.empleadosSinUsuario = []; }
+            }
+
+            function actualizarEstadisticas() {
+                const total = state.usuarios.length;
+                const activos = state.usuarios.filter(u => u.activo).length;
+                const inactivos = total - activos;
+                const sin = state.empleadosSinUsuario.length;
+
+                const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setText('stat-total', total);
+                setText('stat-activos', activos);
+                setText('stat-inactivos', inactivos);
+                setText('stat-sin-usuario', sin);
+            }
+
+            function renderizarUsuarios(lista = state.usuarios) {
+                const container = document.getElementById('lista-usuarios');
+                if (lista.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-5">No se encontraron usuarios</div>`;
+                    return;
+                }
+
+                container.innerHTML = lista.map(user => `
+                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                <div class="card card-user h-100 ${!user.activo ? 'opacity-50' : ''}">
+                                    <div class="card-body text-center d-flex flex-column align-items-center position-relative">
+
+                                        <div class="position-relative mb-3 mt-2">
+                                            <img src="${user.empleado?.foto_url || ''}"
+                                                 class="avatar rounded-circle"
+                                                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff'">
+                                            <span class="position-absolute bottom-0 end-0 p-2 bg-${user.activo ? 'success' : 'danger'} border border-dark rounded-circle"></span>
+                                        </div>
+
+                                        <h5 class="card-title mb-0 fw-bold text-white text-truncate" style="max-width: 100%;">${user.username}</h5>
+                                        <div class="small text-muted mb-3 text-truncate" style="max-width: 100%;">${user.empleado?.nombre || 'Sin Asignar'}</div>
+
+                                        <div class="d-flex gap-2 justify-content-center mb-4 w-100 flex-wrap">
+                                            <span class="badge badge-glass text-light">
+                                                <i class="bi bi-building me-1 text-primary"></i>${user.empleado?.departamento || 'N/A'}
+                                            </span>
+                                            <span class="badge badge-glass text-light">
+                                                <i class="bi bi-shield me-1 text-warning"></i>${user.empleado?.rol || 'N/A'}
+                                            </span>
+                                        </div>
+
+                                        <div class="mt-auto w-100 pt-3 border-top border-secondary border-opacity-25">
+                                            <div class="btn-group w-100 shadow-sm">
+                                                <button class="btn btn-sm btn-outline-light border-secondary border-opacity-25" onclick="UsuariosModule.editarUsuario(${user.idUsuario})" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-light border-secondary border-opacity-25" onclick="UsuariosModule.cambiarPasswordModal(${user.idUsuario})" title="Contraseña">
+                                                    <i class="bi bi-key text-warning"></i>
+                                                </button>
+                                                ${user.activo ?
+                        `<button class="btn btn-sm btn-outline-light border-secondary border-opacity-25" onclick="UsuariosModule.eliminarUsuario(${user.idUsuario}, '${user.username}')" title="Desactivar">
+                                                    <i class="bi bi-power text-danger"></i>
+                                                </button>` :
+                        `<button class="btn btn-sm btn-outline-light border-secondary border-opacity-25" onclick="UsuariosModule.activarUsuario(${user.idUsuario}, '${user.username}')" title="Activar">
+                                                    <i class="bi bi-check-lg text-success"></i>
+                                                </button>`
+                    }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+            }
+
+            async function abrirModalNuevo() {
+                await cargarEmpleadosSinUsuario();
+                document.getElementById('formUsuario').reset();
+                document.getElementById('usuarioId').value = '';
+                document.getElementById('modalTitle').innerHTML = '<i class="bi bi-person-plus me-2 text-primary"></i>Nuevo Usuario';
+                document.getElementById('chkActivo').checked = true;
+                document.getElementById('info-empleado').style.display = 'none';
+
+                const sel = document.getElementById('selEmpleado');
+                sel.disabled = false;
+                document.getElementById('buscarEmpleado').disabled = false;
+
+                llenarSelect(sel);
+                configurarBusqueda();
+
+                // Listener Info
+                sel.onchange = function () {
+                    const opt = this.options[this.selectedIndex];
+                    if (opt.value) {
+                        document.getElementById('info-nombre').textContent = opt.dataset.nombre;
+                        document.getElementById('info-email').textContent = opt.dataset.email;
+                        document.getElementById('info-departamento').textContent = opt.dataset.departamento;
+                        document.getElementById('info-rol').textContent = opt.dataset.rol;
+                        document.getElementById('info-codigo').textContent = opt.dataset.codigo;
+                        document.getElementById('info-empleado').style.display = 'block';
+                        // Auto username
+                        if (opt.dataset.email) document.getElementById('txtUsername').value = opt.dataset.email.split('@')[0];
+                        document.getElementById('buscarEmpleado').value = opt.dataset.nombre;
+                    } else {
+                        document.getElementById('info-empleado').style.display = 'none';
+                        document.getElementById('buscarEmpleado').value = '';
+                    }
+                };
+
+                if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalUsuario'));
+                state.modalInstance.show();
+                setTimeout(() => document.getElementById('buscarEmpleado').focus(), 500);
+            }
+
+            async function editarUsuario(id) {
+                try {
+                    const user = await apiCall(`/api/usuarios/${id}`);
+                    document.getElementById('usuarioId').value = user.idUsuario;
+                    document.getElementById('txtUsername').value = user.username;
+                    document.getElementById('txtPassword').value = '';
+                    document.getElementById('chkActivo').checked = user.activo;
+
+                    // Info
+                    document.getElementById('info-nombre').textContent = user.empleado.nombre;
+                    document.getElementById('info-email').textContent = user.empleado.email;
+                    document.getElementById('info-departamento').textContent = user.empleado.departamento;
+                    document.getElementById('info-rol').textContent = user.empleado.rol;
+                    document.getElementById('info-codigo').textContent = user.empleado.codigo_empleado;
+                    document.getElementById('info-empleado').style.display = 'block';
+
+                    const sel = document.getElementById('selEmpleado');
+                    sel.innerHTML = `<option value="${user.empleado.idEmpleado}" selected>${user.empleado.codigo_empleado} - ${user.empleado.nombre}</option>`;
+                    sel.disabled = true;
+                    document.getElementById('buscarEmpleado').disabled = true;
+
+                    document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil me-2 text-warning"></i>Editar Usuario';
+                    if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalUsuario'));
+                    state.modalInstance.show();
+                } catch (e) { }
+            }
+
+            function llenarSelect(sel) {
+                sel.innerHTML = '<option value="">Seleccione...</option>';
+                const counter = document.getElementById('contadorEmpleados');
+                let count = 0;
+                state.empleadosSinUsuario.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e.idEmpleado;
+                    opt.textContent = `${e.codigo_empleado} - ${e.nombre}`;
+                    opt.dataset.nombre = e.nombre;
+                    opt.dataset.email = e.email;
+                    opt.dataset.departamento = e.departamento;
+                    opt.dataset.rol = e.rol;
+                    opt.dataset.codigo = e.codigo_empleado;
+                    sel.appendChild(opt);
+                    count++;
+                });
+                if (counter) counter.textContent = count;
+            }
+
+            function configurarBusqueda() {
+                const inp = document.getElementById('buscarEmpleado');
+                const sel = document.getElementById('selEmpleado');
+                const counter = document.getElementById('contadorEmpleados');
+                inp.oninput = function () {
+                    const val = this.value.toLowerCase();
+                    let c = 0;
+                    Array.from(sel.options).forEach(opt => {
+                        if (!opt.value) return;
+                        const match = opt.textContent.toLowerCase().includes(val);
+                        opt.style.display = match ? '' : 'none';
+                        if (match) c++;
+                    });
+                    if (counter) counter.textContent = c;
+                };
+                inp.value = '';
+            }
+
+            async function guardarUsuario() {
+                const form = document.getElementById('formUsuario');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                const id = document.getElementById('usuarioId').value;
+                const data = {
+                    IdEmpleado: parseInt(document.getElementById('selEmpleado').value),
+                    Username: document.getElementById('txtUsername').value.trim(),
+                    Password: document.getElementById('txtPassword').value
+                };
+
+                try {
+                    if (id) {
+                        await apiCall(`/api/usuarios/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                        // Manejo Activo/Inactivo separado
+                        const chk = document.getElementById('chkActivo').checked;
+                        const original = state.usuarios.find(u => u.idUsuario == id);
+                        if (original && original.activo !== chk) {
+                            await apiCall(`/api/usuarios/${id}/${chk ? 'activar' : ''}`, { method: chk ? 'PUT' : 'DELETE' });
+                        }
+                        mostrarAlerta('Usuario actualizado', 'success');
+                    } else {
+                        await apiCall('/api/usuarios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                        mostrarAlerta('Usuario creado', 'success');
+                    }
+                    state.modalInstance.hide();
+                    await Promise.all([cargarUsuarios(), cargarEmpleadosSinUsuario()]);
+                } catch (e) { }
+            }
+
+            function cambiarPasswordModal(id) {
+                document.getElementById('passwordUsuarioId').value = id;
+                document.getElementById('txtNewPassword').value = '';
+                if (!state.modalPasswordInstance) state.modalPasswordInstance = new bootstrap.Modal(document.getElementById('modalPassword'));
+                state.modalPasswordInstance.show();
+            }
+
+            async function cambiarPassword() {
+                const id = document.getElementById('passwordUsuarioId').value;
+                const pass = document.getElementById('txtNewPassword').value;
+                if (pass.length < 6) { mostrarAlerta('Mínimo 6 caracteres', 'warning'); return; }
+                try {
+                    await apiCall(`/api/usuarios/${id}/cambiar-password`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevaPassword: pass })
+                    });
+                    mostrarAlerta('Contraseña actualizada', 'success');
+                    state.modalPasswordInstance.hide();
+                } catch (e) { }
+            }
+
+            async function eliminarUsuario(id, name) {
+                if (!confirm(`¿Desactivar a ${name}?`)) return;
+                try {
+                    await apiCall(`/api/usuarios/${id}`, { method: 'DELETE' });
+                    mostrarAlerta('Usuario desactivado', 'success');
+                    await Promise.all([cargarUsuarios(), cargarEmpleadosSinUsuario()]);
+                } catch (e) { }
+            }
+
+            async function activarUsuario(id, name) {
+                try {
+                    await apiCall(`/api/usuarios/${id}/activar`, { method: 'PUT' });
+                    mostrarAlerta('Usuario activado', 'success');
+                    await Promise.all([cargarUsuarios(), cargarEmpleadosSinUsuario()]);
+                } catch (e) { }
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.textContent = msg;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, abrirModalNuevo, editarUsuario, guardarUsuario, cambiarPasswordModal, cambiarPassword, eliminarUsuario, activarUsuario };
+        })();
+    </script>
+</body>
+</html>

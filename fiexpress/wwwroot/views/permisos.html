@@ -1,0 +1,738 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Permisos - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark Consistente) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-header, .modal-header, .modal-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+        }
+
+        /* Stats Cards (Estilo Sólido Dashboard) */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes Estadísticas */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-danger-glass {
+            border-left: 4px solid #e74c3c !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs y Selects Oscuros */
+        .form-control, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        /* Fix Select */
+        .form-select {
+            background-color: rgba(16, 26, 43, 0.95) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white !important;
+                padding: 10px;
+            }
+
+        /* Card Permiso */
+        .card-permiso {
+            transition: transform 0.3s ease;
+            /* Fondo solido/glass simple como pidió el usuario, sin degradados raros */
+            background: var(--glass-bg) !important;
+        }
+
+            .card-permiso:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+
+        /* Bordes de estado para las cards */
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-success-glass-left {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-danger-glass-left {
+            border-left: 4px solid #e74c3c !important;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Pestañas (Tabs) Personalizadas */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-light);
+        }
+
+            .nav-tabs .nav-link {
+                color: var(--text-muted);
+                border: 1px solid transparent;
+                border-radius: 6px 6px 0 0;
+                transition: all 0.3s ease;
+            }
+
+                .nav-tabs .nav-link:hover {
+                    color: white;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-color: var(--border-light);
+                }
+
+                .nav-tabs .nav-link.active {
+                    color: white !important;
+                    background: rgba(52, 152, 219, 0.15) !important;
+                    border-color: var(--border-light) var(--border-light) transparent !important;
+                    font-weight: 600;
+                }
+
+        /* Modales */
+        .modal-content {
+            background: rgba(16, 26, 43, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%);
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        /* Badges */
+        .badge-glass {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Gestión de Permisos -->
+    <div class="container-fluid py-2" id="permisos-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12">
+                <h2 class="mb-1 text-white">
+                    <i class="bi bi-file-text me-2" style="color: var(--accent-color);"></i>Gestión de Permisos
+                </h2>
+                <p class="mb-0 text-muted">Revisa y gestiona las solicitudes de permisos de los empleados.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Pendientes</div>
+                                <div class="stat-value" id="stat-pendientes">0</div>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Aprobados</div>
+                                <div class="stat-value text-success" id="stat-aprobados">0</div>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-danger-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Rechazados</div>
+                                <div class="stat-value text-danger" id="stat-rechazados">0</div>
+                            </div>
+                            <i class="bi bi-x-circle fs-1 text-danger opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Total Historial</div>
+                                <div class="stat-value text-info" id="stat-historial">0</div>
+                            </div>
+                            <i class="bi bi-archive fs-1 text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros Mejorados -->
+        <div class="card mb-4 animate-entry delay-2">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Buscar Empleado</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="filtro-empleado" placeholder="Nombre, código...">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Tipo</label>
+                        <select class="form-select" id="filtro-tipo">
+                            <option value="">Todos</option>
+                            <option value="Ausencia">Ausencia</option>
+                            <option value="Vacaciones">Vacaciones</option>
+                            <option value="Enfermedad">Enfermedad</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Estado</label>
+                        <select class="form-select" id="filtro-estado">
+                            <option value="">Todos</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Aprobado">Aprobado</option>
+                            <option value="Rechazado">Rechazado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Desde</label>
+                        <input type="date" class="form-control" id="filtro-desde">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Hasta</label>
+                        <input type="date" class="form-control" id="filtro-hasta">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                        <button class="btn btn-outline-light" onclick="PermisosModule.limpiarFiltros()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpiar
+                        </button>
+                        <button class="btn btn-primary" onclick="PermisosModule.aplicarFiltros()">
+                            <i class="bi bi-funnel me-1"></i>Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestañas -->
+        <ul class="nav nav-tabs mb-4 animate-entry delay-3" id="permisosTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pendientes-tab" data-bs-toggle="tab" data-bs-target="#pendientes" type="button" role="tab">
+                    <i class="bi bi-clock-history me-2"></i>Pendientes
+                    <span class="badge bg-warning text-dark ms-2" id="badge-pendientes">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial" type="button" role="tab">
+                    <i class="bi bi-archive me-2"></i>Historial
+                    <span class="badge bg-secondary ms-2" id="badge-historial">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content animate-entry delay-3">
+            <!-- Pestaña Pendientes -->
+            <div class="tab-pane fade show active" id="pendientes" role="tabpanel">
+                <div class="row g-3" id="lista-pendientes">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-muted mt-2">Cargando permisos pendientes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Historial -->
+            <div class="tab-pane fade" id="historial" role="tabpanel">
+                <div class="row g-3" id="lista-historial">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-muted mt-2">Cargando historial de permisos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Aprobar -->
+    <div class="modal fade" id="modalAprobar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success">
+                        <i class="bi bi-check-circle me-2"></i>Aprobar Permiso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-white">¿Estás seguro de aprobar esta solicitud?</p>
+                    <div class="card bg-success bg-opacity-10 border-success border-opacity-25 mb-3">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-success-emphasis fw-bold">Empleado:</span>
+                                <span class="text-white" id="info-empleado-aprobar">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-success-emphasis fw-bold">Período:</span>
+                                <span class="text-white" id="info-periodo-aprobar">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-success-emphasis fw-bold">Motivo:</span>
+                                <span class="text-white text-end" style="max-width: 60%;" id="info-motivo-aprobar">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="permiso-id-aprobar">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success px-4" onclick="PermisosModule.confirmarAprobar()">
+                        <i class="bi bi-check-lg me-2"></i>Aprobar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Rechazar -->
+    <div class="modal fade" id="modalRechazar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-x-circle me-2"></i>Rechazar Permiso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-white">¿Estás seguro de rechazar esta solicitud?</p>
+                    <div class="card bg-danger bg-opacity-10 border-danger border-opacity-25 mb-3">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-danger-emphasis fw-bold">Empleado:</span>
+                                <span class="text-white" id="info-empleado-rechazar">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-danger-emphasis fw-bold">Período:</span>
+                                <span class="text-white" id="info-periodo-rechazar">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-danger-emphasis fw-bold">Motivo:</span>
+                                <span class="text-white text-end" style="max-width: 60%;" id="info-motivo-rechazar">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="permiso-id-rechazar">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="PermisosModule.confirmarRechazar()">
+                        <i class="bi bi-x-lg me-2"></i>Rechazar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO PERMISOS - Lógica Preservada
+        window.PermisosModule = (function () {
+            'use strict';
+
+            const state = {
+                permisosPendientes: [],
+                permisosHistorial: [],
+                modalAprobarInstance: null,
+                modalRechazarInstance: null
+            };
+
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, { credentials: 'include', ...options });
+                    if (!response.ok) {
+                        const text = await response.text();
+                        console.error(`API Error ${response.status}:`, text);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
+                }
+            }
+
+            async function cargarPendientes() {
+                try {
+                    state.permisosPendientes = await apiCall('/api/permisos/pending');
+                    actualizarEstadisticas();
+                    renderizarPendientes(state.permisosPendientes);
+                } catch (error) {
+                    document.getElementById('lista-pendientes').innerHTML = `<div class="col-12 text-center text-danger">Error al cargar pendientes</div>`;
+                }
+            }
+
+            async function cargarHistorial() {
+                try {
+                    state.permisosHistorial = await apiCall('/api/permisos/historial');
+                    actualizarEstadisticas();
+                    renderizarHistorial(state.permisosHistorial);
+                } catch (error) {
+                    document.getElementById('lista-historial').innerHTML = `<div class="col-12 text-center text-danger">Error al cargar historial</div>`;
+                }
+            }
+
+            function actualizarEstadisticas() {
+                const pendientes = state.permisosPendientes.length;
+                const historial = state.permisosHistorial.length;
+                const aprobados = state.permisosHistorial.filter(p => p.estado === 'Aprobado').length;
+                const rechazados = state.permisosHistorial.filter(p => p.estado === 'Rechazado').length;
+
+                const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setTxt('stat-pendientes', pendientes);
+                setTxt('stat-aprobados', aprobados);
+                setTxt('stat-rechazados', rechazados);
+                setTxt('stat-historial', historial);
+                setTxt('badge-pendientes', pendientes);
+                setTxt('badge-historial', historial);
+            }
+
+            // --- RENDERIZADO ---
+            function renderizarPendientes(permisos) {
+                const container = document.getElementById('lista-pendientes');
+                if (permisos.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-5"><i class="bi bi-check-circle fs-1 d-block mb-3 opacity-50"></i><h5>No hay permisos pendientes</h5></div>`;
+                    return;
+                }
+
+                container.innerHTML = permisos.map(p => `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card card-permiso h-100 border-warning-glass">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="${p.empleado?.foto_url || ''}" class="avatar rounded-circle me-3"
+                                             onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.empleado?.nombre || 'User')}&background=random&color=fff'">
+                                        <div class="overflow-hidden flex-grow-1">
+                                            <h6 class="card-title mb-0 fw-bold text-white text-truncate">${p.empleado?.nombre || 'N/A'}</h6>
+                                            <small class="text-muted">${p.empleado?.departamento || 'N/A'}</small>
+                                        </div>
+                                        <span class="badge bg-warning text-dark badge-permiso ms-2"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <span class="badge badge-glass text-light border-secondary border-opacity-50 mb-2">${p.tipo || 'N/A'}</span>
+                                        <div class="p-2 rounded bg-black bg-opacity-25 small text-muted border border-secondary border-opacity-10" style="min-height: 50px;">
+                                            <i class="bi bi-chat-left-quote me-1"></i>${p.motivo || 'Sin motivo'}
+                                        </div>
+                                    </div>
+
+                                    <div class="small text-muted mb-3 border-top border-secondary border-opacity-25 pt-2 flex-grow-1">
+                                        <div class="d-flex justify-content-between mb-1"><span>Inicio:</span> <span class="text-white">${p.fecha_inicio}</span></div>
+                                        <div class="d-flex justify-content-between mb-1"><span>Fin:</span> <span class="text-white">${p.fecha_fin}</span></div>
+                                        <div class="d-flex justify-content-between"><span>Solicitado:</span> <span class="text-white">${new Date(p.fecha_solicitud).toLocaleDateString()}</span></div>
+                                    </div>
+
+                                    <div class="btn-group w-100 mt-auto shadow-sm">
+                                        <button class="btn btn-sm btn-success fw-bold" onclick="PermisosModule.abrirModalAprobar(${p.idPermiso}, '${p.empleado?.nombre}', '${p.fecha_inicio} - ${p.fecha_fin}', '${p.motivo}')">
+                                            <i class="bi bi-check-lg me-1"></i>Aprobar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger fw-bold" onclick="PermisosModule.abrirModalRechazar(${p.idPermiso}, '${p.empleado?.nombre}', '${p.fecha_inicio} - ${p.fecha_fin}', '${p.motivo}')">
+                                            <i class="bi bi-x-lg me-1"></i>Rechazar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            function renderizarHistorial(permisos) {
+                const container = document.getElementById('lista-historial');
+                if (permisos.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center text-muted py-5"><i class="bi bi-archive fs-1 d-block mb-3 opacity-50"></i><h5>No hay historial</h5></div>`;
+                    return;
+                }
+
+                container.innerHTML = permisos.map(p => {
+                    const isAprov = p.estado === 'Aprobado';
+                    const borderClass = isAprov ? 'border-success-glass-left' : 'border-danger-glass-left';
+                    const badgeClass = isAprov ? 'bg-success' : 'bg-danger';
+                    const iconClass = isAprov ? 'bi-check-circle' : 'bi-x-circle';
+
+                    return `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card card-permiso h-100 ${borderClass}">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <img src="${p.empleado?.foto_url || ''}" class="avatar rounded-circle me-3"
+                                                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.empleado?.nombre || 'User')}&background=random&color=fff'">
+                                            <div class="overflow-hidden flex-grow-1">
+                                                <h6 class="card-title mb-0 fw-bold text-white text-truncate">${p.empleado?.nombre || 'N/A'}</h6>
+                                                <small class="text-muted">${p.empleado?.departamento || 'N/A'}</small>
+                                            </div>
+                                            <span class="badge ${badgeClass} bg-opacity-75 badge-permiso ms-2"><i class="bi ${iconClass} me-1"></i>${p.estado}</span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <span class="badge badge-glass text-light border-secondary border-opacity-50 mb-2">${p.tipo || 'N/A'}</span>
+                                            <p class="small text-muted text-truncate"><i class="bi bi-chat-left-text me-1"></i>${p.motivo || 'Sin motivo'}</p>
+                                        </div>
+
+                                        <div class="small text-muted border-top border-secondary border-opacity-25 pt-2">
+                                            <div class="d-flex justify-content-between mb-1"><span>Periodo:</span> <span class="text-white">${p.fecha_inicio} / ${p.fecha_fin}</span></div>
+                                            ${p.supervisor ? `<div class="d-flex justify-content-between"><span>Supervisor:</span> <span class="text-white text-truncate" style="max-width:120px;">${p.supervisor}</span></div>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }).join('');
+            }
+
+            // --- FILTROS ---
+            function aplicarFiltros() {
+                const txt = document.getElementById('filtro-empleado').value.toLowerCase();
+                const tipo = document.getElementById('filtro-tipo').value;
+                const estado = document.getElementById('filtro-estado').value;
+                const ini = document.getElementById('filtro-desde').value;
+                const fin = document.getElementById('filtro-hasta').value;
+
+                const filtrar = (lista) => lista.filter(p => {
+                    const matchTxt = (p.empleado?.nombre || '').toLowerCase().includes(txt) ||
+                        (p.empleado?.codigo_empleado || '').toLowerCase().includes(txt) ||
+                        (p.empleado?.departamento || '').toLowerCase().includes(txt);
+                    const matchTipo = !tipo || p.tipo === tipo;
+                    const matchEstado = !estado || p.estado === estado;
+                    const matchFecha = (!ini || p.fecha_solicitud >= ini) && (!fin || p.fecha_solicitud <= fin);
+                    return matchTxt && matchTipo && matchEstado && matchFecha;
+                });
+
+                renderizarPendientes(filtrar(state.permisosPendientes));
+                renderizarHistorial(filtrar(state.permisosHistorial));
+            }
+
+            function limpiarFiltros() {
+                document.getElementById('filtro-empleado').value = '';
+                document.getElementById('filtro-tipo').value = '';
+                document.getElementById('filtro-estado').value = '';
+                document.getElementById('filtro-desde').value = '';
+                document.getElementById('filtro-hasta').value = '';
+                renderizarPendientes(state.permisosPendientes);
+                renderizarHistorial(state.permisosHistorial);
+                mostrarAlerta('Filtros limpiados', 'info');
+            }
+
+            // --- MODALES ---
+            function abrirModalAprobar(id, emp, per, mot) {
+                document.getElementById('permiso-id-aprobar').value = id;
+                document.getElementById('info-empleado-aprobar').textContent = emp;
+                document.getElementById('info-periodo-aprobar').textContent = per;
+                document.getElementById('info-motivo-aprobar').textContent = mot;
+                if (!state.modalAprobarInstance) state.modalAprobarInstance = new bootstrap.Modal(document.getElementById('modalAprobar'));
+                state.modalAprobarInstance.show();
+            }
+
+            function abrirModalRechazar(id, emp, per, mot) {
+                document.getElementById('permiso-id-rechazar').value = id;
+                document.getElementById('info-empleado-rechazar').textContent = emp;
+                document.getElementById('info-periodo-rechazar').textContent = per;
+                document.getElementById('info-motivo-rechazar').textContent = mot;
+                if (!state.modalRechazarInstance) state.modalRechazarInstance = new bootstrap.Modal(document.getElementById('modalRechazar'));
+                state.modalRechazarInstance.show();
+            }
+
+            async function confirmarAprobar() {
+                const id = document.getElementById('permiso-id-aprobar').value;
+                try {
+                    await apiCall(`/api/permisos/${id}/aprobar`, { method: 'PUT' });
+                    mostrarAlerta('Permiso aprobado', 'success');
+                    state.modalAprobarInstance.hide();
+                    cargarTodo();
+                } catch (e) { }
+            }
+
+            async function confirmarRechazar() {
+                const id = document.getElementById('permiso-id-rechazar').value;
+                try {
+                    await apiCall(`/api/permisos/${id}/rechazar`, { method: 'PUT' });
+                    mostrarAlerta('Permiso rechazado', 'success');
+                    state.modalRechazarInstance.hide();
+                    cargarTodo();
+                } catch (e) { }
+            }
+
+            async function cargarTodo() {
+                await Promise.all([cargarPendientes(), cargarHistorial()]);
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${msg}`;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            // INIT
+            async function init() {
+                if (!document.getElementById('permisos-container')) return;
+                await cargarTodo();
+
+                // Real-time search
+                let timeout;
+                const search = document.getElementById('filtro-empleado');
+                if (search) search.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(aplicarFiltros, 300);
+                });
+
+                ['filtro-tipo', 'filtro-estado', 'filtro-desde', 'filtro-hasta'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('change', aplicarFiltros);
+                });
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, cargarTodo, aplicarFiltros, limpiarFiltros, abrirModalAprobar, abrirModalRechazar, confirmarAprobar, confirmarRechazar };
+        })();
+    </script>
+</body>
+</html>

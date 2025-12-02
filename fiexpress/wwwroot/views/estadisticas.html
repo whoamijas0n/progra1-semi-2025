@@ -1,0 +1,774 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Estadísticas - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS GLASSMORPHISM DARK (ADN COMPARTIDO) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Pantalla de Carga Estilizada */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a; /* Fondo sólido oscuro */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+            .loading-overlay.hidden {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+        }
+
+        /* Stats Cards (Estilo Dashboard Sólido) */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs y Selects */
+        .form-control, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        /* Fix Select */
+        .form-select {
+            background-color: rgba(16, 26, 43, 0.95) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white;
+                padding: 10px;
+            }
+
+        /* Card Empleado Estadística */
+        .card-estadistica {
+            transition: transform 0.3s ease;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)) !important;
+        }
+
+            .card-estadistica:hover {
+                transform: translateY(-3px);
+                border-color: rgba(255,255,255,0.3) !important;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+
+        /* Barras de progreso */
+        .progress {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 6px;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Botones Vista */
+        .btn-vista-activa {
+            background-color: var(--accent-color) !important;
+            border-color: var(--accent-color) !important;
+            color: white !important;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+        }
+
+        .search-highlight {
+            background-color: rgba(241, 196, 15, 0.3);
+            color: white;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        .content-hidden {
+            opacity: 0;
+        }
+
+        .content-visible {
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-logo"><i class="bi bi-graph-up"></i></div>
+        <div class="text-white mb-3">Cargando estadísticas...</div>
+        <div class="loading-progress">
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+        </div>
+        <div id="loading-steps" class="small text-muted">Iniciando sistema...</div>
+    </div>
+
+    <!-- Vista de Panel de Estadísticas -->
+    <div class="container-fluid py-2 content-hidden" id="estadisticas-container">
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12 d-flex justify-content-between align-items-end">
+                <div>
+                    <h2 class="mb-1 text-white">
+                        <i class="bi bi-graph-up me-2" style="color: var(--accent-color);"></i>Panel de Estadísticas
+                    </h2>
+                    <p class="mb-0 text-muted">Análisis de asistencia, retrasos y rendimiento del personal.</p>
+                </div>
+                <button class="btn btn-outline-light btn-sm" onclick="EstadisticasModule.recargarEstadisticas()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Estadísticas Principales -->
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Empleados</div>
+                                <div class="stat-value" id="stat-total-empleados">0</div>
+                            </div>
+                            <i class="bi bi-people fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Asistencia</div>
+                                <div class="stat-value text-success" id="stat-asistencia">0%</div>
+                            </div>
+                            <i class="bi bi-pie-chart fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Retrasos</div>
+                                <div class="stat-value text-warning" id="stat-retraso">0h</div>
+                            </div>
+                            <i class="bi bi-clock-history fs-1 text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Horas Extra</div>
+                                <div class="stat-value text-info" id="stat-extra">0h</div>
+                            </div>
+                            <i class="bi bi-plus-circle fs-1 text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y Búsqueda -->
+        <div class="row mb-4 animate-entry delay-2">
+            <div class="col-lg-8 mb-3 mb-lg-0">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="bi bi-funnel me-2"></i>Filtros de Análisis
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Desde</label>
+                                <input type="date" class="form-control" id="filtro-inicio">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Hasta</label>
+                                <input type="date" class="form-control" id="filtro-fin">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Departamento</label>
+                                <select class="form-select" id="filtro-departamento">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div class="col-12 d-flex gap-2">
+                                <button class="btn btn-primary w-100" onclick="EstadisticasModule.aplicarFiltros()">
+                                    <i class="bi bi-check2-circle me-1"></i> Aplicar
+                                </button>
+                                <button class="btn btn-outline-light" onclick="EstadisticasModule.limpiarFiltros()">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="bi bi-search me-2"></i>Búsqueda Rápida
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="busqueda-rapida" placeholder="Nombre, código...">
+                            <button class="btn btn-outline-secondary" type="button" onclick="EstadisticasModule.limpiarBusqueda()"><i class="bi bi-x"></i></button>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" id="btn-activos" onclick="EstadisticasModule.mostrarSoloActivos()">
+                                <i class="bi bi-person-check me-1"></i> Activos
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="btn-inactivos" onclick="EstadisticasModule.mostrarSoloInactivos()">
+                                <i class="bi bi-person-x me-1"></i> Inactivos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Estadísticas -->
+        <div class="row g-3 animate-entry delay-3" id="lista-estadisticas">
+            <!-- Contenido dinámico -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO ESTADÍSTICAS - Lógica Preservada con Renderizado Visual Actualizado
+        window.EstadisticasModule = (function () {
+            'use strict';
+
+            const state = {
+                estadisticas: null,
+                empleados: [],
+                departamentos: [],
+                estadisticasOriginales: null,
+                mostrarSoloActivos: true,
+                busquedaActual: '',
+                pasosCarga: ["Iniciando...", "Cargando empleados...", "Obteniendo departamentos...", "Configurando filtros...", "Calculando métricas...", "Procesando datos...", "Finalizando...", "¡Listo!"],
+                pasoActual: 0
+            };
+
+            const STORAGE_KEY = 'fiExpress_estadisticas_data';
+
+            // --- PANTALLA DE CARGA ---
+            function actualizarProgresoCarga(paso, msg = null) {
+                const bar = document.getElementById('loading-progress-bar');
+                const txt = document.getElementById('loading-steps');
+                const prog = ((paso + 1) / state.pasosCarga.length) * 100;
+                if (bar) bar.style.width = `${prog}%`;
+                if (txt) txt.textContent = msg || state.pasosCarga[paso];
+                state.pasoActual = paso;
+            }
+
+            function mostrarPantallaCarga() {
+                const ov = document.getElementById('loading-overlay');
+                const co = document.getElementById('estadisticas-container');
+                ov.classList.remove('hidden');
+                co.classList.remove('content-visible');
+                co.classList.add('content-hidden');
+                actualizarProgresoCarga(0);
+            }
+
+            function ocultarPantallaCarga() {
+                const ov = document.getElementById('loading-overlay');
+                const co = document.getElementById('estadisticas-container');
+                actualizarProgresoCarga(state.pasosCarga.length - 1, "¡Listo!");
+                setTimeout(() => {
+                    ov.classList.add('hidden');
+                    co.classList.remove('content-hidden');
+                    co.classList.add('content-visible');
+                }, 600);
+            }
+
+            // --- STORAGE ---
+            function guardarDatosEnStorage(datos) {
+                try {
+                    const obj = {
+                        ...datos, timestamp: Date.now(),
+                        filtros: {
+                            inicio: document.getElementById('filtro-inicio').value,
+                            fin: document.getElementById('filtro-fin').value,
+                            departamento: document.getElementById('filtro-departamento').value
+                        }
+                    };
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+                } catch (e) { }
+            }
+
+            function cargarDatosDesdeStorage() {
+                try {
+                    const raw = sessionStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    const data = JSON.parse(raw);
+
+                    // Validar caducidad (5 min) y filtros
+                    const currentFilters = {
+                        inicio: document.getElementById('filtro-inicio').value,
+                        fin: document.getElementById('filtro-fin').value,
+                        departamento: document.getElementById('filtro-departamento').value
+                    };
+                    if (Date.now() - data.timestamp > 300000 || JSON.stringify(data.filtros) !== JSON.stringify(currentFilters)) {
+                        sessionStorage.removeItem(STORAGE_KEY); return null;
+                    }
+                    return data;
+                } catch (e) { return null; }
+            }
+
+            // --- API ---
+            async function apiCall(url, options = {}) {
+                try {
+                    const res = await fetch(url, { credentials: 'include', headers: { 'Content-Type': 'application/json', ...options.headers }, ...options });
+                    if (!res.ok) throw new Error(`Error ${res.status}`);
+                    return await res.json();
+                } catch (e) {
+                    console.error('API Error:', e);
+                    mostrarAlerta(`Error: ${e.message}`, 'danger');
+                    throw e;
+                }
+            }
+
+            // --- CORE ---
+            async function cargarEstadisticas(forceRefresh = false) {
+                if (!forceRefresh) {
+                    const cached = cargarDatosDesdeStorage();
+                    if (cached) {
+                        state.estadisticas = cached;
+                        state.estadisticasOriginales = JSON.parse(JSON.stringify(cached));
+                        actualizarVistaCompleta();
+                        ocultarPantallaCarga();
+                        return;
+                    }
+                }
+
+                mostrarPantallaCarga();
+                try {
+                    actualizarProgresoCarga(1, "Validando...");
+                    const ini = document.getElementById('filtro-inicio').value;
+                    const fin = document.getElementById('filtro-fin').value;
+                    const dep = document.getElementById('filtro-departamento').value;
+
+                    if (!ini || !fin) { mostrarAlerta('Selecciona un rango de fechas', 'warning'); ocultarPantallaCarga(); return; }
+                    if (new Date(ini) > new Date(fin)) { mostrarAlerta('Fecha inicio mayor a fin', 'warning'); ocultarPantallaCarga(); return; }
+
+                    let url = `/api/estadisticas/generales?inicio=${ini}&fin=${fin}`;
+                    if (dep) url += `&departamentoId=${dep}`;
+
+                    actualizarProgresoCarga(2, "Consultando datos...");
+                    state.estadisticas = await apiCall(url);
+                    state.estadisticasOriginales = JSON.parse(JSON.stringify(state.estadisticas));
+
+                    actualizarProgresoCarga(3, "Procesando...");
+                    guardarDatosEnStorage(state.estadisticas);
+                    actualizarVistaCompleta();
+
+                    mostrarAlerta('Estadísticas actualizadas', 'success');
+                    ocultarPantallaCarga();
+                } catch (e) {
+                    ocultarPantallaCarga();
+                }
+            }
+
+            function actualizarEstadisticasPrincipales() {
+                if (!state.estadisticas?.resumenGeneral) return;
+
+                // Calcular métricas basadas en empleados activos visualizados
+                const activos = state.empleados.filter(e => e.activo).length;
+                document.getElementById('stat-total-empleados').textContent = activos;
+
+                let asist = 0, retrasoMin = 0, extraMin = 0;
+                const det = state.estadisticas.estadisticasDetalladas || [];
+
+                // Filtrar solo datos de empleados activos para los totales globales
+                const validos = det.filter(d => {
+                    const emp = state.empleados.find(e => e.idEmpleado === d.empleado?.idEmpleado);
+                    return emp && emp.activo;
+                });
+
+                if (validos.length > 0) {
+                    asist = validos.reduce((acc, cur) => acc + cur.porcentajeAsistencia, 0) / validos.length;
+                    retrasoMin = validos.reduce((acc, cur) => acc + (cur.totalMinutosRetraso || 0), 0);
+                    extraMin = validos.reduce((acc, cur) => acc + (cur.totalMinutosExtra || 0), 0);
+                }
+
+                document.getElementById('stat-asistencia').textContent = `${asist.toFixed(1)}%`;
+                document.getElementById('stat-retraso').textContent = `${(retrasoMin / 60).toFixed(1)}h`;
+                document.getElementById('stat-extra').textContent = `${(extraMin / 60).toFixed(1)}h`;
+            }
+
+            function actualizarVistaCompleta() {
+                actualizarEstadisticasPrincipales();
+                mostrarEstadisticas();
+                actualizarBotonesVista();
+            }
+
+            // --- RENDERIZADO VISUAL ACTUALIZADO (GLASS CARDS) ---
+            function mostrarEstadisticas() {
+                const container = document.getElementById('lista-estadisticas');
+                const data = state.estadisticasOriginales || state.estadisticas;
+
+                if (!data || !data.estadisticasDetalladas) {
+                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">Sin datos disponibles</div>`;
+                    return;
+                }
+
+                let lista = [...data.estadisticasDetalladas];
+
+                // Filtro Activo/Inactivo
+                lista = lista.filter(est => {
+                    const emp = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                    return emp ? (state.mostrarSoloActivos ? emp.activo : !emp.activo) : false;
+                });
+
+                // Ordenamiento por búsqueda
+                if (state.busquedaActual) {
+                    const txt = state.busquedaActual.toLowerCase();
+                    lista.sort((a, b) => {
+                        const scoreA = calcularScore(a, txt);
+                        const scoreB = calcularScore(b, txt);
+                        return scoreB - scoreA;
+                    });
+                }
+
+                if (lista.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">No se encontraron empleados ${state.mostrarSoloActivos ? 'activos' : 'inactivos'} con los filtros actuales.</div>`;
+                    return;
+                }
+
+                container.innerHTML = lista.map(est => {
+                    const emp = state.empleados.find(e => e.idEmpleado === est.empleado?.idEmpleado);
+                    const nombre = resaltar(est.empleado?.nombre);
+                    const depto = resaltar(est.empleado?.departamento);
+
+                    // Colores dinámicos para barras
+                    const colorAsistencia = est.porcentajeAsistencia >= 90 ? 'bg-success' : est.porcentajeAsistencia >= 70 ? 'bg-warning' : 'bg-danger';
+                    const colorTextoAsistencia = est.porcentajeAsistencia >= 90 ? 'text-success' : est.porcentajeAsistencia >= 70 ? 'text-warning' : 'text-danger';
+
+                    return `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card card-estadistica h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <img src="${est.empleado?.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(est.empleado?.nombre)}&background=random&color=fff`}"
+                                                 class="avatar rounded-circle me-3"
+                                                 onerror="this.src='https://ui-avatars.com/api/?name=NA&background=random'">
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <h6 class="mb-0 fw-bold text-white text-truncate">${nombre}</h6>
+                                                <small class="text-muted d-block">${depto || 'N/A'}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <h5 class="mb-0 fw-bold ${colorTextoAsistencia}">${est.porcentajeAsistencia}%</h5>
+                                                <small class="text-muted" style="font-size: 0.7rem;">ASISTENCIA</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar ${colorAsistencia}" style="width: ${est.porcentajeAsistencia}%"></div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between text-center pt-2 border-top border-secondary border-opacity-25">
+                                            <div>
+                                                <div class="fw-bold text-white">${est.diasTrabajados}/${est.totalDias}</div>
+                                                <small class="text-muted" style="font-size: 0.7rem;">DÍAS</small>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-warning">${Math.floor(est.totalMinutosRetraso / 60)}h</div>
+                                                <small class="text-muted" style="font-size: 0.7rem;">RETRASO</small>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-info">${Math.floor(est.totalMinutosExtra / 60)}h</div>
+                                                <small class="text-muted" style="font-size: 0.7rem;">EXTRA</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }).join('');
+            }
+
+            function calcularScore(est, txt) {
+                let pt = 0;
+                const n = (est.empleado?.nombre || '').toLowerCase();
+                const d = (est.empleado?.departamento || '').toLowerCase();
+                const c = (est.empleado?.codigo_empleado || '').toLowerCase();
+
+                if (n === txt) pt += 10;
+                else if (n.startsWith(txt)) pt += 5;
+                else if (n.includes(txt)) pt += 3;
+
+                if (d.includes(txt)) pt += 2;
+                if (c.includes(txt)) pt += 4;
+                return pt;
+            }
+
+            function resaltar(txt) {
+                if (!state.busquedaActual || !txt) return txt;
+                const re = new RegExp(`(${state.busquedaActual})`, 'gi');
+                return txt.toString().replace(re, '<span class="search-highlight">$1</span>');
+            }
+
+            // --- FILTROS & UI ---
+            async function cargarFiltros() {
+                try {
+                    actualizarProgresoCarga(1, "Cargando empleados...");
+                    state.empleados = await apiCall('/api/empleados?incluirInactivos=true');
+
+                    actualizarProgresoCarga(2, "Cargando departamentos...");
+                    state.departamentos = await apiCall('/api/departamentos?incluirInactivos=true');
+
+                    const sel = document.getElementById('filtro-departamento');
+                    sel.innerHTML = '<option value="">Todos</option>';
+                    state.departamentos.forEach(d => {
+                        sel.innerHTML += `<option value="${d.idDepartamento}">${d.nombre}</option>`;
+                    });
+                } catch (e) { }
+            }
+
+            function configurarBusquedaRapida() {
+                document.getElementById('busqueda-rapida').addEventListener('input', (e) => {
+                    state.busquedaActual = e.target.value.trim();
+                    mostrarEstadisticas();
+                });
+            }
+
+            function mostrarSoloActivos() { state.mostrarSoloActivos = true; actualizarVistaCompleta(); }
+            function mostrarSoloInactivos() { state.mostrarSoloActivos = false; actualizarVistaCompleta(); }
+
+            function actualizarBotonesVista() {
+                const bA = document.getElementById('btn-activos');
+                const bI = document.getElementById('btn-inactivos');
+                if (state.mostrarSoloActivos) {
+                    bA.className = 'btn btn-primary btn-sm btn-vista-activa';
+                    bI.className = 'btn btn-outline-secondary btn-sm';
+                } else {
+                    bA.className = 'btn btn-outline-secondary btn-sm';
+                    bI.className = 'btn btn-primary btn-sm btn-vista-activa';
+                }
+            }
+
+            function aplicarFiltros() { cargarEstadisticas(true); }
+
+            function limpiarFiltros() {
+                configurarFechasPorDefecto();
+                document.getElementById('filtro-departamento').value = '';
+                document.getElementById('busqueda-rapida').value = '';
+                state.busquedaActual = '';
+                state.mostrarSoloActivos = true;
+                mostrarAlerta('Filtros restablecidos', 'info');
+                cargarEstadisticas(true);
+            }
+
+            function limpiarBusqueda() {
+                document.getElementById('busqueda-rapida').value = '';
+                state.busquedaActual = '';
+                mostrarEstadisticas();
+            }
+
+            function recargarEstadisticas() { cargarEstadisticas(true); }
+
+            function configurarFechasPorDefecto() {
+                const hoy = new Date();
+                const hace30 = new Date();
+                hace30.setDate(hoy.getDate() - 30);
+                document.getElementById('filtro-inicio').value = hace30.toISOString().split('T')[0];
+                document.getElementById('filtro-fin').value = hoy.toISOString().split('T')[0];
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.innerHTML = `<i class="bi bi-info-circle me-2"></i>${msg}`;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            // INIT
+            async function init() {
+                if (!document.getElementById('estadisticas-container')) return;
+                mostrarPantallaCarga();
+                try {
+                    configurarFechasPorDefecto();
+                    await cargarFiltros();
+                    await cargarEstadisticas(false);
+                    configurarBusquedaRapida();
+                    actualizarBotonesVista();
+                } catch (e) { ocultarPantallaCarga(); }
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return {
+                init, cargarEstadisticas, recargarEstadisticas, aplicarFiltros, limpiarFiltros,
+                limpiarBusqueda, mostrarSoloActivos, mostrarSoloInactivos
+            };
+        })();
+    </script>
+</body>
+</html>

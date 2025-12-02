@@ -1,0 +1,834 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados - Sistema de Fichajes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS VISUALES (Glassmorphism Dark Consistente) ===== */
+        :root {
+            --glass-bg: rgba(16, 26, 43, 0.85);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-muted: #bdc3c7;
+            --accent-color: #3498db;
+        }
+
+        body {
+            color: white;
+            background-color: #0f172a;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Paneles y Cards */
+        .glass-panel, .card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 12px;
+            color: white !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-header, .modal-header, .modal-footer {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-light) !important;
+            color: white !important;
+        }
+
+        /* Stats Cards (Estilo Sólido Dashboard) */
+        .stat-card {
+            background: var(--glass-bg) !important;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+
+        /* Bordes Estadísticas */
+        .border-primary-glass {
+            border-left: 4px solid #3498db !important;
+        }
+
+        .border-success-glass {
+            border-left: 4px solid #2ecc71 !important;
+        }
+
+        .border-warning-glass {
+            border-left: 4px solid #f1c40f !important;
+        }
+
+        .border-info-glass {
+            border-left: 4px solid #1abc9c !important;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs y Selects Oscuros */
+        .form-control, .input-group-text {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+
+            .form-control:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--accent-color) !important;
+                box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        /* Fix Select */
+        .form-select {
+            background-color: rgba(16, 26, 43, 0.95) !important;
+            border: 1px solid var(--border-light) !important;
+            color: white !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+
+            .form-select option {
+                background-color: #1e293b !important;
+                color: white !important;
+                padding: 10px;
+            }
+
+        /* Tabla Glass */
+        .table-glass {
+            color: #ecf0f1;
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
+
+            .table-glass thead th {
+                background: rgba(0, 0, 0, 0.3) !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                color: var(--accent-color);
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                padding: 1rem;
+                border-top: none;
+            }
+
+            .table-glass tbody td {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 1rem;
+                background: transparent !important;
+                color: #ecf0f1;
+            }
+
+            .table-glass tbody tr:hover td {
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+
+        /* Avatar */
+        .avatar-table {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        /* Avatar Preview en Modal */
+        .avatar-preview-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Modales */
+        .modal-content {
+            background: rgba(16, 26, 43, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%);
+        }
+
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        /* Badges */
+        .badge-glass {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            font-weight: normal;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.3em 0.6em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vista de Gestión de Empleados -->
+    <div class="container-fluid py-2" id="empleados-container">
+
+        <!-- Header -->
+        <div class="row mb-4 animate-entry">
+            <div class="col-12">
+                <h2 class="mb-1 text-white">
+                    <i class="bi bi-people-fill me-2" style="color: var(--accent-color);"></i>Gestión de Empleados
+                </h2>
+                <p class="mb-0 text-muted">Administración del personal, datos de contacto y asignación de departamentos.</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4 animate-entry delay-1">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-primary-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Total</div>
+                                <div class="stat-value" id="stat-total">0</div>
+                            </div>
+                            <i class="bi bi-people fs-1 text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-success-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Activos</div>
+                                <div class="stat-value text-success" id="stat-activos">0</div>
+                            </div>
+                            <i class="bi bi-person-check fs-1 text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-info-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Con Usuario</div>
+                                <div class="stat-value text-info" id="stat-con-usuario">0</div>
+                            </div>
+                            <i class="bi bi-person-badge fs-1 text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card border-warning-glass h-100">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Supervisores</div>
+                                <div class="stat-value text-warning" id="stat-supervisores">0</div>
+                            </div>
+                            <i class="bi bi-star fs-1 text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Herramientas -->
+        <div class="card mb-4 animate-entry delay-2">
+            <div class="card-body p-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="input-buscar" placeholder="Buscar por nombre, email o código...">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="select-departamento">
+                            <option value="">Todos los deptos.</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="select-estado">
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activos</option>
+                            <option value="inactivo">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check pt-2">
+                            <input class="form-check-input" type="checkbox" id="check-inactivos">
+                            <label class="form-check-label text-muted small" for="check-inactivos">
+                                Incluir inactivos
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-primary w-100 fw-bold shadow-sm" onclick="EmpleadosModule.abrirModalNuevo()">
+                            <i class="bi bi-person-plus me-1"></i> Nuevo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla y Estado -->
+        <div class="d-flex justify-content-between align-items-center mb-3 animate-entry delay-3">
+            <h6 class="mb-0 text-white">
+                <i class="bi bi-list-ul text-info me-2"></i>Listado de Personal
+                <span class="badge bg-secondary bg-opacity-25 ms-2 rounded-pill fw-normal" id="contador-filtrados">0</span>
+                <span class="text-muted small ms-1">de <span id="contador-empleados">0</span> total</span>
+            </h6>
+            <span class="text-muted small" id="ultima-actualizacion">
+                <i class="bi bi-arrow-clockwise me-1"></i>Actualizando...
+            </span>
+        </div>
+
+        <!-- Tabla de Empleados -->
+        <div class="card animate-entry delay-3">
+            <div class="card-body p-0">
+                <div class="table-responsive rounded-3">
+                    <table class="table table-glass table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Contacto</th>
+                                <th>Departamento</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-empleados">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                    Cargando empleados...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Loading Overlay para la tabla -->
+                <div id="spinner-tabla" class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50 rounded-3" style="z-index: 5;">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Empleado -->
+    <div class="modal fade" id="modalEmpleado" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white" id="modalEmpleadoTitle">
+                        <i class="bi bi-person-plus me-2 text-primary"></i>Nuevo Empleado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEmpleado">
+                        <input type="hidden" id="empleadoId">
+                        <input type="hidden" id="empleadoActivo" value="true">
+
+                        <!-- Vista previa avatar -->
+                        <div class="text-center mb-4" id="avatar-preview" style="display: none;">
+                            <img src="" id="preview-avatar-img" class="avatar-preview-img rounded-circle mb-2">
+                            <p class="small text-muted mb-0">Vista previa</p>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Datos Personales -->
+                            <div class="col-12">
+                                <h6 class="text-info border-bottom border-secondary border-opacity-25 pb-2 mb-3 small text-uppercase fw-bold">Datos Personales</h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small">Código *</label>
+                                <input type="text" class="form-control" id="codigoEmpleado" required maxlength="20" placeholder="EMP-001">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Nombre Completo *</label>
+                                <input type="text" class="form-control" id="nombreEmpleado" required maxlength="100" placeholder="Juan Pérez">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small">Email *</label>
+                                <input type="email" class="form-control" id="emailEmpleado" required maxlength="100" placeholder="juan@empresa.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefonoEmpleado" maxlength="20" placeholder="+1234567890">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small">Fecha Nacimiento *</label>
+                                <input type="date" class="form-control" id="fechaNacimiento" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Foto URL (Opcional)</label>
+                                <input type="url" class="form-control" id="fotoUrl" placeholder="https://...">
+                            </div>
+
+                            <!-- Datos Laborales -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-warning border-bottom border-secondary border-opacity-25 pb-2 mb-3 small text-uppercase fw-bold">Datos Laborales</h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small">Departamento *</label>
+                                <select class="form-select" id="selectDepartamento" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Rol *</label>
+                                <select class="form-select" id="selectRol" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Fecha Ingreso *</label>
+                                <input type="date" class="form-control" id="fechaIngreso" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnGuardarEmpleado" onclick="EmpleadosModule.guardarEmpleado()">
+                        <span id="btnGuardarText"><i class="bi bi-check-lg me-2"></i>Guardar</span>
+                        <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // MÓDULO EMPLEADOS - Lógica Preservada
+        window.EmpleadosModule = (function () {
+            'use strict';
+
+            const state = {
+                empleados: [],
+                departamentos: [],
+                roles: [],
+                modalInstance: null,
+                filtros: {
+                    buscar: '',
+                    departamento: '',
+                    estado: '',
+                    incluirInactivos: false
+                }
+            };
+
+            async function apiCall(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json', ...options.headers },
+                        ...options
+                    });
+
+                    if (response.status === 500) {
+                        console.warn('⚠️ Error 500, verificando éxito parcial...');
+                        try {
+                            const errorData = await response.json();
+                            if (errorData.mensaje) throw new Error(`Server Error: ${errorData.mensaje}`);
+                        } catch (parseError) {
+                            return { _success: true, _partial: true };
+                        }
+                        throw new Error(`Error 500`);
+                    }
+
+                    if (!response.ok) {
+                        const text = await response.text();
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Call Error:', error);
+                    if (!error.message.includes('500')) mostrarAlerta(`Error: ${error.message}`, 'danger');
+                    throw error;
+                }
+            }
+
+            async function cargarEmpleados() {
+                try {
+                    mostrarLoadingTabla();
+                    const params = new URLSearchParams();
+                    if (state.filtros.incluirInactivos) params.append('incluirInactivos', 'true');
+
+                    state.empleados = await apiCall(`/api/empleados?${params.toString()}`);
+                    aplicarFiltrosYRenderizar();
+                    actualizarEstadisticas();
+                    actualizarTimestamp();
+                } catch (error) {
+                    mostrarErrorTabla('Error al cargar empleados: ' + error.message);
+                }
+            }
+
+            async function cargarSelects() {
+                try {
+                    state.departamentos = await apiCall('/api/departamentos?incluirInactivos=false');
+                    const selectDepto = document.getElementById('selectDepartamento');
+                    const filtroDepto = document.getElementById('select-departamento');
+
+                    selectDepto.innerHTML = '<option value="">Seleccionar...</option>';
+                    filtroDepto.innerHTML = '<option value="">Todos los deptos.</option>';
+
+                    state.departamentos.forEach(d => {
+                        selectDepto.innerHTML += `<option value="${d.idDepartamento}">${d.nombre}</option>`;
+                        filtroDepto.innerHTML += `<option value="${d.idDepartamento}">${d.nombre}</option>`;
+                    });
+
+                    state.roles = await apiCall('/api/roles?incluirInactivos=false');
+                    const selectRol = document.getElementById('selectRol');
+                    selectRol.innerHTML = '<option value="">Seleccionar...</option>';
+                    state.roles.forEach(r => {
+                        selectRol.innerHTML += `<option value="${r.idRol}">${r.nombre}</option>`;
+                    });
+                } catch (e) { console.error(e); }
+            }
+
+            function aplicarFiltrosYRenderizar() {
+                let filtrados = [...state.empleados];
+                const s = state.filtros;
+
+                // CORRECCIÓN CRÍTICA: Búsqueda segura
+                if (s.buscar) {
+                    const b = s.buscar.toLowerCase();
+                    filtrados = filtrados.filter(e =>
+                        (e.nombre && e.nombre.toLowerCase().includes(b)) ||
+                        (e.codigo_empleado && String(e.codigo_empleado).toLowerCase().includes(b)) ||
+                        (e.email && e.email.toLowerCase().includes(b)) ||
+                        (e.departamento && e.departamento.nombre && e.departamento.nombre.toLowerCase().includes(b))
+                    );
+                }
+                if (s.departamento) {
+                    filtrados = filtrados.filter(e => e.departamento && e.departamento.idDepartamento == s.departamento);
+                }
+                if (s.estado) {
+                    filtrados = filtrados.filter(e => s.estado === 'activo' ? e.activo : !e.activo);
+                }
+
+                renderizarEmpleados(filtrados);
+            }
+
+            function renderizarEmpleados(empleados) {
+                const tbody = document.getElementById('tabla-empleados');
+                document.getElementById('contador-empleados').textContent = state.empleados.length;
+                document.getElementById('contador-filtrados').textContent = empleados.length;
+
+                if (empleados.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-5">No se encontraron empleados</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = empleados.map(e => `
+                        <tr class="${!e.activo ? 'opacity-50' : ''}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="${e.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=0D6EFD&color=fff`}"
+                                         class="avatar-table rounded-circle me-3"
+                                         onerror="this.src='https://ui-avatars.com/api/?name=NA&background=random'">
+                                    <div>
+                                        <strong class="d-block text-white">${e.nombre}</strong>
+                                        <small class="text-muted">${e.codigo_empleado}</small>
+                                        <div class="mt-1">
+                                            ${e.esSupervisor ? '<span class="badge bg-warning text-dark status-badge me-1">Supervisor</span>' : ''}
+                                            ${e.tieneUsuario ? '<span class="badge bg-info text-dark status-badge">Usuario</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small text-muted">
+                                    <div><i class="bi bi-envelope me-2"></i>${e.email}</div>
+                                    <div><i class="bi bi-telephone me-2"></i>${e.telefono || '-'}</div>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-glass text-light">${e.departamento?.nombre || 'N/A'}</span></td>
+                            <td><span class="badge badge-glass text-light">${e.rol?.nombre || 'N/A'}</span></td>
+                            <td>
+                                <span class="badge ${e.activo ? 'bg-success' : 'bg-danger'} bg-opacity-75">
+                                    ${e.activo ? 'Activo' : 'Inactivo'}
+                                </span>
+                                ${e.fecha_baja ? `<div class="small text-danger mt-1">Baja: ${new Date(e.fecha_baja).toLocaleDateString()}</div>` : ''}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm shadow-sm">
+                                    <button class="btn btn-outline-primary" onclick="EmpleadosModule.editarEmpleado(${e.idEmpleado})" ${!e.activo ? 'disabled' : ''} title="Editar"><i class="bi bi-pencil"></i></button>
+                                    ${e.activo ?
+                        `<button class="btn btn-outline-danger" onclick="EmpleadosModule.desactivarEmpleado(${e.idEmpleado}, '${e.nombre}')" title="Desactivar"><i class="bi bi-person-dash"></i></button>` :
+                        `<button class="btn btn-outline-success" onclick="EmpleadosModule.activarEmpleado(${e.idEmpleado}, '${e.nombre}')" title="Activar"><i class="bi bi-person-check"></i></button>`}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+            }
+
+            async function abrirModalNuevo() {
+                if (state.departamentos.length === 0) await cargarSelects();
+
+                document.getElementById('formEmpleado').reset();
+                document.getElementById('empleadoId').value = '';
+                document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-person-plus me-2"></i>Nuevo Empleado';
+                document.getElementById('avatar-preview').style.display = 'none';
+                document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+                document.getElementById('codigoEmpleado').disabled = false;
+
+                document.getElementById('nombreEmpleado').addEventListener('input', updateAvatarPreview);
+
+                if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalEmpleado'));
+                state.modalInstance.show();
+                setTimeout(() => {
+                    document.getElementById('codigoEmpleado').focus();
+                }, 500);
+            }
+
+            function updateAvatarPreview() {
+                const val = this.value.trim();
+                const img = document.getElementById('preview-avatar-img');
+                const div = document.getElementById('avatar-preview');
+                if (val) {
+                    img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(val)}&size=200&background=0D6EFD&color=fff`;
+                    div.style.display = 'block';
+                } else { div.style.display = 'none'; }
+            }
+
+            async function editarEmpleado(id) {
+                try {
+                    const emp = await apiCall(`/api/empleados/${id}`);
+                    document.getElementById('empleadoId').value = emp.idEmpleado;
+                    document.getElementById('codigoEmpleado').value = emp.codigo_empleado;
+                    document.getElementById('nombreEmpleado').value = emp.nombre;
+                    document.getElementById('emailEmpleado').value = emp.email;
+                    document.getElementById('telefonoEmpleado').value = emp.telefono;
+                    document.getElementById('fechaNacimiento').value = emp.fecha_nacimiento ? emp.fecha_nacimiento.split('T')[0] : '';
+                    document.getElementById('fechaIngreso').value = emp.fecha_ingreso ? emp.fecha_ingreso.split('T')[0] : '';
+                    document.getElementById('selectDepartamento').value = emp.departamento?.idDepartamento;
+                    document.getElementById('selectRol').value = emp.rol?.idRol;
+                    document.getElementById('fotoUrl').value = emp.foto_url || '';
+
+                    if (emp.nombre) {
+                        document.getElementById('preview-avatar-img').src = emp.foto_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.nombre)}&background=0D6EFD&color=fff`;
+                        document.getElementById('avatar-preview').style.display = 'block';
+                    }
+
+                    document.getElementById('modalEmpleadoTitle').innerHTML = '<i class="bi bi-pencil me-2 text-warning"></i>Editar Empleado';
+                    document.getElementById('codigoEmpleado').disabled = true;
+
+                    if (!state.modalInstance) state.modalInstance = new bootstrap.Modal(document.getElementById('modalEmpleado'));
+                    state.modalInstance.show();
+                } catch (e) { mostrarAlerta('Error al cargar empleado', 'danger'); }
+            }
+
+            async function guardarEmpleado() {
+                const form = document.getElementById('formEmpleado');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                const nac = new Date(document.getElementById('fechaNacimiento').value);
+                if ((new Date().getFullYear() - nac.getFullYear()) < 14) { mostrarAlerta('Edad mínima 14 años', 'warning'); return; }
+
+                const id = document.getElementById('empleadoId').value;
+                const data = {
+                    CodigoEmpleado: document.getElementById('codigoEmpleado').value.trim(),
+                    Nombre: document.getElementById('nombreEmpleado').value.trim(),
+                    Email: document.getElementById('emailEmpleado').value.trim().toLowerCase(),
+                    Telefono: document.getElementById('telefonoEmpleado').value.trim(),
+                    FechaNacimiento: document.getElementById('fechaNacimiento').value,
+                    FechaIngreso: document.getElementById('fechaIngreso').value,
+                    FotoUrl: document.getElementById('fotoUrl').value.trim() || null,
+                    IdDepartamento: parseInt(document.getElementById('selectDepartamento').value),
+                    IdRol: parseInt(document.getElementById('selectRol').value)
+                };
+
+                toggleBotonGuardar(true);
+                try {
+                    let res;
+                    if (id) {
+                        res = await apiCall(`/api/empleados/${id}`, {
+                            method: 'PUT', body: JSON.stringify({
+                                Nombre: data.Nombre, Email: data.Email, Telefono: data.Telefono,
+                                IdDepartamento: data.IdDepartamento, IdRol: data.IdRol
+                            })
+                        });
+                    } else {
+                        res = await apiCall('/api/empleados', { method: 'POST', body: JSON.stringify(data) });
+                    }
+
+                    if (res && res._partial) mostrarAlerta('Guardado con advertencia del servidor', 'warning');
+                    else mostrarAlerta(id ? 'Actualizado correctamente' : 'Creado correctamente', 'success');
+
+                    state.modalInstance.hide();
+                    await cargarEmpleados();
+                } catch (e) {
+                    if (e.message.includes('500')) {
+                        mostrarAlerta('Verificando cambios tras error 500...', 'warning');
+                        await cargarEmpleados();
+                    } else { mostrarAlerta('Error al guardar', 'danger'); }
+                } finally { toggleBotonGuardar(false); }
+            }
+
+            async function desactivarEmpleado(id, n) {
+                if (!confirm(`¿Desactivar a ${n}?`)) return;
+                try {
+                    await apiCall(`/api/empleados/${id}/desactivar`, { method: 'PUT' });
+                    mostrarAlerta('Desactivado', 'success'); await cargarEmpleados();
+                } catch (e) {
+                    if (e.message.includes('500')) { await cargarEmpleados(); }
+                    else mostrarAlerta('Error al desactivar', 'danger');
+                }
+            }
+
+            async function activarEmpleado(id, n) {
+                if (!confirm(`¿Activar a ${n}?`)) return;
+                try {
+                    await apiCall(`/api/empleados/${id}/activar`, { method: 'PUT' });
+                    mostrarAlerta('Activado', 'success'); await cargarEmpleados();
+                } catch (e) {
+                    if (e.message.includes('500')) { await cargarEmpleados(); }
+                    else mostrarAlerta('Error al activar', 'danger');
+                }
+            }
+
+            function actualizarEstadisticas() {
+                document.getElementById('stat-total').textContent = state.empleados.length;
+                document.getElementById('stat-activos').textContent = state.empleados.filter(e => e.activo).length;
+                document.getElementById('stat-con-usuario').textContent = state.empleados.filter(e => e.tieneUsuario).length;
+                document.getElementById('stat-supervisores').textContent = state.empleados.filter(e => e.esSupervisor).length;
+            }
+
+            function limpiarFiltros() {
+                state.filtros = { buscar: '', departamento: '', estado: '', incluirInactivos: false };
+                document.getElementById('input-buscar').value = '';
+                document.getElementById('select-departamento').value = '';
+                document.getElementById('select-estado').value = '';
+                document.getElementById('check-inactivos').checked = false;
+                aplicarFiltrosYRenderizar();
+            }
+
+            function toggleBotonGuardar(loading) {
+                const btn = document.getElementById('btnGuardarEmpleado');
+                const txt = document.getElementById('btnGuardarText');
+                const sp = document.getElementById('btnGuardarSpinner');
+                btn.disabled = loading;
+                if (loading) { txt.classList.add('d-none'); sp.classList.remove('d-none'); }
+                else { txt.classList.remove('d-none'); sp.classList.add('d-none'); }
+            }
+
+            function mostrarLoadingTabla() { document.getElementById('spinner-tabla').classList.remove('d-none'); }
+            function ocultarLoadingTabla() { document.getElementById('spinner-tabla').classList.add('d-none'); }
+
+            function mostrarErrorTabla(msg) {
+                document.getElementById('tabla-empleados').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-5">${msg}</td></tr>`;
+                ocultarLoadingTabla();
+            }
+
+            function actualizarTimestamp() {
+                document.getElementById('ultima-actualizacion').innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i>Actualizado: ${new Date().toLocaleTimeString()}`;
+                ocultarLoadingTabla();
+            }
+
+            function mostrarAlerta(msg, type) {
+                const div = document.createElement('div');
+                div.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 z-3`;
+                div.textContent = msg;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3000);
+            }
+
+            function recargarEmpleados() { cargarEmpleados(); }
+
+            // INIT
+            async function init() {
+                if (!document.getElementById('empleados-container')) return;
+                await cargarSelects();
+                await cargarEmpleados();
+
+                // Eventos
+                document.getElementById('input-buscar').addEventListener('input', (e) => {
+                    state.filtros.buscar = e.target.value; aplicarFiltrosYRenderizar();
+                });
+                document.getElementById('select-departamento').addEventListener('change', (e) => {
+                    state.filtros.departamento = e.target.value; aplicarFiltrosYRenderizar();
+                });
+                document.getElementById('select-estado').addEventListener('change', (e) => {
+                    state.filtros.estado = e.target.value; aplicarFiltrosYRenderizar();
+                });
+                document.getElementById('check-inactivos').addEventListener('change', (e) => {
+                    state.filtros.incluirInactivos = e.target.checked; cargarEmpleados();
+                });
+
+                setInterval(() => { if (!document.hidden) cargarEmpleados(); }, 30000);
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+
+            return { init, abrirModalNuevo, editarEmpleado, guardarEmpleado, desactivarEmpleado, activarEmpleado, limpiarFiltros, recargarEmpleados, cargarEmpleados };
+        })();
+    </script>
+</body>
+</html>

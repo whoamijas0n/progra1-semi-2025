@@ -1,0 +1,132 @@
+﻿<form id="frmMatricula">
+    <div class="card border-secondary mb-3" style="min-width: 700px;">
+        <div class="card-header">
+            <div class="d-flex">
+                Administracion de Matriculas
+
+                <div class="ms-auto">
+                    <button data-form="matricula" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body text-secondary">
+            <div class="row p-1">
+                <div class="col-3 col-md-2">ALUMNO:</div>
+                <div class="col-8 col-md-4">
+                    <input list="dlsAlumnos" required autocomplete="off" type="text" class="form-control" id="txtAlumnoMatricula" name="txtAlumnoMatricula" />
+                    <datalist id="dlsAlumnos"></datalist>
+                </div>
+                <div class="col-1 col-md-1">
+                    <a href='javascript:;' onClick="formActivo = 'matricula'; abrirVentana('busqueda_alumno')" title="Buscar Clientes" id="btnBuscarClienteVenta">
+                        <span class="material-symbols-outlined">
+                            person_search
+                        </span>
+                    </a>
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">PERIODO:</div>
+                <div class="col-9 col-md-4">
+                    <input list="dlsPeriodos" required autocomplete="off" type="text" class="form-control" id="txtPeriodoMatricula" name="txtPeriodoMatricula" />
+                    <datalist id="dlsPeriodos"></datalist>
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">FECHA</div>
+                <div class="col-9 col-md-4">
+                    <input required type="date" class="form-control" id="txtFechaMatricula" name="txtFechaMatricula" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-12 text-center">
+                    <input type="submit" class="btn btn-outline-primary" value="Guardar" />
+                    <input type="reset" class="btn btn-outline-warning" value="Nuevo" />
+                    <input type="button" class="btn btn-outline-success" value="Buscar" onclick="abrirVentana('busqueda_matricula')" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>var accion = 'nuevo',
+        idMatricula = 0;
+    frmMatricula.addEventListener('submit', e => {
+        e.preventDefault();
+        guardarMatricula();
+    });
+    frmMatricula.addEventListener('reset', e => {
+        e.preventDefault();
+        limpiarDatosMatricula();
+    });
+    mostrarAlumnosMatricula();
+    mostrarPeriodosMatricula();
+
+    async function mostrarAlumnosMatricula() {
+        let alumnos = await obtenerAlumnos(),
+            filas = '';
+        alumnos.forEach(alumno => {
+            filas += `<option data-idalumno="${alumno.idAlumno}" value="${alumno.nombre.trim()}"></option>`;
+        });
+        dlsAlumnos.innerHTML = filas;
+    }
+    async function mostrarPeriodosMatricula() {
+        let periodos = await obtenerPeriodos(),
+            filas = '';
+        periodos.forEach(periodo => {
+            filas += `<option data-idperiodo="${periodo.idPeriodo}" value="${periodo.periodo.trim()}"></option>`;
+        });
+        dlsPeriodos.innerHTML = filas;
+    }
+    function obtenerIdForaneo(tabla = 'Alumno') {
+        let $options = $(`#dls${tabla}s`);
+        if ($options.length == 0) return 0;
+        const foraneoSeleccionado = Array.from($options[0].options)
+            .find(opcion => opcion.value.trim() === $(`#txt${tabla}Matricula`).val().trim());
+        return foraneoSeleccionado?.dataset[`id${tabla.toLowerCase()}`] || 0;
+    }
+    async function guardarMatricula() {
+        let datos = {
+            idAlumno: obtenerIdForaneo('Alumno'),
+            idPeriodo: obtenerIdForaneo('Periodo'),
+            fecha: txtFechaMatricula.value
+        },
+            url = 'https://localhost:7005/api/Matriculas',
+            method = 'POST';
+        if (datos.idAlumno<=0) {
+            alertify.error("Por favor seleccione el alumno a matricular");
+            return;
+        }
+        if (datos.idPeriodo <= 0) {
+            alertify.error("Por favor seleccione el periodo en el cual se ha de matricular");
+            return;
+        }
+        if (accion == "modificar") {
+            method = 'PUT';
+            url = `https://localhost:7005/api/Matriculas/${idMatricula}`;
+            datos.idMatricula = idMatricula;
+        }
+        const respuesta = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(datos)
+        }), matricula = await respuesta.json();
+        if ((matricula?.idMatricula || 0) > 0) {
+            limpiarDatosMatricula();
+            listarMatriculas(txtBuscarMatricula.value || '');
+        }
+    }
+    function limpiarDatosMatricula() {
+        accion = "nuevo";
+        idMatricula = 0;
+        txtFechaMatricula.value = "";
+        txtAlumnoMatricula.value = "";
+        txtPeriodoMatricula.value = "";
+    }
+    function modificarMatricula(matricula) {
+        accion = "modificar";
+        idMatricula = matricula.idMatricula;
+        txtFechaMatricula.value = new Date(matricula.fecha).toLocaleDateString("en-GB").split("/").reverse().join("-");
+        txtAlumnoMatricula.value = matricula.alumno.nombre.trim();
+        txtPeriodoMatricula.value = matricula.periodo.periodo.trim();
+    }</script>

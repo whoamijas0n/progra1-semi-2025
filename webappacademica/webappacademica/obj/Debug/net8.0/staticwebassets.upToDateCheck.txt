@@ -1,0 +1,12 @@
+wwwroot\views\alumno.html
+wwwroot\views\busqueda_alumno.html
+wwwroot\views\busqueda_docente.html
+wwwroot\views\busqueda_materia.html
+wwwroot\views\busqueda_matricula.html
+wwwroot\views\busqueda_periodo.html
+wwwroot\views\docente.html
+wwwroot\views\index.html
+wwwroot\views\materia.html
+wwwroot\views\matricula.html
+wwwroot\views\app.js
+wwwroot\views\periodo.html

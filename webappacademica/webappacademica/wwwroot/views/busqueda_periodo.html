@@ -1,0 +1,68 @@
+﻿<form id="frmBusquedaPeriodo">
+    <div class="card border-secondary mb-3" style="min-width: 700px;">
+        <div class="card-header">
+            <div class="d-flex">
+                Consulta de Periodos
+
+                <div class="ms-auto">
+                    <button data-form="busqueda_periodo" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body text-secondary">
+            <table id="tblConsultaPeriodos" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="5">
+                            <input name="txtBuscarPeriodo" id="txtBuscarPeriodo" type="search"
+                                   class="form-control" placeholder="Buscar periodos por fecha, periodo" />
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>FECHA</th>
+                        <th>PERIODO</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script>listarPeriodos();
+
+    txtBuscarPeriodo.addEventListener('keyup', e => {
+        listarPeriodos(txtBuscarPeriodo.value);
+    });
+
+    async function listarPeriodos(buscar='') {
+        let periodos = await obtenerPeriodos(buscar),
+            filas = '';
+        periodos.forEach(periodo => {
+            filas += `
+                <tr onClick='modificarPeriodo(${JSON.stringify(periodo)})'>
+                    <td>${new Date(periodo.fecha).toLocaleDateString("en-GB") }</td>
+                    <td>${periodo.periodo}</td>
+                    <td><button type="button" class="btn btn-outline-danger btn-sm" onClick='eliminarPeriodo(${JSON.stringify(periodo)}, event)'>DEL</button>
+                </tr>
+            `;
+        });
+        document.querySelector("#tblConsultaPeriodos > tbody").innerHTML = filas;
+    }
+    async function eliminarPeriodo(periodo, event) {
+        event.preventDefault();
+
+        if (confirm(`Esta seguro de eliminar a ${periodo.periodo.trim()}?`) ) {
+            const respuesta = await fetch(`/api/Periodos/${periodo.idPeriodo}`, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }), data = await respuesta.text();
+            if (data && data.length > 0) {
+                alert(`Error, nose pudo eliminar el periodo ${periodo.periodo}, error: ${data}`);
+                return;
+            }
+            listarPeriodos();
+        }
+    }</script>

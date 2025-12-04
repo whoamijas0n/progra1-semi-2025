@@ -8192,11 +8192,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-web\\webappacademica\\webappacademica\\webappacademica.csproj",
+      "projectUniqueName": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-finish\\webappacademica\\webappacademica\\webappacademica.csproj",
       "projectName": "webappacademica",
-      "projectPath": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-web\\webappacademica\\webappacademica\\webappacademica.csproj",
+      "projectPath": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-finish\\webappacademica\\webappacademica\\webappacademica.csproj",
       "packagesPath": "C:\\Users\\rousemary\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-web\\webappacademica\\webappacademica\\obj\\",
+      "outputPath": "C:\\Users\\rousemary\\Source\\Repos\\progra1-semi-2025-finish\\webappacademica\\webappacademica\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

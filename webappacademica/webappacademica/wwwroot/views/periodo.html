@@ -1,0 +1,83 @@
+﻿<form id="frmPeriodo">
+    <div class="card border-secondary mb-3" style="min-width: 700px;">
+        <div class="card-header">
+            <div class="d-flex">
+                Administracion de Periodos
+
+                <div class="ms-auto">
+                    <button data-form="periodo" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body text-secondary">
+            <div class="row p-1">
+                <div class="col-3 col-md-2">FECHA</div>
+                <div class="col-9 col-md-4">
+                    <input required type="date" class="form-control" id="txtFechaPeriodo" name="txtFechaPeriodo" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">PERIODO</div>
+                <div class="col-9 col-md-8">
+                    <select class="form-control" id="cboPeriodo" name="cboPeriodo">
+                        <option value="ciclo i">Ciclo I</option>
+                        <option value="ciclo ii">Ciclo II</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-12 text-center">
+                    <input type="submit" class="btn btn-outline-primary" value="Guardar" />
+                    <input type="reset" class="btn btn-outline-warning" value="Nuevo" />
+                    <input type="button" class="btn btn-outline-success" value="Buscar" onclick="abrirVentana('busqueda_periodo')" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>var accion = 'nuevo',
+        idPeriodo = 0;
+    frmPeriodo.addEventListener('submit', e => {
+        e.preventDefault();
+        guardarPeriodo();
+    });
+    frmPeriodo.addEventListener('reset', e => {
+        e.preventDefault();
+        limpiarDatosPeriodo();
+    });
+    async function guardarPeriodo() {
+        let datos = {
+            fecha: txtFechaPeriodo.value,
+            periodo: cboPeriodo.value
+        },
+            url = 'https://localhost:7005/api/Periodos',
+            method = 'POST';
+        if (accion == "modificar") {
+            method = 'PUT';
+            url = `https://localhost:7005/api/Periodos/${idPeriodo}`;
+            datos.idPeriodo = idPeriodo;
+        }
+        const respuesta = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(datos)
+        }), periodo = await respuesta.json();
+        if ((periodo?.idPeriodo || 0) > 0) {
+            limpiarDatosPeriodo();
+            listarPeriodos(txtBuscarPeriodo.value || '');
+        }
+    }
+    function limpiarDatosPeriodo() {
+        accion = "nuevo";
+        idPeriodo = 0;
+        txtFechaPeriodo.value = "";
+        cboPeriodo.value = "ciclo i";
+    }
+    function modificarPeriodo(periodo) {
+        accion = "modificar";
+        idPeriodo = periodo.idPeriodo;
+        txtFechaPeriodo.value = new Date(periodo.fecha).toLocaleDateString("en-GB").split("/").reverse().join("-");
+        cboPeriodo.value = periodo.periodo.trim();
+    }</script>

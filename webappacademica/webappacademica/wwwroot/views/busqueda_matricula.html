@@ -1,0 +1,74 @@
+﻿<form id="frmBusquedaMatricula">
+    <div class="card border-secondary mb-3" style="min-width: 700px;">
+        <div class="card-header">
+            <div class="d-flex">
+                Consulta de Matriculas
+
+                <div class="ms-auto">
+                    <button data-form="busqueda_matricula" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body text-secondary">
+            <table id="tblConsultaMatriculas" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="5">
+                            <input name="txtBuscarMatricula" id="txtBuscarMatricula" type="search" class="form-control" placeholder="Buscar matriculas por nombre, codigo" />
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>ALUMNO</th>
+                        <th>PERIODO</th>
+                        <th>FECHA</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script>listarMatriculas();
+
+    txtBuscarMatricula.addEventListener('keyup', e => {
+        listarMatriculas(txtBuscarMatricula.value);
+    });
+
+    async function listarMatriculas(buscar='') {
+        const respuesta = await fetch(`/api/Matriculas/buscar?buscar=${buscar}`, {
+            method:'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }), matriculas = await respuesta.json();
+        let filas = '';
+        matriculas.forEach(matricula => {
+            filas += `
+                <tr onClick='modificarMatricula(${JSON.stringify(matricula)})'>
+                    <td>${matricula.alumno.nombre}</td>
+                    <td>${matricula.periodo.periodo}</td>
+                    <td>${new Date(matricula.fecha).toLocaleDateString("en-GB") }</td>
+                    <td><button type="button" class="btn btn-outline-danger btn-sm" onClick='eliminarMatricula(${JSON.stringify(matricula)}, event)'>DEL</button>
+                </tr>
+            `;
+        });
+        document.querySelector("#tblConsultaMatriculas > tbody").innerHTML = filas;
+    }
+    async function eliminarMatricula(matricula, event) {
+        event.preventDefault();
+
+        if (confirm(`Esta seguro de eliminar la matricula del estudiante ${matricula.alumno.nombre.trim()}?`) ) {
+            const respuesta = await fetch(`/api/Matriculas/${matricula.idMatricula}`, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }), data = await respuesta.text();
+            if (data && data.length > 0) {
+                alert(`Error, nose pudo eliminar el matricula ${matricula.alumno.nombre}, error: ${data}`);
+                return;
+            }
+            listarMatriculas();
+        }
+    }</script>

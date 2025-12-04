@@ -4,7 +4,7 @@ Este repositorio aloja distintas ramas con el contenido desarollado dentro de la
 
 ## Ramas dentro de el repositorio:
 
-´´´Plaintext
+```Plaintext
  ├── Main (Rama Principal)
  │
  ├── Academica (Formulario de Windows Form para la administracion academica)
@@ -13,7 +13,7 @@ Este repositorio aloja distintas ramas con el contenido desarollado dentro de la
  ├── parcial1 (Parcial 1 de Programacion Computacional)
  ├── parcial2 (Parcial 2 de Programacion Computacional)
  └── webappacademica (Aplicacion web para la administracion academica)
-´´´
+```
 
 ## Avisos
 
@@ -22,6 +22,8 @@ Este repositorio aloja distintas ramas con el contenido desarollado dentro de la
 * La rama `Fiexpress` corresponde a la rama del proyecto final.
 * Todas los proyectos alojados en las ramas funcionan correctamente, solamente los proyectos de aplicaciones web quiza no pueda visualizarlos bien debido a la falta de la base de datos de SQL server
 * Puede visualizar la documentacion correspondiente a el proyecto final despues de este apartado
+
+``` ```
 
 # **DOCUMENTACION CORRESPONDIENTE A EL PROYECTO FINAL**
 # Fiexpress
